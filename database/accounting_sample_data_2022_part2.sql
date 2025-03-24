@@ -105,7 +105,7 @@ INSERT INTO invoices (customer_id, invoice_number, date, due_date, total_amount,
 (3, 'INV-2022-008', '2022-04-15', '2022-05-15', 1605.00, 105.00, 'Software maintenance', 'paid');
 
 -- Invoice Lines (sample)
-INSERT INTO invoice_lines (invoice_id, product_id, description, quantity, unit_price, tax_rate_id, tax_amount, line_total) VALUES
+INSERT INTO invoice_lines (invoice_id, product_id, description, quantity, unit_price, tax_rate_id, tax_amount, line_amount) VALUES
 (1, 1, 'Laptop Computer', 2, 1200.00, 2, 180.00, 2580.00),
 (1, 6, 'Ink Cartridges', 4, 24.99, 2, 7.50, 107.46),
 (2, 3, 'Office Chair', 10, 250.00, 2, 187.50, 2687.50),
@@ -129,7 +129,7 @@ INSERT INTO bills (vendor_id, bill_number, date, due_date, total_amount, tax_amo
 (8, 'BILL-2022-008', '2022-04-15', '2022-05-15', 3745.00, 245.00, 'Office renovation', 'paid');
 
 -- Bill Lines (sample)
-INSERT INTO bill_lines (bill_id, product_id, description, quantity, unit_price, tax_rate_id, tax_amount, line_total) VALUES
+INSERT INTO bill_lines (bill_id, product_id, description, quantity, unit_price, tax_rate_id, tax_amount, line_amount) VALUES
 (1, 5, 'Printer Paper', 50, 5.99, 2, 22.46, 321.96),
 (1, 6, 'Ink Cartridges', 8, 24.99, 2, 14.99, 214.91),
 (2, 1, 'Laptop Computer', 2, 1200.00, 2, 180.00, 2580.00),

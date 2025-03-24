@@ -177,7 +177,7 @@ CREATE TABLE invoice_lines (
     unit_price DECIMAL(15,2) NOT NULL,
     tax_rate_id INTEGER,
     tax_amount DECIMAL(15,2) DEFAULT 0,
-    line_total DECIMAL(15,2) DEFAULT 0,
+    line_amount DECIMAL(15,2) DEFAULT 0,
     FOREIGN KEY (invoice_id) REFERENCES invoices(id),
     FOREIGN KEY (product_id) REFERENCES products(id),
     FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id)
@@ -207,7 +207,7 @@ CREATE TABLE bill_lines (
     unit_price DECIMAL(15,2) NOT NULL,
     tax_rate_id INTEGER,
     tax_amount DECIMAL(15,2) DEFAULT 0,
-    line_total DECIMAL(15,2) DEFAULT 0,
+    line_amount DECIMAL(15,2) DEFAULT 0,
     FOREIGN KEY (bill_id) REFERENCES bills(id),
     FOREIGN KEY (product_id) REFERENCES products(id),
     FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id)

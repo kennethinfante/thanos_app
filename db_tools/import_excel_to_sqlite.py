@@ -22,8 +22,34 @@ def import_excel_to_sqlite(excel_path, db_path):
         columns = df.columns.tolist()
         
         create_query = f"CREATE TABLE IF NOT EXISTS {sheet_name} (\n"
-        create_query += "id INTEGER PRIMARY KEY,\n"
-        create_query += ",\n".join([f"{col} TEXT" for col in columns if col != 'id'])
+        create_query += "id INTEGER PRIMARY KEY"
+        for col in columns:
+            if col == 'id':
+                continue
+            elif col.endswith("_id"):
+                create_query += f",\n{col} INTEGER"
+            elif col.endswith("_amount") or \
+                col.endswith("_balance") or \
+                col.endswith("_price") or \
+                col in ("debit", "credit") or \
+                col == "amount":
+                create_query += f",\n{col} DECIMAL(15,2) DEFAULT 0"
+            elif col.endswith("_number") or \
+                col in ("sku", "code"):
+                create_query += f",\n{col} TEXT NOT NULL UNIQUE"
+            elif col == "created_at":
+                create_query += f",\n{col} TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+            elif sheet_name == "bills" and col == "status":
+                create_query += f",\n{col} TEXT DEFAULT 'draft', -- draft, received, paid, partially_paid, overdue, cancelled"
+            elif sheet_name == "invoices" and col == "status":
+                create_query += f",\n{col} TEXT DEFAULT 'draft', -- draft, sent, paid, partially_paid, overdue, cancelled"
+            elif col in ("is_posted", "is_reconciled", "is_closed", "is_default"):
+                create_query += f",\n{col} BOOLEAN DEFAULT 0"
+            elif col in ("is_active"):
+                create_query += f",\n{col} BOOLEAN DEFAULT 1"
+            else:
+                create_query += f",\n{col} TEXT"
+        # create_query += ",\n".join([f"{col} TEXT" for col in columns if col != 'id'])
         create_query += "\n);"
         
         table_queries[sheet_name] = create_query
@@ -71,6 +97,7 @@ def import_excel_to_sqlite(excel_path, db_path):
             else:
                 create_query += f"FOREIGN KEY ({fk[0]}) REFERENCES {fk[1]}({fk[2]}),\n"
         create_query += ");"
+        print(create_query)
         cursor.execute(create_query)
 
     # Insert data into tables
