@@ -47,7 +47,7 @@ def get_insert_query(sheet_name, df):
         value_list = []
         for value in row:
             str_value = str(value)
-            if str_value.isdigit():
+            if str_value.replace('.','').isdigit():
                 value_list.append(str_value)
             elif pd.notna(value):
                 value_list.append(f'"{str_value}"')
