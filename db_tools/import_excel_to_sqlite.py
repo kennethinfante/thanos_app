@@ -150,11 +150,11 @@ def import_excel_to_sqlite(excel_path, sql_output_path, db_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate database and SQL statements from an Excel file')
     parser.add_argument('--excel', default='acctg_db1/acctg_export1.xlsx',
-                        help='Path excel file (default: acctg_export.xlsx)')
+                        help='Path excel file (default: acctg_db1/acctg_export1.xlsx)')
     parser.add_argument('--sql', default='acctg_db1/accounting.sql',
-                        help='Path to SQL file (default: ../accounting.sql)')
+                        help='Path to SQL file (default: acctg_db1/accounting.sql)')
     parser.add_argument('--db', default='acctg_db1/accounting.db',
-                        help='Path to SQLite database file (default: ../accounting.db)')
+                        help='Path to SQLite database file (default: acctg_db1/accounting.db)')
 
     args = parser.parse_args()
     
