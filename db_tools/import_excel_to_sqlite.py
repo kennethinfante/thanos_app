@@ -46,7 +46,10 @@ def get_insert_query(sheet_name, df):
         columns = ', '.join(row.index)
         value_list = []
         for value in row:
-            str_value = str(value)
+
+            str_value = str(value).rstrip()
+
+            # don't worry for now of fk becoming float, they work the same as integer in sqlite
             if str_value.replace('.','').isdigit():
                 value_list.append(str_value)
             elif pd.notna(value):
@@ -93,9 +96,9 @@ def add_foreign_keys(table_queries):
 
     return table_queries
 
-def import_excel_to_sqlite(excel_path, db_path, sql_output_path):
+def import_excel_to_sqlite(excel_path, sql_output_path, db_path):
     # Read the Excel file
-    xls = pd.ExcelFile(excel_path)
+    xls = pd.ExcelFile(excel_path, engine="openpyxl")
 
     # Connect to the SQLite database
     conn = sqlite3.connect(db_path)
@@ -148,11 +151,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generate database and SQL statements from an Excel file')
     parser.add_argument('--excel', default='acctg_db1/acctg_export1.xlsx',
                         help='Path excel file (default: acctg_export.xlsx)')
-    parser.add_argument('--db', default='acctg_db1/accounting.db',
-                        help='Path to SQLite database file (default: ../accounting.db)')
     parser.add_argument('--sql', default='acctg_db1/accounting.sql',
                         help='Path to SQL file (default: ../accounting.sql)')
+    parser.add_argument('--db', default='acctg_db1/accounting.db',
+                        help='Path to SQLite database file (default: ../accounting.db)')
 
     args = parser.parse_args()
     
-    import_excel_to_sqlite(args.excel, args.db, args.sql)
+    import_excel_to_sqlite(args.excel, args.sql, args.db)
