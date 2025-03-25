@@ -1,8 +1,9 @@
 import pandas as pd
 import sqlite3
 import os
+import argparse
 
-def import_excel_to_sqlite(excel_path, db_path):
+def import_excel_to_sqlite(excel_path, db_path, sql_output_path):
     # Read the Excel file
     xls = pd.ExcelFile(excel_path)
 
@@ -15,6 +16,8 @@ def import_excel_to_sqlite(excel_path, db_path):
 
     # Dictionary to store table creation queries
     table_queries = {}
+
+    sql_file = open(sql_output_path, 'w')
 
     # First pass: Create tables without foreign key constraints
     for sheet_name in xls.sheet_names:
@@ -53,7 +56,6 @@ def import_excel_to_sqlite(excel_path, db_path):
         create_query += "\n);"
         
         table_queries[sheet_name] = create_query
-        # cursor.execute(create_query)
 
     # Second pass: Add foreign key constraints
     foreign_keys = {
@@ -90,32 +92,46 @@ def import_excel_to_sqlite(excel_path, db_path):
 
     for table, fks in foreign_keys.items():
         create_query = table_queries[table]
-        create_query = create_query.replace("\n);", ',\n')
+        create_query = create_query.replace("\n);", "")
         for fk in fks:
-            if fk == fks[-1]:
-                create_query += f"FOREIGN KEY ({fk[0]}) REFERENCES {fk[1]}({fk[2]})\n"
-            else:
-                create_query += f"FOREIGN KEY ({fk[0]}) REFERENCES {fk[1]}({fk[2]}),\n"
-        create_query += ");"
+            create_query += f",\nFOREIGN KEY ({fk[0]}) REFERENCES {fk[1]}({fk[2]})"
+        create_query += "\n);"
         print(create_query)
         cursor.execute(create_query)
+
+        # Write updated CREATE TABLE statement with foreign keys to SQL file
+        sql_file.write(f"{create_query}\n\n")
 
     # Insert data into tables
     for sheet_name in xls.sheet_names:
         df = pd.read_excel(xls, sheet_name)
         df.to_sql(sheet_name, conn, if_exists='replace', index=False)
 
+        # Generate and write INSERT statements
+        for _, row in df.iterrows():
+            columns = ', '.join(row.index)
+            values = ', '.join([f'"{str(value)}"' if pd.notna(value) else 'NULL' for value in row])
+            insert_query = f"INSERT INTO {sheet_name} ({columns}) VALUES ({values});"
+            sql_file.write(f"{insert_query}\n")
+        sql_file.write("\n")
+
     # Commit changes and close connection
     conn.commit()
     conn.close()
+    sql_file.close()
 
     print(f"Excel file imported to SQLite database: {db_path}")
+    print(f"SQL statements exported to: {sql_output_path}")
 
 if __name__ == "__main__":
-    # Specify the path to your Excel file
-    excel_path = "acctg_export.xlsx"
+    parser = argparse.ArgumentParser(description='Generate database and SQL statements from an Excel file')
+    parser.add_argument('--excel', default='acctg_export.xlsx',
+                        help='Path excel file (default: acctg_export.xlsx)')
+    parser.add_argument('--db', default='../accounting.db',
+                        help='Path to SQLite database file (default: ../accounting.db)')
+    parser.add_argument('--sql', default='../accounting.sql',
+                        help='Path to SQL file (default: ../accounting.sql)')
+
+    args = parser.parse_args()
     
-    # Specify the path for the output SQLite database
-    db_path = "../accounting.db"
-    
-    import_excel_to_sqlite(excel_path, db_path)
+    import_excel_to_sqlite(args.excel, args.db, args.sql)

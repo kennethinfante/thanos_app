@@ -37,6 +37,7 @@
 ######################
 Exercise_Files/
 .vscode/
+.idea/
 *.sublime-project
 *.sublime-workspace
 
@@ -51,3 +52,5 @@ __pycache__
 # Project Specifics #
 ######################
 acctg.db
+TODO.md
+app_old.py
