@@ -199,3 +199,12 @@ Feel free to reach out if you need any further assistance with implementing spec
 # from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette, QColor
 # from PyQt5.QtCore import Qt, QSize, QDate
 ```
+
+
+## Notes
+Advantage of separate bill and invoice payments tables
+* Easy getting AR and AP balance
+* Easy getting payment reference numbers
+
+Advantage of single cash table
+* Easier for reconciliation

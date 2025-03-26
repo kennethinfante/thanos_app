@@ -2,7 +2,7 @@ import pandas as pd
 import sqlite3
 import os
 import argparse
-
+from fks import *
 
 def get_create_query(sheet_name, columns):
     create_query = f"CREATE TABLE IF NOT EXISTS {sheet_name} (\nid INTEGER PRIMARY KEY"
@@ -42,8 +42,9 @@ def get_create_query(sheet_name, columns):
 def get_insert_query(sheet_name, df):
     values = ""
 
+    columns = ', '.join(df.columns.tolist())
+    
     for _, row in df.iterrows():
-        columns = ', '.join(row.index)
         value_list = []
         for value in row:
 
@@ -64,28 +65,8 @@ def get_insert_query(sheet_name, df):
 
     return f"INSERT INTO {sheet_name} ({columns}) VALUES ({values}\n);"
 
-def add_foreign_keys(table_queries):
-    foreign_keys = {
-        'accounts': [('account_type_id', 'account_types', 'id'), ('parent_account_id', 'accounts', 'id')],
-        'contacts': [('type_id', 'contact_types', 'id')],
-        'bank_accounts': [('account_id', 'accounts', 'id'), ('currency_id', 'currencies', 'id')],
-        'journal_entry_lines': [('journal_entry_id', 'journal_entries', 'id'), ('account_id', 'accounts', 'id')],
-        'products': [('category_id', 'product_categories', 'id'), ('tax_rate_id', 'tax_rates', 'id'),
-                     ('inventory_account_id', 'accounts', 'id'), ('revenue_account_id', 'accounts', 'id'),
-                     ('expense_account_id', 'accounts', 'id')],
-        'invoices': [('customer_id', 'contacts', 'id')],
-        'invoice_lines': [('invoice_id', 'invoices', 'id'), ('product_id', 'products', 'id'),
-                          ('tax_rate_id', 'tax_rates', 'id')],
-        'bills': [('vendor_id', 'contacts', 'id')],
-        'bill_lines': [('bill_id', 'bills', 'id'), ('product_id', 'products', 'id'),
-                       ('tax_rate_id', 'tax_rates', 'id')],
-        'invoice_payments': [('payment_method_id', 'payment_methods', 'id'), ('invoice_id', 'invoices', 'id')],
-        'bill_payments': [('payment_method_id', 'payment_methods', 'id'), ('bill_id', 'bills', 'id')],
-        'bank_transactions': [('bank_account_id', 'bank_accounts', 'id'), ('journal_entry_id', 'journal_entries', 'id'),
-                              ('invoice_payment_id', 'invoice_payments', 'id'), ('bill_payment_id', 'bill_payments', 'id')]
-    }
-
-    for sheet_name, fks in foreign_keys.items():
+def add_foreign_keys(table_queries, fks):
+    for sheet_name, fks in fks.items():
         create_query = table_queries[sheet_name]
         create_query = create_query.replace("\n);", "")
         for fk in fks:
@@ -96,7 +77,7 @@ def add_foreign_keys(table_queries):
 
     return table_queries
 
-def import_excel_to_sqlite(excel_path, sql_output_path, db_path):
+def import_excel_to_sqlite(fks, excel_path, sql_output_path, db_path):
     # Read the Excel file
     xls = pd.ExcelFile(excel_path, engine="openpyxl")
 
@@ -122,10 +103,11 @@ def import_excel_to_sqlite(excel_path, sql_output_path, db_path):
         table_queries[sheet_name] = create_query
 
     # Second pass: Add foreign key constraints
-    table_queries = add_foreign_keys(table_queries)
+    table_queries = add_foreign_keys(table_queries, fks)
     
     # separate exece because the fk dict above may not include all the tables in the excel file
     for sheet_name, create_query in table_queries.items():
+        print(create_query)
         cursor.execute(create_query)
         sql_file.write(f"{create_query}\n\n")
 
@@ -148,14 +130,5 @@ def import_excel_to_sqlite(excel_path, sql_output_path, db_path):
     print(f"SQL statements exported to: {sql_output_path}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Generate database and SQL statements from an Excel file')
-    parser.add_argument('--excel', default='acctg_db1/acctg_export1.xlsx',
-                        help='Path excel file (default: acctg_db1/acctg_export1.xlsx)')
-    parser.add_argument('--sql', default='acctg_db1/accounting.sql',
-                        help='Path to SQL file (default: acctg_db1/accounting.sql)')
-    parser.add_argument('--db', default='acctg_db1/accounting.db',
-                        help='Path to SQLite database file (default: acctg_db1/accounting.db)')
-
-    args = parser.parse_args()
     
-    import_excel_to_sqlite(args.excel, args.sql, args.db)
+    import_excel_to_sqlite(fk2, **acctg_set2)

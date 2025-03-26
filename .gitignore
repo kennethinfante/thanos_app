@@ -54,3 +54,7 @@ __pycache__
 acctg.db
 TODO.md
 app_old.py
+db_tools/acctg_db1/accounting.db
+db_tools/acctg_db1/accounting.sql
+db_tools/acctg_db2/accounting.db
+db_tools/acctg_db2/accounting.sql
