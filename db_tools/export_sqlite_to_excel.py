@@ -12,7 +12,7 @@ def export_sqlite_to_excel(db_path, excel_path):
     tables = cursor.fetchall()
 
     # Create a Pandas Excel writer using XlsxWriter as the engine
-    with pd.ExcelWriter(excel_path, engine='xlsxwriter') as writer:
+    with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
         for table in tables:
             table_name = table[0]
             # Read the table into a pandas DataFrame
@@ -30,9 +30,9 @@ def export_sqlite_to_excel(db_path, excel_path):
 
 if __name__ == "__main__":
     # Specify the path to your SQLite database
-    db_path = "../acctg.db"
+    db_path = "acctg_db3/accounting.db"
     
     # Specify the path for the output Excel file
-    excel_path = "acctg_export.xlsx"
+    excel_path = "acctg_db3/acctg_export3.xlsx"
     
     export_sqlite_to_excel(db_path, excel_path)

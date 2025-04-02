@@ -131,4 +131,4 @@ def import_excel_to_sqlite(fks, excel_path, sql_output_path, db_path):
 
 if __name__ == "__main__":
     
-    import_excel_to_sqlite(fk2, **acctg_set2)
+    import_excel_to_sqlite(fk4, **acctg_set4)

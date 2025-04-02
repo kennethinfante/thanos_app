@@ -208,3 +208,41 @@ Advantage of separate bill and invoice payments tables
 
 Advantage of single cash table
 * Easier for reconciliation
+
+Products and services
+* If tracked - is_sold and is_purchased are checked, COGS, Sales, Inventory
+* If not tracked
+    * if purchase but not sold - consumables
+    * If sold but not purchase - service
+    * If purchase and sold - inventory is purchases
+
+## User Story for Products and services
+Let: 
+    is_inventory_tracked = 1
+    is_consumable = 2
+    is_service = 3
+
+* If 1 is clicked
+    * 2 and 3 are greyed out.
+    * Inventory account is prepopulated, greyed out
+    * Sales account is prepopulated, greyed out
+    * COGS is prepopulated, greye out
+
+* If 2 is clicked
+    * 1 & 3 are greyed out.
+    * Inventory is blank, greyed out
+    * Sales account is blank, greyed out
+    * Purchases - default to Supplies expense, editable
+
+* If 3 is clicked
+    * 2 & 1 are greyed out
+    * Inventory is blank, greyed out
+    * Sales - default to Service revenue, editable
+    * Purchases - account is blank, editable. Note that if not blank, item name will be appended with "(purchased)"
+
+* If none is clicked
+    * Inventory is blank, greyed out
+    * Sales - blank, editable
+    * Purchases - blank, editable
+
+Note that in bills, items without Expense accounts are not available. In invoices, items without revenue accounts are not available.

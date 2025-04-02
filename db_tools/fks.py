@@ -47,3 +47,60 @@ fk2 = {
     'cash_transactions': [('payment_method_id', 'payment_methods', 'id'), ('invoice_id', 'invoices', 'id'), ('bill_id', 'bills', 'id'), ('cash_id', 'accounts', 'id'), ('account_id', 'accounts', 'id')],
     'bank_transactions': [('bank_account_id', 'bank_accounts', 'id'), ('cash_transaction_id', 'cash_transactions', 'id')]
 }
+
+acctg_set3 = {
+    "excel_path" : "acctg_db3/acctg_export3.xlsx", 
+    "sql_output_path" : "acctg_db3/accounting.sql", 
+    "db_path" : "acctg_db3/accounting.db"
+}
+
+fk3 = {
+    'accounts': [('account_type_id', 'account_types', 'id'), ('parent_account_id', 'accounts', 'id')],
+    'entities': [('type_id', 'entity_types', 'id')],
+    'bank_accounts': [('account_id', 'accounts', 'id'), ('currency_id', 'currencies', 'id')],
+    'journal_lines': [('journal_id', 'journals', 'id'), ('account_id', 'accounts', 'id')],
+    'products': [('tax_rate_id', 'tax_rates', 'id'),
+                    ('inventory_account_id', 'accounts', 'id'), ('revenue_account_id', 'accounts', 'id'),
+                    ('expense_account_id', 'accounts', 'id')],
+    'invoices': [('customer_id', 'entities', 'id')],
+    'invoice_lines': [('invoice_id', 'invoices', 'id'), ('product_id', 'products', 'id'),
+                        ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
+    'bills': [('vendor_id', 'entities', 'id')],
+    'bill_lines': [('bill_id', 'bills', 'id'), ('product_id', 'products', 'id'),
+                    ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
+    'cash_transactions': [('payment_method_id', 'payment_methods', 'id'), ('invoice_id', 'invoices', 'id'), ('bill_id', 'bills', 'id'), ('cash_id', 'accounts', 'id'), ('account_id', 'accounts', 'id'), ('tax_rate_id', 'tax_rates', 'id')],
+    'bank_transactions': [('bank_account_id', 'bank_accounts', 'id'), ('cash_transaction_id', 'cash_transactions', 'id')]
+}
+
+
+acctg_set4 = {
+    "excel_path" : "acctg_db4/acctg_export4.xlsx", 
+    "sql_output_path" : "acctg_db4/accounting.sql", 
+    "db_path" : "acctg_db4/accounting.db"
+}
+
+fk4 = {
+    'accounts': [('account_type_id', 'account_types', 'id'), ('parent_account_id', 'accounts', 'id')],
+    'entities': [('type_id', 'entity_types', 'id')],
+    'bank_accounts': [('account_id', 'accounts', 'id'), ('currency_id', 'currencies', 'id')],
+    'journal_lines': [('journal_id', 'journals', 'id'), ('account_id', 'accounts', 'id')],
+    'products': [('tax_rate_id', 'tax_rates', 'id'),
+                    ('inventory_account_id', 'accounts', 'id'), ('revenue_account_id', 'accounts', 'id'),
+                    ('expense_account_id', 'accounts', 'id')],
+    'invoices': [('customer_id', 'entities', 'id')],
+    'invoice_lines': [('invoice_id', 'invoices', 'id'), ('product_id', 'products', 'id'),
+                        ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
+    'invoice_payments': [('invoice_id', 'invoices', 'id'), ('payment_method_id', 'payment_methods', 'id'),
+                        ('account_id', 'accounts', 'id')],
+    'bills': [('vendor_id', 'entities', 'id')],
+    'bill_lines': [('bill_id', 'bills', 'id'), ('product_id', 'products', 'id'),
+                    ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
+    'bill_payments': [('bill_id', 'bills', 'id'), ('payment_method_id', 'payment_methods', 'id'),
+                        ('account_id', 'accounts', 'id')],
+    'cash_transactions': [('cash_type_id', 'cash_types', 'id'), ('tax_rate_id', 'tax_rates', 'id'),
+                          ('payment_method_id', 'payment_methods', 'id'), ('account_id', 'accounts', 'id')],
+    'cash_transaction_lines': [('cash_transaction_id', 'cash_transactions', 'id'), ('product_id', 'products', 'id'),
+                          ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
+    'bank_transactions': [('bank_account_id', 'bank_accounts', 'id'), ('cash_transaction_id', 'cash_transactions', 'id'),
+                          ('invoice_payment_id', 'invoice_payments', 'id'), ('bill_payment_id', 'bill_payments', 'id')]
+}
