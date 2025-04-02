@@ -1,0 +1,127 @@
+@startuml
+' uncomment the line below if you're using computer with a retina display
+' skinparam dpi 300
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define Model(name,desc) class name as "desc" << (M,#FFAAAA) >>
+' we use bold for primary key
+' green color for unique
+' and underscore for not_null
+!define nn(x) <u>x</u>
+!define pk(x) <b>x</b>
+!define fk(x) <i>x</i>
+!define bk(x) <color:black>x</color>
+!define unique(x) <color:green>x</color>
+' other tags available:
+' <i></i>
+' <back:COLOR></color>, where color is a color name or html color code
+' (#FFAACC)
+' see: http://plantuml.com/classes.html#More
+hide methods
+hide stereotypes
+
+
+' entities
+
+Table(COA, "Chart_Of_Accounts") {
+pk(id INTEGER)
+bk(account_name TEXT)
+bk(description TEXT)
+bk(account_type TEXT)
+bk(account_category TEXT)  
+}
+
+Table(bills, "Bills") {
+pk(id INTEGER) 
+bk(bill_no TEXT)
+bk(tran_date DATE*)
+bk(due_date DATE*)
+bk(description TEXT)
+bk(reference TEXT)
+bk(total DECIMAL 20-2)
+bk(status BINARY or TINYINT)
+fk(contact_id INTEGER)
+}
+
+Table(invoices, "Invoices") {
+pk(id INTEGER) 
+bk(invoice_no TEXT)
+bk(tran_date DATE*)
+bk(due_date DATE*)
+bk(description TEXT)
+bk(reference TEXT)
+bk(total DECIMAL 20-2)
+bk(status BINARY or TINYINT)
+fk(contact_id INTEGER)
+}     
+
+Table(contacts, "Contacts") {
+pk(id INTEGER)
+bk(name TEXT)
+bk(primary_person TEXT)
+bk(email TEXT)
+bk(phone TEXT)
+bk(fax TEXT)
+bk(mobile TEXT)
+bk(website TEXT)
+bk(addr_st TEXT)
+bk(addr_city_town TEXT)
+bk(addr_state_region TEXT)
+bk(addr_zip_code TEXT)
+bk(addr_country TEXT)
+bk(invoice_terms INTEGER)
+bk(bill_terms INTEGER)
+}
+
+Table(cash, "Cash") {
+pk(id INTEGER)
+bk(type TEXT)
+fk(bank_coa_id INTEGER)
+fk(contact_id INTEGER)
+bk(tran_date DATE*)
+bk(description TEXT)
+bk(reference TEXT)
+bk(total DECIMAL 20-2)
+fk(invoice_id INTEGER)
+fk(bill_id INTEGER)
+}
+
+Table(cash_lines, "Cash_Lines") {
+pk(id INTEGER)
+bk(item_id INTEGER)
+fk(line_coa_id INTEGER)
+bk(qty INTEGER)
+bk(unit_price DECIMAL 20-2)
+bk(unit_cost DECIMAL 20-2)
+bk(extended DECIMAL 20-2)
+fk(cash_id INTEGER)
+}
+
+Table(items, "Items") {
+pk(id INTEGER)
+bk(item_code TEXT)
+bk(item_name TEXT)
+bk(description TEXT)
+fk(default_inventory_coa_id INTEGER)
+fk(default_cogs_coa_id INTEGER)
+fk(default_purchases_coa_id INTEGER)
+fk(default_sales_coa_id INTEGER)
+bk(default_unit_price INTEGER)
+bk(default_unit_cost DECIMAL 20-2)
+bk(beg_qty INTEGER)
+bk(beg_unit_cost DECIMAL 20-2)
+bk(beg_extended DECIMAL 20-2)
+}
+                    
+
+' relationships
+cash "1" -- "M" invoices
+contacts "1" -- "M" cash
+cash "1" -- "M" bills
+
+COA "1" -- "1" cash
+COA "1" -- "1" items
+COA "1" -- "M" cash_lines
+
+cash "1" -- "M" cash_lines
+items "1" -- "M" cash_lines
+@enduml

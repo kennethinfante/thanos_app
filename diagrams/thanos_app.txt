@@ -1,0 +1,125 @@
+@startuml
+' uncomment the line below if you're using computer with a retina display
+' skinparam dpi 300
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define Model(name,desc) class name as "desc" << (M,#FFAAAA) >>
+' we use bold for primary key
+' green color for unique
+' and underscore for not_null
+!define nn(x) <u>x
+!define pk(x) <b>x
+!define fk(x) <i>x
+' dd stand for details
+!define dd(x) <size:12><i>x
+!define cc(x) <size:10><i>x
+!define unique(x) <color:green>x
+' to add parentheses
+!define p(x) &#40;x&#41;
+' other tags available:
+' <i></i>
+' <back:COLOR></color>, where color is a color name or html color code
+' (#FFAACC)
+' see: http://plantuml.com/classes.html#More
+hide methods
+hide stereotypes
+
+note as N1
+  I choose to use duckdb to aide in the discussion.
+  The goal is to establisht the logic first.
+  Later we'll migrate this to MySQL or PostgreSQL.
+  In actual SQL, the code for PK is "PRIMARY KEY (id)".
+  For FK, "FOREIGN KEY contact_id REFERENCES contacts(id)".
+  Enclosed field names with "`" as needed.
+
+  Joining table is used to facilitate M-to-M relationships.
+  transactions table serves as the joining table between
+    documents and contacts.
+  line_items table serves as the joining table between
+    transactions and accounts.
+  
+  The transactions are not broken down to Sales, Purchases 
+    as this is business logic. Hence, responsibility of
+    the app not the database.
+
+  Theoretically, fields can be defaulted to null.
+    It is the responsibility of the app to enforce validation.
+    However, we added the not null here as reminder once
+    we start the code for the app.
+
+end note
+
+' entities
+
+Table(documents, "documents") {
+    cc(-Not all documents can result to a transaction. Example: contract)
+    cc(-Not all transactions results from a document. Example: depreciation)
+    cc(-A document can result to multiple transactions.)
+    cc(-Example: OR used to input Sales Invoice and Cash Receipt)
+pk(id INT NN)
+    cc(-Doc date can be different from transaction date.)
+    cc(-Example:  June 2024 Phone bill dated Jul 1 2024)
+document_date TEXT NN
+description TEXT NN
+created_at TEXT NN
+updated_at TEXT NN
+}
+
+Table(contacts, "contact_id") {
+    cc(-A customer can be a supplier and vice versa. Hence no separate table for each)
+pk(id INT NN)
+    cc(-The business name. Name of the person can be put here if natural person)
+is_natural_person` INT NN
+name TEXT NN
+contact_person TEXT NN
+contact_person_no TEXT NN
+is_archived INT NN
+created_at TEXT NN
+updated_at TEXT NN
+}
+
+Table(transactions, "transactions") {
+pk(id INT NN)
+    cc(-Contact and doc can be null for a transactions. Example is depreciation)
+    cc(-The app should enforce if transaction needs a doc depending on the)
+    cc(-specific input form - like in Invoice form)
+    cc(-because this is a business logic)
+document_id INT DN
+contact_id INT DN
+    cc(-This is the date when transaction is recognized following acctg standards)
+transaction_date TEXT NN
+description TEXT NN
+created_at TEXT NN
+updated_at TEXT NN
+}
+
+Table(accounts, "accounts") {
+pk(id INT NOT NULL)
+account_name TEXT NN
+account_type INT NN
+    cc(-SQLite does not have boolean. Mimic it 1 or 2 only)
+is_archived INT NN
+    cc(-SQLite does not have datetime.)
+    cc(-Text with format YYYY-MM-DD HH:MM:SS)
+created_at TEXT NN
+updated_at TEXT NN
+}
+
+Table(line_items, "line_items") {
+    cc(-One line per account affected. + if debit. - if credit)
+    cc(-A transaction has at least two lines)
+pk(id INT NN)
+transaction_id INT NN
+account_id INT NN
+entry_type ENUM('D', 'C') NN
+amount DECIMAL(20, 2) NN
+}
+
+                    
+
+' relationships
+documents "1" -- "M" transactions
+transactions "1" -- "M" line_items
+accounts "1" -- "M" line_items
+contacts "1" -- "M" transactions
+
+@enduml
