@@ -1,0 +1,18 @@
+<RCC>
+  <qresource prefix="logos" />
+  <qresource prefix="">
+    <file>icons/home.png</file>
+    <file>icons/coupon.png</file>
+    <file>icons/purchase.png</file>
+    <file>icons/cash.png</file>
+    <file>icons/box.png</file>
+    <file>icons/people.png</file>
+    <file>icons/diary.png</file>
+    <file>icons/analytics.png</file>
+    <file>icons/settings.png</file>
+    <file>icons/infinity-gauntlet.png</file>
+  </qresource>
+  <qresource prefix="stylesheets">
+    <file>stylesheet.css</file>
+  </qresource>
+</RCC>

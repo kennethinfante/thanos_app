@@ -17,16 +17,16 @@ FOREIGN KEY (account_type_id) REFERENCES account_types(id),
 FOREIGN KEY (parent_account_id) REFERENCES accounts(id)
 );
 
-CREATE TABLE IF NOT EXISTS entity_types (
+CREATE TABLE IF NOT EXISTS contact_types (
 id INTEGER PRIMARY KEY,
 name TEXT
 );
 
-CREATE TABLE IF NOT EXISTS entities (
+CREATE TABLE IF NOT EXISTS contacts (
 id INTEGER PRIMARY KEY,
 type_id INTEGER,
 name TEXT,
-company_name TEXT,
+contact_person TEXT,
 phone TEXT,
 email TEXT,
 website TEXT,
@@ -39,7 +39,7 @@ country TEXT,
 description TEXT,
 is_active BOOLEAN DEFAULT 1,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (type_id) REFERENCES entity_types(id)
+FOREIGN KEY (type_id) REFERENCES contact_types(id)
 );
 
 CREATE TABLE IF NOT EXISTS employees (
@@ -164,7 +164,7 @@ total_amount DECIMAL(15,2) DEFAULT 0,
 description TEXT,
 status TEXT DEFAULT 'draft', -- draft, sent, paid, partially_paid, overdue, cancelled,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (customer_id) REFERENCES entities(id)
+FOREIGN KEY (customer_id) REFERENCES contacts(id)
 );
 
 CREATE TABLE IF NOT EXISTS invoice_lines (
@@ -210,7 +210,7 @@ total_amount DECIMAL(15,2) DEFAULT 0,
 description TEXT,
 status TEXT DEFAULT 'draft', -- draft, received, paid, partially_paid, overdue, cancelled,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-FOREIGN KEY (vendor_id) REFERENCES entities(id)
+FOREIGN KEY (vendor_id) REFERENCES contacts(id)
 );
 
 CREATE TABLE IF NOT EXISTS bill_lines (
@@ -367,22 +367,22 @@ INSERT INTO accounts (id, code, name, description, account_type_id, parent_accou
 (52, 6000, "Miscellaneous Expense", "Other expenses", 5, 36.0, 1, "2025-03-24 06:31:20"),
 );
 
-INSERT INTO entity_types (id, name) VALUES (
+INSERT INTO contact_types (id, name) VALUES (
 (1, "Customer"),
 (2, "Vendor"),
 );
 
-INSERT INTO entities (id, type_id, name, company_name, phone, email, website, tax_number, address, city, state, postal_code, country, description, is_active, created_at) VALUES (
-(1, 1, "John Smith", "Smith Enterprises", "212-555-1234", "john@smith.com", "www.smithenterprises.com", "123-45-6789", "123 Main St", "New York", "NY", 10001, "USA", "Regular customer", 1, "2025-03-24 06:31:20"),
-(2, 1, "Sarah Johnson", "Johnson LLC", "310-555-5678", "sarah@johnson.com", "www.johnsonllc.com", "987-65-4321", "456 Oak Ave", "Los Angeles", "CA", 90001, "USA", "Premium customer", 1, "2025-03-24 06:31:20"),
-(3, 1, "Michael Brown", "Brown Industries", "312-555-9012", "michael@brown.com", "www.brownindustries.com", "456-78-9012", "789 Pine Rd", "Chicago", "IL", 60007, "USA", "New customer", 1, "2025-03-24 06:31:20"),
-(4, 1, "Emily Davis", "Davis Co.", "713-555-3456", "emily@davis.com", "www.davisco.com", "789-01-2345", "101 Elm St", "Houston", "TX", 77001, "USA", "Occasional customer", 1, "2025-03-24 06:31:20"),
-(5, 1, "Robert Wilson", "Wilson Group", "305-555-7890", "robert@wilson.com", "www.wilsongroup.com", "234-56-7890", "202 Maple Dr", "Miami", "FL", 33101, "USA", "Loyal customer", 1, "2025-03-24 06:31:20"),
+INSERT INTO contacts (id, type_id, name, contact_person, phone, email, website, tax_number, address, city, state, postal_code, country, description, is_active, created_at) VALUES (
+(1, 1, "Smith Enterprises", "John Smith", "212-555-1234", "john@smith.com", "www.smithenterprises.com", "123-45-6789", "123 Main St", "New York", "NY", 10001, "USA", "Regular customer", 1, "2025-03-24 06:31:20"),
+(2, 1, "Johnson LLC", "Sarah Johnson", "310-555-5678", "sarah@johnson.com", "www.johnsonllc.com", "987-65-4321", "456 Oak Ave", "Los Angeles", "CA", 90001, "USA", "Premium customer", 1, "2025-03-24 06:31:20"),
+(3, 1, "Brown Industries", "Michael Brown", "312-555-9012", "michael@brown.com", "www.brownindustries.com", "456-78-9012", "789 Pine Rd", "Chicago", "IL", 60007, "USA", "New customer", 1, "2025-03-24 06:31:20"),
+(4, 1, "Davis Co.", "Emily Davis", "713-555-3456", "emily@davis.com", "www.davisco.com", "789-01-2345", "101 Elm St", "Houston", "TX", 77001, "USA", "Occasional customer", 1, "2025-03-24 06:31:20"),
+(5, 1, "Wilson Group", "Robert Wilson", "305-555-7890", "robert@wilson.com", "www.wilsongroup.com", "234-56-7890", "202 Maple Dr", "Miami", "FL", 33101, "USA", "Loyal customer", 1, "2025-03-24 06:31:20"),
 (6, 2, "Office Supplies Inc.", "Office Supplies Inc.", "617-555-1111", "info@officesupplies.com", "www.officesupplies.com", "321-45-6789", "100 Supply St", "Boston", "MA", 2101, "USA", "Office supplies vendor", 1, "2025-03-24 06:31:20"),
-(7, 2, "Tech Solutions", "Tech Solutions LLC", "415-555-2222", "info@techsolutions.com", "www.techsolutions.com", "789-65-4321", "200 Tech Blvd", "San Francisco", "CA", 94101, "USA", "IT equipment vendor", 1, "2025-03-24 06:31:20"),
-(8, 2, "Furniture World", "Furniture World Corp", "206-555-3333", "info@furnitureworld.com", "www.furnitureworld.com", "654-78-9012", "300 Chair Ave", "Seattle", "WA", 98101, "USA", "Office furniture vendor", 1, "2025-03-24 06:31:20"),
-(9, 2, "Marketing Experts", "Marketing Experts Co.", "303-555-4444", "info@marketingexperts.com", "www.marketingexperts.com", "987-01-2345", "400 Ad St", "Denver", "CO", 80201, "USA", "Marketing services vendor", 1, "2025-03-24 06:31:20"),
-(10, 2, "Shipping Partners", "Shipping Partners Inc.", "404-555-5555", "info@shippingpartners.com", "www.shippingpartners.com", "432-56-7890", "500 Delivery Rd", "Atlanta", "GA", 30301, "USA", "Shipping services vendor", 1, "2025-03-24 06:31:20"),
+(7, 2, "Tech Solutions LLC", "Tech Solutions", "415-555-2222", "info@techsolutions.com", "www.techsolutions.com", "789-65-4321", "200 Tech Blvd", "San Francisco", "CA", 94101, "USA", "IT equipment vendor", 1, "2025-03-24 06:31:20"),
+(8, 2, "Furniture World Corp", "Furniture World", "206-555-3333", "info@furnitureworld.com", "www.furnitureworld.com", "654-78-9012", "300 Chair Ave", "Seattle", "WA", 98101, "USA", "Office furniture vendor", 1, "2025-03-24 06:31:20"),
+(9, 2, "Marketing Experts Co.", "Marketing Experts", "303-555-4444", "info@marketingexperts.com", "www.marketingexperts.com", "987-01-2345", "400 Ad St", "Denver", "CO", 80201, "USA", "Marketing services vendor", 1, "2025-03-24 06:31:20"),
+(10, 2, "Shipping Partners Inc.", "Shipping Partners", "404-555-5555", "info@shippingpartners.com", "www.shippingpartners.com", "432-56-7890", "500 Delivery Rd", "Atlanta", "GA", 30301, "USA", "Shipping services vendor", 1, "2025-03-24 06:31:20"),
 (11, 2, "Tech Innovations Inc.", "Tech Innovations Inc.", "408-555-7890", "info@techinnovations.com", "www.techinnovations.com", "879-01-2345", "789 Innovation Blvd", "San Jose", "CA", 95110, "USA", "New technology vendor", 1, "2025-03-24 06:31:20"),
 (12, 1, "Global Solutions Corp", "Global Solutions Corp", "212-555-6789", "info@globalsolutions.com", "www.globalsolutions.com", "432-65-7890", "456 Global Ave", "New York", "NY", 10001, "USA", "New enterprise customer", 1, "2025-03-24 06:31:20"),
 (13, 2, "Green Energy Solutions", "Green Energy Solutions", "503-555-7890", "info@greenenergysolutions.com", "www.greenenergysolutions.com", "564-78-9012", "789 Eco Street", "Portland", "OR", 97201, "USA", "Sustainable energy solutions provider", 1, "2025-03-24 06:31:20"),
