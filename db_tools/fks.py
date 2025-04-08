@@ -97,7 +97,7 @@ fk4 = {
                     ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
     'bill_payments': [('bill_id', 'bills', 'id'), ('payment_method_id', 'payment_methods', 'id'),
                         ('account_id', 'accounts', 'id')],
-    'cash_transactions': [('cash_type_id', 'cash_types', 'id'), ('tax_rate_id', 'tax_rates', 'id'),
+    'cash_transactions': [('contact_id', 'contacts', 'id'), ('tax_rate_id', 'tax_rates', 'id'),
                           ('payment_method_id', 'payment_methods', 'id'), ('account_id', 'accounts', 'id')],
     'cash_transaction_lines': [('cash_transaction_id', 'cash_transactions', 'id'), ('product_id', 'products', 'id'),
                           ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
