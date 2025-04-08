@@ -126,6 +126,7 @@ background-color: #838383;
          </property>
          <property name="font">
           <font>
+           <weight>75</weight>
            <bold>true</bold>
            <underline>false</underline>
            <strikeout>false</strikeout>
@@ -133,7 +134,7 @@ background-color: #838383;
           </font>
          </property>
          <property name="toolTip">
-          <string>Create new or search in invoices</string>
+          <string>Create sales on account</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
@@ -143,7 +144,7 @@ background-color: #838383;
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
-           <normaloff>:/icons/analysis.png</normaloff>:/icons/analysis.png</iconset>
+           <normaloff>:/icons/coupon.png</normaloff>:/icons/coupon.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -154,7 +155,7 @@ background-color: #838383;
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="offers_btn">
+        <widget class="QPushButton" name="bills_btn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -169,23 +170,24 @@ background-color: #838383;
          </property>
          <property name="font">
           <font>
+           <weight>75</weight>
            <bold>true</bold>
            <underline>false</underline>
            <strikeout>false</strikeout>
           </font>
          </property>
          <property name="toolTip">
-          <string>Create new offer, or search old ones</string>
+          <string>Create purchases on account</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Proposals</string>
+          <string>Bills</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
-           <normaloff>:/icons/business-proposal.png</normaloff>:/icons/business-proposal.png</iconset>
+           <normaloff>:/icons/purchase.png</normaloff>:/icons/purchase.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -196,7 +198,7 @@ background-color: #838383;
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="products_btn">
+        <widget class="QPushButton" name="cash_btn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -211,23 +213,24 @@ background-color: #838383;
          </property>
          <property name="font">
           <font>
+           <weight>75</weight>
            <bold>true</bold>
            <underline>false</underline>
            <strikeout>false</strikeout>
           </font>
          </property>
          <property name="toolTip">
-          <string>Manage products, and get reports about the,</string>
+          <string>Create Receive Money or Spend Money transactions</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Products</string>
+          <string>Cash</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
-           <normaloff>:/icons/box-circle.png</normaloff>:/icons/box-circle.png</iconset>
+           <normaloff>:/icons/cash.png</normaloff>:/icons/cash.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -238,7 +241,7 @@ background-color: #838383;
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="brands_btn">
+        <widget class="QPushButton" name="items_btn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -253,23 +256,24 @@ background-color: #838383;
          </property>
          <property name="font">
           <font>
+           <weight>75</weight>
            <bold>true</bold>
            <underline>false</underline>
            <strikeout>false</strikeout>
           </font>
          </property>
          <property name="toolTip">
-          <string>Manage products, and get reports about the,</string>
+          <string>Manage inventory, consumables, services</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Brands</string>
+          <string>Items</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
-           <normaloff>:/icons/product-tag.jpg</normaloff>:/icons/product-tag.jpg</iconset>
+           <normaloff>:/icons/box.png</normaloff>:/icons/box.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -280,7 +284,7 @@ background-color: #838383;
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="categories_btn">
+        <widget class="QPushButton" name="contacts_btn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -295,13 +299,14 @@ background-color: #838383;
          </property>
          <property name="font">
           <font>
+           <weight>75</weight>
            <bold>true</bold>
            <underline>false</underline>
            <strikeout>false</strikeout>
           </font>
          </property>
          <property name="toolTip">
-          <string>Manage categories</string>
+          <string>Manage contacts</string>
          </property>
          <property name="autoFillBackground">
           <bool>false</bool>
@@ -310,11 +315,11 @@ background-color: #838383;
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Categories</string>
+          <string>Contacts</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
-            <normaloff>:/icons/product-icon.jpg</normaloff>:/icons/product-icon.jpg</iconset>
+           <normaloff>:/icons/people.png</normaloff>:/icons/people.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -325,7 +330,7 @@ background-color: #838383;
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="calender_btn">
+        <widget class="QPushButton" name="journals_btn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -346,23 +351,24 @@ background-color: #838383;
          </property>
          <property name="font">
           <font>
+           <weight>75</weight>
            <bold>true</bold>
            <underline>false</underline>
            <strikeout>false</strikeout>
           </font>
          </property>
          <property name="toolTip">
-          <string>Check calnder for appointment</string>
+          <string>Manage journal entries</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Calender</string>
+          <string>Journals</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
-           <normaloff>:/icons/pngegg.png</normaloff>:/icons/pngegg.png</iconset>
+           <normaloff>:/icons/diary.png</normaloff>:/icons/diary.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -373,7 +379,7 @@ background-color: #838383;
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="customers_btn">
+        <widget class="QPushButton" name="reports_btn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -394,23 +400,24 @@ background-color: #838383;
          </property>
          <property name="font">
           <font>
+           <weight>75</weight>
            <bold>true</bold>
            <underline>false</underline>
            <strikeout>false</strikeout>
           </font>
          </property>
          <property name="toolTip">
-          <string>Manage cusutomers and get reports about them</string>
+          <string>Manage reports</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Clients</string>
+          <string>Reports</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
-           <normaloff>:/icons/people.png</normaloff>:/icons/people.png</iconset>
+           <normaloff>:/icons/analytics.png</normaloff>:/icons/analytics.png</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -421,7 +428,7 @@ background-color: #838383;
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="employees_btn">
+        <widget class="QPushButton" name="settings_btn">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -442,83 +449,30 @@ background-color: #838383;
          </property>
          <property name="font">
           <font>
+           <weight>75</weight>
            <bold>true</bold>
            <underline>false</underline>
            <strikeout>false</strikeout>
           </font>
          </property>
          <property name="toolTip">
-          <string>Create, View, edit or delete employees</string>
+          <string>Manage settings</string>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>Employees</string>
+          <string>Settings</string>
          </property>
          <property name="icon">
           <iconset resource="../resources.qrc">
-           <normaloff>:/icons/group-people.png</normaloff>:/icons/group-people.png</iconset>
+           <normaloff>:/icons/settings.png</normaloff>:/icons/settings.png</iconset>
          </property>
          <property name="iconSize">
           <size>
            <width>24</width>
            <height>24</height>
           </size>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="system_properties_btn">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimumSize">
-          <size>
-           <width>200</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>40</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <bold>true</bold>
-           <underline>false</underline>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="toolTip">
-          <string>Go to job titles, status, and other system related functions</string>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
-         <property name="styleSheet">
-          <string notr="true"/>
-         </property>
-         <property name="text">
-          <string>System properties</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../resources.qrc">
-           <normaloff>:/icons/gear-icon.png</normaloff>:/icons/gear-icon.png</iconset>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>24</width>
-           <height>24</height>
-          </size>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -549,7 +503,7 @@ background-color: #838383;
      <x>0</x>
      <y>0</y>
      <width>1920</width>
-     <height>19</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

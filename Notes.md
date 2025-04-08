@@ -8,10 +8,10 @@ $ pyrcc5 resources.qrc > resources_rc.py
 
 ## Icons and Images
 Dashboard home.png
-Sales coupon.png
-Purchases purchase.png
+Invoices coupon.png
+Bills purchase.png
 Cash cash.png
-Products box.png
+Items box.png
 Contacts people.png
 Journal diary.png
 Reports analytics.png

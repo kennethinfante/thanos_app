@@ -24,7 +24,7 @@ name TEXT
 
 CREATE TABLE IF NOT EXISTS contacts (
 id INTEGER PRIMARY KEY,
-type_id INTEGER,
+contact_type TEXT,
 name TEXT,
 contact_person TEXT,
 phone TEXT,
@@ -129,7 +129,7 @@ FOREIGN KEY (journal_id) REFERENCES journals(id),
 FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS items (
 id INTEGER PRIMARY KEY,
 name TEXT,
 description TEXT,
@@ -170,7 +170,7 @@ FOREIGN KEY (customer_id) REFERENCES contacts(id)
 CREATE TABLE IF NOT EXISTS invoice_lines (
 id INTEGER PRIMARY KEY,
 invoice_id INTEGER,
-product_id INTEGER,
+item_id INTEGER,
 account_id INTEGER,
 description TEXT,
 quantity TEXT,
@@ -180,7 +180,7 @@ subtotal TEXT,
 tax_amount DECIMAL(15,2) DEFAULT 0,
 line_amount DECIMAL(15,2) DEFAULT 0,
 FOREIGN KEY (invoice_id) REFERENCES invoices(id),
-FOREIGN KEY (product_id) REFERENCES products(id),
+FOREIGN KEY (item_id) REFERENCES items(id),
 FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id),
 FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
@@ -216,7 +216,7 @@ FOREIGN KEY (vendor_id) REFERENCES contacts(id)
 CREATE TABLE IF NOT EXISTS bill_lines (
 id INTEGER PRIMARY KEY,
 bill_id INTEGER,
-product_id INTEGER,
+item_id INTEGER,
 account_id INTEGER,
 description TEXT,
 quantity TEXT,
@@ -226,7 +226,7 @@ subtotal TEXT,
 tax_amount DECIMAL(15,2) DEFAULT 0,
 line_amount DECIMAL(15,2) DEFAULT 0,
 FOREIGN KEY (bill_id) REFERENCES bills(id),
-FOREIGN KEY (product_id) REFERENCES products(id),
+FOREIGN KEY (item_id) REFERENCES items(id),
 FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id),
 FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
@@ -265,7 +265,7 @@ FOREIGN KEY (account_id) REFERENCES accounts(id)
 CREATE TABLE IF NOT EXISTS cash_transaction_lines (
 id INTEGER PRIMARY KEY,
 cash_transaction_id INTEGER,
-product_id INTEGER,
+item_id INTEGER,
 account_id INTEGER,
 description TEXT,
 quantity TEXT,
@@ -275,7 +275,7 @@ subtotal TEXT,
 tax_amount DECIMAL(15,2) DEFAULT 0,
 total_amount DECIMAL(15,2) DEFAULT 0,
 FOREIGN KEY (cash_transaction_id) REFERENCES cash_transactions(id),
-FOREIGN KEY (product_id) REFERENCES products(id),
+FOREIGN KEY (item_id) REFERENCES items(id),
 FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id),
 FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
@@ -366,7 +366,7 @@ INSERT INTO contact_types (id, name) VALUES (
 (2, "Vendor"),
 );
 
-INSERT INTO contacts (id, type_id, name, contact_person, phone, email, website, tax_number, address, city, state, postal_code, country, description, is_active, created_at) VALUES (
+INSERT INTO contacts (id, contact_type, name, contact_person, phone, email, website, tax_number, address, city, state, postal_code, country, description, is_active, created_at) VALUES (
 (1, 1, "Smith Enterprises", "John Smith", "212-555-1234", "john@smith.com", "www.smithenterprises.com", "123-45-6789", "123 Main St", "New York", "NY", 10001, "USA", "Regular customer", 1, "2025-03-24 06:31:20"),
 (2, 1, "Johnson LLC", "Sarah Johnson", "310-555-5678", "sarah@johnson.com", "www.johnsonllc.com", "987-65-4321", "456 Oak Ave", "Los Angeles", "CA", 90001, "USA", "Premium customer", 1, "2025-03-24 06:31:20"),
 (3, 1, "Brown Industries", "Michael Brown", "312-555-9012", "michael@brown.com", "www.brownindustries.com", "456-78-9012", "789 Pine Rd", "Chicago", "IL", 60007, "USA", "New customer", 1, "2025-03-24 06:31:20"),
@@ -614,7 +614,7 @@ INSERT INTO journal_lines (id, journal_id, account_id, description, debit, credi
 (120, 58, 15, "Accumulated depreciation - Buildings", 0, 800),
 );
 
-INSERT INTO products (id, name, description, sale_price, purchase_price, tax_rate_id, is_active, inventory_tracking, is_consumable, is_service, current_stock, reorder_level, inventory_account_id, revenue_account_id, expense_account_id, created_at) VALUES (
+INSERT INTO items (id, name, description, sale_price, purchase_price, tax_rate_id, is_active, inventory_tracking, is_consumable, is_service, current_stock, reorder_level, inventory_account_id, revenue_account_id, expense_account_id, created_at) VALUES (
 (1, "Laptop Computer", "Business laptop", 1200, 900.0, 2, 1, 1, 0, 0, 15.0, 5.0, 8.0, 33.0, 38.0, "2025-03-24 06:31:25"),
 (2, "Desktop Computer", "Office desktop", 950, 700.0, 2, 1, 1, 0, 0, 10.0, 3.0, 8.0, 33.0, 38.0, "2025-03-24 06:31:25"),
 (3, "Office Chair", "Ergonomic office chair", 250, 150.0, 2, 1, 1, 0, 0, 20.0, 5.0, 8.0, 33.0, 38.0, "2025-03-24 06:31:25"),
@@ -702,7 +702,7 @@ INSERT INTO invoices (id, customer_id, invoice_number, date, due_date, subtotal,
 (64, 3, "INV-064", "2026-06-30 00:00:00", "2026-07-30 00:00:00", 5500, 412.5, 5912.5, "IoT integration for smart office", "unpaid", "2026-06-30 06:31:25"),
 );
 
-INSERT INTO invoice_lines (id, invoice_id, product_id, account_id, description, quantity, unit_price, tax_rate_id, subtotal, tax_amount, line_amount) VALUES (
+INSERT INTO invoice_lines (id, invoice_id, item_id, account_id, description, quantity, unit_price, tax_rate_id, subtotal, tax_amount, line_amount) VALUES (
 (1, 1, 6, NULL, "Ink Cartridges", 4, 25, 2, 100, 7.5, 107.5),
 (2, 1, 1, NULL, "Laptop Computer", 2, 1200, 2, 2400, 180.0, 2580.0),
 (3, 2, 4, NULL, "Office Desk", 5, 350, 2, 1750, 131.25, 1881.25),
@@ -901,7 +901,7 @@ INSERT INTO bills (id, vendor_id, bill_number, date, due_date, subtotal, tax_amo
 (62, 13, "BILL-062", "2026-06-25 00:00:00", "2026-07-25 00:00:00", 4800, 360.0, 5160.0, "Energy efficiency consultation", "unpaid", "2026-06-30 06:31:25"),
 );
 
-INSERT INTO bill_lines (id, bill_id, product_id, account_id, description, quantity, unit_price, tax_rate_id, subtotal, tax_amount, line_amount) VALUES (
+INSERT INTO bill_lines (id, bill_id, item_id, account_id, description, quantity, unit_price, tax_rate_id, subtotal, tax_amount, line_amount) VALUES (
 (1, 1, 5.0, NULL, "Printer Paper", 40, 3.5, 2, 140, 10.5, 150.5),
 (2, 1, 6.0, NULL, "Ink Cartridges", 8, 15.0, 2, 120, 9.0, 129.0),
 (3, 2, 1.0, NULL, "Laptop Computer", 2, 900.0, 2, 1800, 135.0, 1935.0),
@@ -1088,7 +1088,7 @@ INSERT INTO cash_transactions (id, contact_id, cash_type, date, tax_rate_id, sub
 (36, NULL, "bank_transfer", "2026-06-30 00:00:00", 1, 10000, 0.0, 10000.0, "Transfer from checking account", 3, 6),
 );
 
-INSERT INTO cash_transaction_lines (id, cash_transaction_id, product_id, account_id, description, quantity, unit_price, tax_rate_id, subtotal, tax_amount, total_amount) VALUES (
+INSERT INTO cash_transaction_lines (id, cash_transaction_id, item_id, account_id, description, quantity, unit_price, tax_rate_id, subtotal, tax_amount, total_amount) VALUES (
 (1, 1, NULL, 29.0, "Owner capital", 1, 50000, 1, 50000, 0.0, 50000.0),
 (2, 2, NULL, 40.0, "Monthly office rent", 1, 2000, 2, 2000, 150.0, 2150.0),
 (3, 3, NULL, 42.0, "Office supplies purchase", 1, 500, 2, 500, 37.5, 537.5),
