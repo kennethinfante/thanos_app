@@ -2,15 +2,15 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from src.managers.base_manager import BaseManager
-from forms_python.invoices_manager import Ui_invoicesManagerWindow
-from src.models.invoices_table_model import InvoicesTableModel
+from forms_python.invoices_widget import Ui_invoicesWidget
+from models.invoices_model import InvoicesModel
 # from src.create_invoice import CreateInvoice
 
 
 class InvoicesManager(BaseManager):
     def __init__(self, parent=None):
-        super(InvoicesManager, self).__init__(ui=Ui_invoicesManagerWindow(), parent=parent,
-                                              model=InvoicesTableModel())
+        super(InvoicesManager, self).__init__(ui=Ui_invoicesWidget(), parent=parent,
+                                              model=InvoicesModel())
 
     def setup_table(self):
         self.ui.invoices_table_view.setModel(self.model)

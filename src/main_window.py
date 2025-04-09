@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from forms_python.main_window import Ui_MainWindow
-from src.managers.invoices_manager import InvoicesManager
+from managers.invoices_manager import InvoicesManager
 # from src.managers.bills_manager import BillsManager
 # from src.managers.cash_manager import CashManager
 # from src.managers.items_manager import ItemsManager
@@ -24,9 +24,9 @@ class AppMainWindow(QMainWindow):
         self.ui.window_content.setCurrentIndex(0)
 
     def connect_signals_slots(self):
-        self.ui.sales_btn.clicked.connect(
+        self.ui.invoices_btn.clicked.connect(
             lambda: self.change_widget(self.widgets["invoices_manager"]["index"]))
-        # self.ui.purchases_btn.clicked.connect(
+        # self.ui.bills_btn.clicked.connect(
         #     lambda: self.change_widget(self.widgets["bills_manager"]["index"]))
         # self.ui.cash_btn.clicked.connect(
         #     lambda: self.change_widget(self.widgets["cash_manager"]["index"]))
@@ -42,26 +42,23 @@ class AppMainWindow(QMainWindow):
         #     lambda: self.change_widget(self.widgets["settings_manager"]["index"]))
 
     def initializePages(self):
-        # index starts at the bottom
         self.widgets = {
-            # "dashboard":
-            #     {"index": 0, "widget": Dashboard()},
-            # "settings_manager":
-            #     {"index": 1, "widget": SettingsManager()},
-            # "reports_manager":
-            #     {"index": 2, "widget": ReportsManager()},
-            # "journals_manager":
-            #     {"index": 3, "widget": JournalsManager()},
-            # 'contacts_manager':
-            #     {"index": 4, "widget": ContactsManager()},
-            # "items_manager":
-            #     {"index": 5, "widget": ItemsManager()},
-            # "cash_manager":
-            #     {"index": 6, "widget": CashManager()},
-            # "bills_manager":
-            #     {"index": 7, "widget": BillsManager()},
             "invoices_manager":
-                {"index": 8, "widget": InvoicesManager()}
+                {"index": 1, "widget": InvoicesManager()}
+            # "bills_manager":
+            #     {"index": 2, "widget": BillsManager()},
+            # "cash_manager":
+            #     {"index": 3, "widget": CashManager()},
+            # "items_manager":
+            #     {"index": 4, "widget": ItemsManager()},
+            # 'contacts_manager':
+            #     {"index": 5, "widget": ContactsManager()},
+            # "journals_manager":
+            #     {"index": 6, "widget": JournalsManager()},
+            # "reports_manager":
+            #     {"index": 7, "widget": ReportsManager()},
+            # "settings_manager":
+            #     {"index": 8, "widget": SettingsManager()}
         }
         [self.ui.window_content.insertWidget(self.widgets[widget]["index"], self.widgets[widget]["widget"]) for widget in self.widgets]
 

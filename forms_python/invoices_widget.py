@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'forms_ui/invoices_manager.ui'
+# Form implementation generated from reading ui file 'forms_ui/invoices_widget.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -11,11 +11,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_invoicesManagerWindow(object):
-    def setupUi(self, invoicesManagerWindow):
-        invoicesManagerWindow.setObjectName("invoicesManagerWindow")
-        invoicesManagerWindow.resize(1321, 893)
-        self.centralwidget = QtWidgets.QWidget(invoicesManagerWindow)
+class Ui_invoicesWidget(object):
+    def setupUi(self, invoicesWidget):
+        invoicesWidget.setObjectName("invoicesWidget")
+        invoicesWidget.resize(1321, 893)
+        self.centralwidget = QtWidgets.QWidget(invoicesWidget)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -143,26 +143,26 @@ class Ui_invoicesManagerWindow(object):
         self.invoices_table_view.horizontalHeader().setMinimumSectionSize(80)
         self.invoices_table_view.horizontalHeader().setStretchLastSection(True)
         self.verticalLayout.addWidget(self.invoices_table_view)
-        invoicesManagerWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(invoicesManagerWindow)
+        invoicesWidget.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(invoicesWidget)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1321, 26))
         self.menubar.setObjectName("menubar")
-        invoicesManagerWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(invoicesManagerWindow)
+        invoicesWidget.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(invoicesWidget)
         self.statusbar.setObjectName("statusbar")
-        invoicesManagerWindow.setStatusBar(self.statusbar)
+        invoicesWidget.setStatusBar(self.statusbar)
 
-        self.retranslateUi(invoicesManagerWindow)
-        QtCore.QMetaObject.connectSlotsByName(invoicesManagerWindow)
+        self.retranslateUi(invoicesWidget)
+        QtCore.QMetaObject.connectSlotsByName(invoicesWidget)
 
-    def retranslateUi(self, invoicesManagerWindow):
+    def retranslateUi(self, invoicesWidget):
         _translate = QtCore.QCoreApplication.translate
-        invoicesManagerWindow.setWindowTitle(_translate("invoicesManagerWindow", "Invoices manager"))
-        self.search_date_chbox.setText(_translate("invoicesManagerWindow", "Enable date"))
-        self.form_date_edit.setText(_translate("invoicesManagerWindow", "From date:"))
-        self.from_date_edit.setDisplayFormat(_translate("invoicesManagerWindow", "yyyy-MM-dd"))
-        self.to_label.setText(_translate("invoicesManagerWindow", "To:"))
-        self.to_date_edit.setDisplayFormat(_translate("invoicesManagerWindow", "yyyy-MM-dd"))
-        self.invoice_no_label.setText(_translate("invoicesManagerWindow", "Invoice number"))
-        self.search_btn.setText(_translate("invoicesManagerWindow", "Search"))
-        self.add_new_invoice_btn.setText(_translate("invoicesManagerWindow", "Add new invoice"))
+        invoicesWidget.setWindowTitle(_translate("invoicesWidget", "Invoices widget"))
+        self.search_date_chbox.setText(_translate("invoicesWidget", "Enable date"))
+        self.form_date_edit.setText(_translate("invoicesWidget", "From date:"))
+        self.from_date_edit.setDisplayFormat(_translate("invoicesWidget", "yyyy-MM-dd"))
+        self.to_label.setText(_translate("invoicesWidget", "To:"))
+        self.to_date_edit.setDisplayFormat(_translate("invoicesWidget", "yyyy-MM-dd"))
+        self.invoice_no_label.setText(_translate("invoicesWidget", "Invoice #"))
+        self.search_btn.setText(_translate("invoicesWidget", "Search"))
+        self.add_new_invoice_btn.setText(_translate("invoicesWidget", "Add new invoice"))

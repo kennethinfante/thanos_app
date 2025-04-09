@@ -3,9 +3,9 @@ from src.dao.invoice_dao import InvoiceDao
 from src.logger import Logger
 
 
-class InvoicesTableModel(QAbstractTableModel):
+class InvoicesModel(QAbstractTableModel):
     def __init__(self):
-        super(InvoicesTableModel, self).__init__()
+        super(InvoicesModel, self).__init__()
         self.invoice_dao = InvoiceDao()
         self.invoice_dataframe = None
         self.get_invoice_dataframe()

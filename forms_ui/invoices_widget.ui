@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>invoicesManagerWindow</class>
- <widget class="QMainWindow" name="invoicesManagerWindow">
+ <class>invoicesWidget</class>
+ <widget class="QMainWindow" name="invoicesWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Invoices manager</string>
+   <string>Invoices widget</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -181,7 +181,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Invoice number</string>
+         <string>Invoice #</string>
         </property>
        </widget>
       </item>
