@@ -28,5 +28,5 @@ class InvoicesModel(QAbstractTableModel):
     def get_invoice_dataframe(self, conditions=None):
         self.invoice_dataframe = self.invoice_dao.get_invoices_dataframe(conditions=conditions)
         self.dataChanged.emit(QModelIndex(), QModelIndex())
-        print(self.invoice_dataframe)
+
         return self.invoice_dataframe

@@ -1,3 +1,4 @@
+from datetime import datetime, date
 
 class Invoice(object):
     def __init__(self, id, customer_id, invoice_number, date, due_date, subtotal, tax_amount, total_amount, description=None, status='unpaid'):
@@ -11,6 +12,7 @@ class Invoice(object):
         self.total_amount = total_amount
         self.description = description
         self.status = status
+        # self.created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def __str__(self):
         return self.invoice_number

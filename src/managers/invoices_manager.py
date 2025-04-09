@@ -35,7 +35,7 @@ class InvoicesManager(BaseManager):
                                                          operator='>=', parameter='from_date'),
                                self.get_search_condition(column='date', value=f"{self.ui.to_date_edit.text()}",
                                                          operator='<=', logic='AND', parameter='to_date')])
-        conditions.append(self.get_search_condition('serial_number', str(self.ui.invoice_serial_line_edit.text()), logic='AND')) if self.ui.invoice_serial_line_edit.text() != '' else None
+        conditions.append(self.get_search_condition('invoice_number', str(self.ui.invoice_num_line_edit.text()), logic='AND')) if self.ui.invoice_num_line_edit.text() != '' else None
         self.model.get_invoice_dataframe(conditions)
         self.ui.invoices_table_view.update()
 
