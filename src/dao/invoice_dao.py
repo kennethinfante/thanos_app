@@ -1,13 +1,69 @@
-from decimal import Decimal
-import pandas as pd
 from typing import List, Dict, Optional
-from src.dao.data_access_object import DataAccessObject
+from decimal import Decimal
+
+import pandas as pd
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
+
 from src.do.invoice import Invoice
+from src.database_manager import DatabaseManager
+from src.logger import Logger
+
+class InvoiceDao:
+    def __init__(self, table_name=''):
+        self.table_name = table_name
+        self.db_manager = DatabaseManager()
+        self.logger = Logger()
+
+    def _convert_to_decimal(value: float = 0, quantizer: str = '.00') -> Decimal:
+        return Decimal(value).quantize(Decimal(quantizer))
 
 
-class InvoiceDao(DataAccessObject):
-    def __init__(self, is_testing: bool = False):
-        super().__init__(table_name='invoices', is_testing=is_testing)
+    def extract_filters(self, query, conditions):
+        if not conditions:
+            return query, {}
+
+        where_clauses = []
+        filters = {}
+
+        for condition in conditions:
+            column = condition.get('column')
+            operator = condition.get('operator', '=')
+            value = condition.get('value')
+            connector = condition.get('connector', 'AND')
+
+            if column and value is not None:
+                param_name = f"{column.replace('.', '_')}_{len(filters)}"
+                where_clauses.append(
+                    f"{connector} {column} {operator} :{param_name}"
+                )
+                filters[param_name] = value
+
+        if where_clauses:
+            # Remove the connector in first clause
+            where_clauses[0] = where_clauses[0].rsplit(' ', 1)[1]
+            where_clause = " WHERE " + " ".join(where_clauses)
+            query += where_clause
+
+        return query, filters
+
+    def execute_query(self, query_str, filters):
+        """
+        Execute the query_str
+        :param query_str: The final query string with filters
+        :param filters: A dictionary contains the values for the filters in the query string
+        :return: Result of the query execution
+        """
+
+        with self.db_manager.Session() as session:
+            try:
+                session = self.db_manager.Session()
+                result = session.execute(text(query_str), filters)
+                session.commit()
+                return result
+            except SQLAlchemyError as e:
+                session.rollback()
+                return None
 
     def get_invoices_dataframe(self, conditions=None):
         query = f"""
@@ -16,8 +72,10 @@ class InvoiceDao(DataAccessObject):
         FROM invoices
         """
 
-        placeholders = self.extract_values_from_conditions(conditions) if conditions else None
-        invoices_result = self.execute_select_query(query_str=query, placeholders=placeholders)
+        query_str, filters = self.extract_filters(query, conditions)
+        print(query_str)
+        print(filters)
+        invoices_result = self.execute_query(query_str=query_str, filters=filters)
 
         invoices_df = pd.DataFrame(invoices_result.fetchall())
         if not invoices_df.empty:
@@ -27,9 +85,6 @@ class InvoiceDao(DataAccessObject):
 
         return invoices_df
 
-    @staticmethod
-    def convert_to_decimal(value: float = 0, quantizer: str = '.00') -> Decimal:
-        return Decimal(value).quantize(Decimal(quantizer))
 
     def create_invoice(self, invoice: Invoice) -> Optional[int]:
         invoice_values = {
@@ -45,7 +100,3 @@ class InvoiceDao(DataAccessObject):
         }
         return self.insert(values=invoice_values)
 
-    def get_invoices(self, conditions: Optional[Dict] = None,
-                     columns: List[str] = ['id', 'invoice_number', 'date']) -> List[Invoice]:
-        invoices_result = self.select(columns=columns, conditions=conditions)
-        return [Invoice(**row) for row in invoices_result.fetchall()]

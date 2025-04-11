@@ -7,12 +7,9 @@ import config
 
 class DatabaseManager(object):
     class __DatabaseManager:
-        def __init__(self, is_testing):
+        def __init__(self):
             self.val = None
-            self.DATABASE_FILENAME = f'{config.PROJECT_ROOT_PATH}/assets/database/{config.DB_NAME}.db'
-            self.TESTING_DATABASE_FILENAME = f'{config.PROJECT_ROOT_PATH}/assets/database/{config.DB_NAME}_testing.db'
-            self.is_testing = is_testing
-            self.current_database = self.DATABASE_FILENAME if not self.is_testing else self.TESTING_DATABASE_FILENAME
+            self.current_database = f'{config.PROJECT_ROOT_PATH}/assets/database/{config.DB_NAME}.db'
             self.logger = Logger()
             self.Base = declarative_base()
             self.Session = None
@@ -44,7 +41,7 @@ class DatabaseManager(object):
 
     def __new__(cls, is_testing=False):
         if not DatabaseManager.instance:
-            DatabaseManager.instance = DatabaseManager.__DatabaseManager(is_testing=is_testing)
+            DatabaseManager.instance = DatabaseManager.__DatabaseManager()
         return DatabaseManager.instance
 
     def __getattr__(self, item):

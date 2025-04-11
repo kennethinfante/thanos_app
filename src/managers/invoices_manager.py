@@ -9,73 +9,49 @@ from models.invoices_model import InvoicesModel
 
 class InvoicesManager(BaseManager):
     def __init__(self, parent=None):
-        super(InvoicesManager, self).__init__(ui=Ui_invoicesWidget(), parent=parent,
+        super().__init__(ui=Ui_invoicesWidget(), parent=parent,
                                               model=InvoicesModel())
 
-    def setup_table(self):
+    def initialize_ui(self):
         self.ui.invoices_table_view.setModel(self.model)
 
     def connect_signals_slots(self):
-        self.ui.add_new_invoice_btn.clicked.connect(self.open_create_invoice)
-        self.ui.search_btn.clicked.connect(self.search)
         self.ui.search_date_chbox.stateChanged.connect(self.enable_date)
+        self.ui.search_btn.clicked.connect(self.search)
+        self.ui.add_new_invoice_btn.clicked.connect(self.open_create_invoice)
 
     def enable_date(self, state: int):
         is_enabled = state == Qt.Checked
         self.ui.from_date_edit.setEnabled(is_enabled)
         self.ui.to_date_edit.setEnabled(is_enabled)
 
-    # def search(self):
-    #     conditions = []
-    #     if self.ui.search_date_chbox.checkState() == Qt.Checked:
-    #         conditions.extend([self.get_search_condition(column='date', value=f"{self.ui.from_date_edit.text()}",
-    #                                                      operator='>=', parameter='from_date'),
-    #                            self.get_search_condition(column='date', value=f"{self.ui.to_date_edit.text()}",
-    #                                                      operator='<=', logic='AND', parameter='to_date')])
-    #     conditions.append(self.get_search_condition('invoice_number', str(self.ui.invoice_num_line_edit.text()), logic='AND')) if self.ui.invoice_num_line_edit.text() != '' else None
-    #     self.model.get_invoice_dataframe(conditions)
-    #     self.ui.invoices_table_view.update()
-
     def search(self):
-        conditions = self.get_search_conditions()
+        conditions = self.build_search_filter()
         self.model.get_invoice_dataframe(conditions)
         self.ui.invoices_table_view.update()
 
-    def get_search_conditions(self) -> List[Dict[str, Any]]:
+    def build_search_filter(self) -> List[Dict[str, Any]]:
         conditions = []
         if self.ui.search_date_chbox.isChecked():
             conditions.extend([
-                self.get_search_condition('date', self.ui.from_date_edit.text(), '>=', parameter='from_date'),
-                self.get_search_condition('date', self.ui.to_date_edit.text(), '<=', logic='AND', parameter='to_date')
+                self.build_filter('date', self.ui.from_date_edit.text(), '>=', parameter='from_date'),
+                self.build_filter('date', self.ui.to_date_edit.text(), '<=', parameter='to_date', connector='AND')
             ])
 
         invoice_num = self.ui.invoice_num_line_edit.text()
         if invoice_num:
-            conditions.append(self.get_search_condition('invoice_number', invoice_num, logic='AND'))
+            conditions.append(self.build_filter('invoice_number', invoice_num, connector='AND'))
 
         return conditions
 
-    # def get_search_condition(self, column, value, operator='=', options='', logic='', parameter=None):
-    #     condition = {
-    #         'column': column,
-    #         'value': value,
-    #         'operator': operator,
-    #         'options': options,
-    #         'logic': logic
-    #     }
-    #     if parameter:
-    #         condition['parameter'] = parameter
-    #     return condition
+    def build_filter(self, column: str, value: str, operator: str = '=', parameter: str = None,
+                     connector: str = '') -> Dict[str, Any]:
 
-    @staticmethod
-    def get_search_condition(column: str, value: str, operator: str = '=', options: str = '',
-                             logic: str = '', parameter: str = None) -> Dict[str, Any]:
         condition = {
             'column': column,
             'value': value,
             'operator': operator,
-            'options': options,
-            'logic': logic
+            'connector': connector
         }
         if parameter:
             condition['parameter'] = parameter
