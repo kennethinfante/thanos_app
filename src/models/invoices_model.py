@@ -9,9 +9,9 @@ class InvoicesModel(QAbstractTableModel):
         super().__init__()
         self.invoice_dao = InvoiceDao()
         self.invoice_dataframe = pd.DataFrame()
-        self.get_invoice_dataframe()
+        self.get_invoices_dataframe()
 
-    def get_invoice_dataframe(self, conditions: List[Dict[str, Any]] = None):
+    def get_invoices_dataframe(self, conditions: List[Dict[str, Any]] = None):
         self.invoice_dataframe = self.invoice_dao.get_invoices_dataframe(conditions)
         self.layoutChanged.emit()
 

@@ -2,15 +2,15 @@ from typing import List, Dict, Any
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from src.managers.base_manager import BaseManager
-from forms_python.invoices_widget import Ui_invoicesWidget
+from forms_python.invoices_view import Ui_invoicesView
 from models.invoices_model import InvoicesModel
 # from src.create_invoice import CreateInvoice
 
 
 class InvoicesManager(BaseManager):
     def __init__(self, parent=None):
-        super().__init__(ui=Ui_invoicesWidget(), parent=parent,
-                                              model=InvoicesModel())
+        super().__init__(ui=Ui_invoicesView(), parent=parent,
+                         model=InvoicesModel())
 
     def initialize_ui(self):
         self.ui.invoices_table_view.setModel(self.model)
@@ -18,6 +18,7 @@ class InvoicesManager(BaseManager):
     def connect_signals_slots(self):
         self.ui.search_date_chbox.stateChanged.connect(self.enable_date)
         self.ui.search_btn.clicked.connect(self.search)
+        self.ui.clear_btn.clicked.connect(self.clear)
         self.ui.add_new_invoice_btn.clicked.connect(self.open_create_invoice)
 
     def enable_date(self, state: int):
@@ -27,7 +28,11 @@ class InvoicesManager(BaseManager):
 
     def search(self):
         conditions = self.build_search_filters()
-        self.model.get_invoice_dataframe(conditions)
+        self.model.get_invoices_dataframe(conditions)
+        self.ui.invoices_table_view.update()
+
+    def clear(self):
+        self.model.get_invoices_dataframe()
         self.ui.invoices_table_view.update()
 
     def build_search_filters(self) -> List[Dict[str, Any]]:
@@ -47,8 +52,8 @@ class InvoicesManager(BaseManager):
     def open_create_invoice(self):
         # create_invoice = CreateInvoice(self)
         # create_invoice.show()
-        pass
 
+        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

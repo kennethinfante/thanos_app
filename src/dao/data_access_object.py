@@ -13,7 +13,7 @@ class DataAccessObject(object):
     def build_query_string(self, query, filter_clauses=None):
         if filter_clauses:
             # Remove the connector in first clause
-            filter_clauses[0] = filter_clauses[0].rsplit(' ', 1)[1]
+            filter_clauses[0] = filter_clauses[0].replace('AND ', '')
             where_clause = " WHERE " + " ".join(filter_clauses)
             query += where_clause
 
@@ -30,14 +30,18 @@ class DataAccessObject(object):
             column = condition.get('column')
             operator = condition.get('operator', '=')
             value = condition.get('value')
+            parameter = condition.get('parameter')
             connector = condition.get('connector', 'AND')
 
-            if column and value is not None:
+            if parameter is None:
                 param_name = f"{column.replace('.', '_')}_{len(placeholders)}"
-                filter_clauses.append(
-                    f"{connector} {column} {operator} :{param_name}"
-                )
+                filter_clause = f"{connector} {column} {operator} :{param_name}"
                 placeholders[param_name] = value
+            else:
+                filter_clause = f"{connector} {column} {operator} :{parameter}"
+                placeholders[parameter] = value
+
+            filter_clauses.append(filter_clause)
 
         return filter_clauses, placeholders
 
