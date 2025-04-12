@@ -1,3 +1,4 @@
+from typing import List, Dict, Any
 from PyQt5.QtWidgets import QMainWindow
 
 
@@ -19,17 +20,18 @@ class BaseManager(QMainWindow):
     def connect_signals_slots(self):
         pass
 
-    def build_filter(self):
-        pass
+    def build_filter(self, column: str, value: str, operator: str = '=',
+                        parameter: str = None, connector: str = '') -> Dict[str, Any]:
 
-
-
-
-    # def extract_values_from_conditions(self, conditions):
-    #     placeholder = dict()
-    #     for condition in conditions:
-    #         placeholder[condition['column'].replace('.', '_')] = condition['value']
-    #     return placeholder
+        condition = {
+            'column': column,
+            'value': value,
+            'operator': operator,
+            'connector': connector
+        }
+        if parameter:
+            condition['parameter'] = parameter
+        return condition
 
 
 

@@ -26,11 +26,11 @@ class InvoicesManager(BaseManager):
         self.ui.to_date_edit.setEnabled(is_enabled)
 
     def search(self):
-        conditions = self.build_search_filter()
+        conditions = self.build_search_filters()
         self.model.get_invoice_dataframe(conditions)
         self.ui.invoices_table_view.update()
 
-    def build_search_filter(self) -> List[Dict[str, Any]]:
+    def build_search_filters(self) -> List[Dict[str, Any]]:
         conditions = []
         if self.ui.search_date_chbox.isChecked():
             conditions.extend([
@@ -43,19 +43,6 @@ class InvoicesManager(BaseManager):
             conditions.append(self.build_filter('invoice_number', invoice_num, connector='AND'))
 
         return conditions
-
-    def build_filter(self, column: str, value: str, operator: str = '=', parameter: str = None,
-                     connector: str = '') -> Dict[str, Any]:
-
-        condition = {
-            'column': column,
-            'value': value,
-            'operator': operator,
-            'connector': connector
-        }
-        if parameter:
-            condition['parameter'] = parameter
-        return condition
 
     def open_create_invoice(self):
         # create_invoice = CreateInvoice(self)
