@@ -23,14 +23,18 @@ class ItemDao(DataAccessObject):
         filter_clauses, placeholders = self.build_filter_clauses_and_placeholders(conditions)
         query_str = self.build_query_string(query, filter_clauses)
 
-        print(query_str, filter_clauses, placeholders)
+        # print(query_str, filter_clauses, placeholders)
         items_result = self.execute_select_query(query_str=query_str, placeholders=placeholders)
 
         items_df = pd.DataFrame(items_result.fetchall())
         if not items_df.empty:
-            items_df.drop(['created_at'], axis='columns', inplace=True)
+            # items_df.drop(['created_at'], axis='columns', inplace=True)
+            items_df = items_df[['id', 'name', 'description', 'sale_price', 'purchase_price', 'is_active', 'inventory_tracking', 'is_consumable', 'is_service']]
             new_columns = [column.replace('_', ' ').title() for column in items_df.columns]
             items_df.columns = new_columns
+
+            # Set the index to 'Invoice Number' column
+            items_df.set_index('Id', inplace=True)
 
         return items_df
 

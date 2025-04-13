@@ -23,7 +23,7 @@ class InvoiceDao(DataAccessObject):
         filter_clauses, placeholders = self.build_filter_clauses_and_placeholders(conditions)
         query_str = self.build_query_string(query, filter_clauses)
 
-        print(query_str, filter_clauses, placeholders)
+        # print(query_str, filter_clauses, placeholders)
         invoices_result = self.execute_select_query(query_str=query_str, placeholders=placeholders)
 
         invoices_df = pd.DataFrame(invoices_result.fetchall())
@@ -31,6 +31,9 @@ class InvoiceDao(DataAccessObject):
             invoices_df.drop(['created_at'], axis='columns', inplace=True)
             new_columns = [column.replace('_', ' ').title() for column in invoices_df.columns]
             invoices_df.columns = new_columns
+
+            # Set the index to 'Invoice Number' column
+            invoices_df.set_index('Id', inplace=True)
 
         return invoices_df
 
