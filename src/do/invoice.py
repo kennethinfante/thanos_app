@@ -27,7 +27,7 @@ class Invoice(Base):
     customer = relationship("Customer", back_populates="invoices", uselist=False)
 
     def __repr__(self):
-        return f"Invoice #: {self.id}, Amount: {self.total_amount}"
+        return f"<Invoice(customer='{self.customer.name}', amount='{self.total_amount}')>"
 
 
 # class InvoiceLine(Base):

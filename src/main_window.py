@@ -7,7 +7,7 @@ from src.database_manager import DatabaseManager
 from src.managers.invoices.invoices_manager import InvoicesManager
 # from src.managers.bills_manager import BillsManager
 # from src.managers.cash_manager import CashManager
-from src.managers.items.items_manager import ItemsManager
+# from src.managers.items.items_manager import ItemsManager
 # from src.managers.contacts_manager import ContactsManager
 # from src.managers.journals_manager import JournalsManager
 # from src.managers.reports_manager import ReportsManager
@@ -34,8 +34,8 @@ class AppMainWindow(QMainWindow):
         #     lambda: self.change_widget(self.widgets["bills_manager"]["index"]))
         # self.ui.cash_btn.clicked.connect(
         #     lambda: self.change_widget(self.widgets["cash_manager"]["index"]))
-        self.ui.items_btn.clicked.connect(
-            lambda: self.change_widget(self.widgets["items_manager"]["index"]))
+        # self.ui.items_btn.clicked.connect(
+        #     lambda: self.change_widget(self.widgets["items_manager"]["index"]))
         # self.ui.contacts_btn.clicked.connect(
         #     lambda: self.change_widget(self.widgets["contacts_manager"]["index"]))
         # self.ui.journals_btn.clicked.connect(
@@ -79,13 +79,13 @@ class AppMainWindow(QMainWindow):
     def initializePages(self):
         self.widgets = {
             "invoices_manager":
-                {"index": 1, "widget": InvoicesManager()},
+                {"index": 1, "widget": InvoicesManager()}
             # "bills_manager":
             #     {"index": 2, "widget": BillsManager()},
             # "cash_manager":
             #     {"index": 3, "widget": CashManager()},
-            "items_manager":
-                {"index": 4, "widget": ItemsManager()},
+            # "items_manager":
+            #     {"index": 4, "widget": ItemsManager()},
             # 'contacts_manager':
             #     {"index": 5, "widget": ContactsManager()},
             # "journals_manager":

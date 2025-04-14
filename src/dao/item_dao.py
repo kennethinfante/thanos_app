@@ -1,40 +1,66 @@
-from typing import List, Dict, Optional
-
-from decimal import Decimal
-import pandas as pd
-
 from src.dao.data_access_object import DataAccessObject
-from src.do.item import Item
+from src.do.data_objects import Invoice
 
 class ItemDao(DataAccessObject):
-    def __init__(self, is_testing: bool = False):
+    def __init__(self, is_testing=False):
         super().__init__(table_name='items', is_testing=is_testing)
 
-    def _convert_to_decimal(value: float = 0, quantizer: str = '.00') -> Decimal:
-        return Decimal(value).quantize(Decimal(quantizer))
+    def get_all_items(self):
+        """Get all items"""
+        try:
+            return self.session.query(Item).all()
+        except Exception as e:
+            self.logger.error(f"Error getting all items: {str(e)}")
+            return []
 
-    def get_items_dataframe(self, conditions=None):
-        query = f"""
-        SELECT
-            *
-        FROM items
-        """
+    def get_item_by_id(self, item_id):
+        """Get an item by ID"""
+        try:
+            return self.session.query(Item).filter(Item.id == item_id).first()
+        except Exception as e:
+            self.logger.error(f"Error getting item by ID: {str(e)}")
+            return None
 
-        filter_clauses, placeholders = self.build_filter_clauses_and_placeholders(conditions)
-        query_str = self.build_query_string(query, filter_clauses)
+    def create_item(self, item_data):
+        """Create a new item"""
+        try:
+            item = Item(**item_data)
+            self.session.add(item)
+            self.session.commit()
+            return item
+        except Exception as e:
+            self.session.rollback()
+            self.logger.error(f"Error creating item: {str(e)}")
+            return None
 
-        # print(query_str, filter_clauses, placeholders)
-        items_result = self.execute_select_query(query_str=query_str, placeholders=placeholders)
+    def update_item(self, item_id, item_data):
+        """Update an existing item"""
+        try:
+            item = self.get_item_by_id(item_id)
+            if not item:
+                return None
 
-        items_df = pd.DataFrame(items_result.fetchall())
-        if not items_df.empty:
-            # items_df.drop(['created_at'], axis='columns', inplace=True)
-            items_df = items_df[['id', 'name', 'description', 'sale_price', 'purchase_price', 'is_active', 'inventory_tracking', 'is_consumable', 'is_service']]
-            new_columns = [column.replace('_', ' ').title() for column in items_df.columns]
-            items_df.columns = new_columns
+            for key, value in item_data.items():
+                setattr(item, key, value)
 
-            # Set the index to 'Invoice Number' column
-            items_df.set_index('Id', inplace=True)
+            self.session.commit()
+            return item
+        except Exception as e:
+            self.session.rollback()
+            self.logger.error(f"Error updating item: {str(e)}")
+            return None
 
-        return items_df
+    def delete_item(self, item_id):
+        """Delete an item"""
+        try:
+            item = self.get_item_by_id(item_id)
+            if not item:
+                return False
 
+            self.session.delete(item)
+            self.session.commit()
+            return True
+        except Exception as e:
+            self.session.rollback()
+            self.logger.error(f"Error deleting item: {str(e)}")
+            return False

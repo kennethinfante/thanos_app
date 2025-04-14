@@ -21,8 +21,8 @@ class ItemsManager(BaseManager):
         self.ui.add_new_item_btn.clicked.connect(self.open_create_item)
 
     def search(self):
-        conditions = self.build_search_filters()
-        self.model.get_items_dataframe(conditions)
+        filters = self.build_search_filters()
+        self.model.get_items_dataframe(filters)
         self.ui.items_table_view.update()
 
     def clear(self):
