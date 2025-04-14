@@ -78,6 +78,14 @@ def add_foreign_keys(table_queries, fks):
     return table_queries
 
 def import_excel_to_sqlite(fks, excel_path, sql_output_path, db_path):
+    # Delete the existing database file if it exists
+    if os.path.exists(db_path):
+        try:
+            os.remove(db_path)
+            print(f"Existing database file deleted: {db_path}")
+        except Exception as e:
+            print(f"Warning: Could not delete existing database file: {e}")
+
     # Read the Excel file
     xls = pd.ExcelFile(excel_path, engine="openpyxl")
 
@@ -131,4 +139,4 @@ def import_excel_to_sqlite(fks, excel_path, sql_output_path, db_path):
 
 if __name__ == "__main__":
     
-    import_excel_to_sqlite(fk4, **acctg_set4)
+    import_excel_to_sqlite(fk5, **acctg_set5)

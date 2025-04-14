@@ -174,7 +174,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="invoice_num_label">
+       <widget class="QLabel" name="customer_label">
         <property name="minimumSize">
          <size>
           <width>130</width>
@@ -195,12 +195,12 @@
          </font>
         </property>
         <property name="text">
-         <string>Invoice #</string>
+         <string>Customer</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="invoice_num_line_edit">
+       <widget class="QLineEdit" name="customer_line_edit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
           <horstretch>0</horstretch>

@@ -1,11 +1,10 @@
-from src.logger import Logger
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, registry
+from src.logger import Logger
 import config
 
 
-class DatabaseManager(object):
+class DatabaseManager:
     class __DatabaseManager:
         def __init__(self, is_testing):
             self.val = None
@@ -14,7 +13,11 @@ class DatabaseManager(object):
             self.is_testing = is_testing
             self.current_database = self.DATABASE_FILENAME if not self.is_testing else self.TESTING_DATABASE_FILENAME
             self.logger = Logger()
-            self.Base = declarative_base()
+
+            # Create registry for ORM models
+            self.registry = registry()
+            self.Base = self.registry.generate_base()
+
             self.Session = None
             self.engine = None
             self.connectToDatabase()
@@ -50,5 +53,5 @@ class DatabaseManager(object):
     def __getattr__(self, item):
         return getattr(self.instance, item)
 
-    def __setattr(self, item):
+    def __setattr__(self, item):
         return setattr(self.instance, item)

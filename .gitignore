@@ -64,6 +64,5 @@ db_tools/acctg_db3/accounting.sql
 db_tools/acctg_db4/accounting.db
 db_tools/acctg_db4/accounting.sql
 db_tools/DATABASE.sql
-TODO.py
-TODO2.py
-TODO3.py
+TODO*.py
+Snippet*.md

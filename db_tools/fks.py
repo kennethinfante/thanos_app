@@ -104,3 +104,34 @@ fk4 = {
     'bank_transactions': [('bank_account_id', 'bank_accounts', 'id'), ('cash_transaction_id', 'cash_transactions', 'id'),
                           ('invoice_payment_id', 'invoice_payments', 'id'), ('bill_payment_id', 'bill_payments', 'id')]
 }
+
+acctg_set5 = {
+    "excel_path" : "acctg_db5/acctg_export5.xlsx",
+    "sql_output_path" : "../assets/database/accounting.sql",
+    "db_path" : "../assets/database/accounting.db"
+}
+
+fk5 = {
+    'accounts': [('account_type_id', 'account_types', 'id'), ('parent_account_id', 'accounts', 'id')],
+    'bank_accounts': [('account_id', 'accounts', 'id'), ('currency_id', 'currencies', 'id')],
+    'journal_lines': [('journal_id', 'journals', 'id'), ('account_id', 'accounts', 'id')],
+    'items': [('tax_rate_id', 'tax_rates', 'id'),
+                    ('inventory_account_id', 'accounts', 'id'), ('revenue_account_id', 'accounts', 'id'),
+                    ('expense_account_id', 'accounts', 'id')],
+    'invoices': [('customer_id', 'customers', 'id')],
+    'invoice_lines': [('invoice_id', 'invoices', 'id'), ('item_id', 'items', 'id'),
+                        ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
+    'invoice_payments': [('invoice_id', 'invoices', 'id'), ('payment_method_id', 'payment_methods', 'id'),
+                        ('account_id', 'accounts', 'id')],
+    'bills': [('vendor_id', 'vendors', 'id')],
+    'bill_lines': [('bill_id', 'bills', 'id'), ('item_id', 'items', 'id'),
+                    ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
+    'bill_payments': [('bill_id', 'bills', 'id'), ('payment_method_id', 'payment_methods', 'id'),
+                        ('account_id', 'accounts', 'id')],
+    'cash_transactions': [('customer_id', 'customers', 'id'), ('vendor_id', 'vendors', 'id'), ('tax_rate_id', 'tax_rates', 'id'),
+                          ('payment_method_id', 'payment_methods', 'id'), ('account_id', 'accounts', 'id')],
+    'cash_transaction_lines': [('cash_transaction_id', 'cash_transactions', 'id'), ('item_id', 'items', 'id'),
+                          ('tax_rate_id', 'tax_rates', 'id'), ('account_id', 'accounts', 'id')],
+    'bank_transactions': [('bank_account_id', 'bank_accounts', 'id'), ('cash_transaction_id', 'cash_transactions', 'id'),
+                          ('invoice_payment_id', 'invoice_payments', 'id'), ('bill_payment_id', 'bill_payments', 'id')]
+}
