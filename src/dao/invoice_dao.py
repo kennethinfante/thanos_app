@@ -1,54 +1,94 @@
-from typing import List, Dict, Optional
-
-from decimal import Decimal
-import pandas as pd
-
 from src.dao.data_access_object import DataAccessObject
 from src.do.invoice import Invoice
 
 class InvoiceDao(DataAccessObject):
-    def __init__(self, is_testing: bool = False):
+    def __init__(self, is_testing=False):
         super().__init__(table_name='invoices', is_testing=is_testing)
 
-    def _convert_to_decimal(value: float = 0, quantizer: str = '.00') -> Decimal:
-        return Decimal(value).quantize(Decimal(quantizer))
+    def get_all_invoices(self, filters=None):
+        """Get all invoices with related data"""
+        try:
+            query = self.session.query(Invoice)
+            query = query.join(Invoice.customer)
 
-    def get_invoices_dataframe(self, conditions=None):
-        query = f"""
-        SELECT
-            *
-        FROM invoices
-        """
+            # Apply invoice filters
+            if filters:
+                for filter_condition in filters:
+                    query = query.filter(filter_condition)
+            return query.all()
+        except Exception as e:
+            self.logger.error(f"Error getting all invoices: {str(e)}")
+            return []
 
-        filter_clauses, placeholders = self.build_filter_clauses_and_placeholders(conditions)
-        query_str = self.build_query_string(query, filter_clauses)
+    def get_invoice_by_id(self, invoice_id):
+        """Get an invoice by ID with related data"""
+        try:
+            return self.session.query(Invoice).filter(Invoice.id == invoice_id).first()
+        except Exception as e:
+            self.logger.error(f"Error getting invoice by ID: {str(e)}")
+            return None
 
-        # print(query_str, filter_clauses, placeholders)
-        invoices_result = self.execute_select_query(query_str=query_str, placeholders=placeholders)
+    def get_invoices_by_customer(self, customer_id):
+        """Get all invoices for a specific customer"""
+        try:
+            return self.session.query(Invoice).filter(Invoice.customer_id == customer_id).all()
+        except Exception as e:
+            self.logger.error(f"Error getting invoices by customer: {str(e)}")
+            return []
 
-        invoices_df = pd.DataFrame(invoices_result.fetchall())
-        if not invoices_df.empty:
-            invoices_df.drop(['created_at'], axis='columns', inplace=True)
-            new_columns = [column.replace('_', ' ').title() for column in invoices_df.columns]
-            invoices_df.columns = new_columns
+    def search_invoices(self, filters):
+        """Search invoices based on filters"""
+        try:
+            query = self.session.query(Invoice)
 
-            # Set the index to 'Invoice Number' column
-            invoices_df.set_index('Id', inplace=True)
+            for filter_condition in filters:
+                query = query.filter(filter_condition)
 
-        return invoices_df
+            return query.all()
+        except Exception as e:
+            self.logger.error(f"Error searching invoices: {str(e)}")
+            return []
 
+    def create_invoice(self, invoice_data):
+        """Create a new invoice"""
+        try:
+            invoice = Invoice(**invoice_data)
+            self.session.add(invoice)
+            self.session.commit()
+            return invoice
+        except Exception as e:
+            self.session.rollback()
+            self.logger.error(f"Error creating invoice: {str(e)}")
+            return None
 
-    def create_invoice(self, invoice: Invoice) -> Optional[int]:
-        invoice_values = {
-            'invoice_number': invoice.invoice_number,
-            'date': invoice.date,
-            'customer_id': invoice.customer_id,
-            'due_date': invoice.due_date,
-            'subtotal': invoice.subtotal,
-            'tax_amount': invoice.tax_amount,
-            'total_amount': invoice.total_amount,
-            'description': invoice.description,
-            'status': invoice.status
-        }
-        return self.insert(values=invoice_values)
+    def update_invoice(self, invoice_id, invoice_data):
+        """Update an existing invoice"""
+        try:
+            invoice = self.get_invoice_by_id(invoice_id)
+            if not invoice:
+                return None
 
+            for key, value in invoice_data.items():
+                setattr(invoice, key, value)
+
+            self.session.commit()
+            return invoice
+        except Exception as e:
+            self.session.rollback()
+            self.logger.error(f"Error updating invoice: {str(e)}")
+            return None
+
+    def delete_invoice(self, invoice_id):
+        """Delete an invoice"""
+        try:
+            invoice = self.get_invoice_by_id(invoice_id)
+            if not invoice:
+                return False
+
+            self.session.delete(invoice)
+            self.session.commit()
+            return True
+        except Exception as e:
+            self.session.rollback()
+            self.logger.error(f"Error deleting invoice: {str(e)}")
+            return False

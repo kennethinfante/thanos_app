@@ -1,32 +1,55 @@
-from datetime import datetime, date
-from dataclasses import dataclass, field
+from sqlalchemy import Column, Integer, String, Float, Date, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from src.database_manager import DatabaseManager
 
-@dataclass
-class Invoice:
-    id: int
-    customer_id: int
-    invoice_number: str
-    date: date
-    due_date: date
-    subtotal: float
-    tax_amount: float
-    total_amount: float
-    description: str = None
-    status: str = 'unpaid'
-    created_at: datetime = field(default_factory=lambda: datetime.now())
-    # self.created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# Get the Base class from the DatabaseManager
+db_manager = DatabaseManager()
+Base = db_manager.Base
 
-    def __str__(self):
-        return self.invoice_number
+class Invoice(Base):
+    __tablename__ = 'invoices'
 
-    def serialize_invoice(self, fields='All', exclude=None):
-        if fields == 'All':
-            data = self.__dict__.copy()
-        else:
-            data = {field: getattr(self, field) for field in fields}
+    id = Column(Integer, primary_key=True)
+    # here the ForeignKey specifies the table name as found in db
+    customer_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
+    invoice_number = Column(String, unique=True, nullable=False)
+    date = Column(Date, nullable=False)
+    due_date = Column(Date, nullable=False)
+    subtotal = Column(Float, nullable=False, default=0.0)
+    tax_amount = Column(Float, nullable=False, default=0.0)
+    total_amount = Column(Float, nullable=False, default=0.0)
+    description = Column(String, nullable=False)
+    status = Column(String, nullable=False, default='unpaid')
+    created_at = Column(DateTime, nullable=False)
 
-        if exclude:
-            for field_ in exclude:
-                data.pop(field_, None)
+    # Define relationships
+    # for consistency, just singular
+    customer = relationship("Customer", back_populates="invoices", uselist=False)
 
-        return data
+    def __repr__(self):
+        return f"<Invoice(customer='{self.customer.name}', amount='{self.total_amount}')>"
+
+
+# class InvoiceLine(Base):
+#     __tablename__ = 'invoice_lines'
+#
+#     id = Column(Integer, primary_key=True)
+#     invoice_id = Column(Integer, ForeignKey('invoices.id'), nullable=False)
+#     item_id = Column(Integer, ForeignKey('items.id'), nullable=True)
+#     account_id = Column(Integer, ForeignKey('accounts.id'), nullable=True)
+#     description = Column(String, nullable=False)
+#     quantity = Column(Float, nullable=False, default=1.0)
+#     unit_price = Column(Float, nullable=False, default=0.0)
+#     tax_rate_id = Column(Integer, ForeignKey('tax_rates.id'), nullable=False)
+#     subtotal = Column(Float, nullable=False, default=0.0)
+#     tax_amount = Column(Float, nullable=False, default=0.0)
+#     line_amount = Column(Float, nullable=False, default=0.0)
+#
+#     # Define relationships
+#     invoice = relationship("Invoice")
+#     item = relationship("Item")
+#     account = relationship("Account")
+#     tax_rate = relationship("Tax_Rate")
+#
+#     def __repr__(self):
+#         return f"Invoice #: {self.invoice_id}, Amount: {self.line_amount}"

@@ -20,18 +20,8 @@ class BaseManager(QMainWindow):
     def connect_signals_slots(self):
         pass
 
-    def build_filter(self, column: str, value: str, operator: str = '=',
-                        parameter: str = None, connector: str = '') -> Dict[str, Any]:
-
-        condition = {
-            'column': column,
-            'value': value,
-            'operator': operator,
-            'connector': connector
-        }
-        if parameter:
-            condition['parameter'] = parameter
-        return condition
+    def build_filter(self):
+        pass
 
 
 

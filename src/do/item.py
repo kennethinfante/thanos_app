@@ -1,37 +1,30 @@
-from datetime import datetime, date
-from dataclasses import dataclass, field
+from sqlalchemy import Column, Integer, String, Float, Date, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+from src.database_manager import DatabaseManager
 
-@dataclass
-class Item:
-    id: int
-    name: str
-    tax_rate_id: int
-    is_active: int
-    inventory_tracking: int = 0
-    is_consumable: int = 0
-    is_service: int = 0
-    description: str = None
-    sale_price: float = 0.0
-    purchase_price: float = None
-    current_stock: int = None
-    reorder_level: int = None
-    inventory_account_id: int = None
-    revenue_account_id: int = None
-    expense_account_id: int = None
-    created_at: datetime = field(default_factory=lambda: datetime.now())
-    # self.created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+# Get the Base class from the DatabaseManager
+db_manager = DatabaseManager()
+Base = db_manager.Base
 
-    def __str__(self):
-        return self.name
+class Item(Base):
+    __tablename__ = 'items'
 
-    def serialize_item(self, fields='All', exclude=None):
-        if fields == 'All':
-            data = self.__dict__.copy()
-        else:
-            data = {field: getattr(self, field) for field in fields}
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    description = Column(String)
+    sale_price = Column(Float, nullable=False, default=0.0)
+    purchase_price = Column(Float, nullable=True)
+    tax_rate_id = Column(Integer, ForeignKey('tax_rates.id'), nullable=False)
+    is_active = Column(Integer, nullable=False)
+    inventory_tracking = Column(Integer, nullable=False)
+    is_consumable = Column(Integer, nullable=False)
+    is_service = Column(Integer, nullable=False)
+    current_stock = Column(Float, nullable=True)
+    reorder_level = Column(Float, nullable=True)
+    inventory_account_id = Column(Float, ForeignKey('accounts.id'), nullable=True)
+    revenue_account_id = Column(Float, ForeignKey('accounts.id'), nullable=True)
+    expense_account_id = Column(Float, ForeignKey('accounts.id'), nullable=True)
+    created_at = Column(DateTime, nullable=False)
 
-        if exclude:
-            for field_ in exclude:
-                data.pop(field_, None)
-
-        return data
+    def __repr__(self):
+        return f"<Item(name='{self.name}', unit_price={self.unit_price})>"

@@ -1,40 +1,53 @@
-from typing import List, Dict, Any
-import pandas as pd
 from PyQt5.QtCore import QAbstractTableModel, Qt, QModelIndex
+
 from src.dao.invoice_dao import InvoiceDao
 
-
 class InvoicesModel(QAbstractTableModel):
-    def __init__(self):
-        super().__init__()
-        self.invoice_dao = InvoiceDao()
-        self.invoice_dataframe = pd.DataFrame()
-        self.get_invoices_dataframe()
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.dao = InvoiceDao()
+        self.invoices = []
+        self.headers = ["ID", "Invoice Number", "Date", "Customer", "Total Amount", "Status"]
+        self.load_data()
 
-    def get_invoices_dataframe(self, conditions: List[Dict[str, Any]] = None):
-        self.invoice_dataframe = self.invoice_dao.get_invoices_dataframe(conditions)
+    def load_data(self, filters=None):
+        self.invoices = self.dao.get_all_invoices(filters)
         self.layoutChanged.emit()
 
-    def rowCount(self, parent=QModelIndex()) -> int:
-        return len(self.invoice_dataframe)
+    # retained to differentiate between initial load and data update
+    def update(self, filters=None):
+        self.load_data(filters)
 
-    def columnCount(self, parent=QModelIndex()) -> int:
-        return len(self.invoice_dataframe.columns)
+    def rowCount(self, parent=QModelIndex()):
+        return len(self.invoices)
 
-    def data(self, index: QModelIndex, role: int = Qt.DisplayRole):
-        if not index.isValid():
+    def columnCount(self, parent=QModelIndex()):
+        return len(self.headers)
+
+    def data(self, index, role=Qt.DisplayRole):
+        if not index.isValid() or not (0 <= index.row() < len(self.invoices)):
             return None
 
+        invoice = self.invoices[index.row()]
+
         if role == Qt.DisplayRole:
-            return str(self.invoice_dataframe.iloc[index.row(), index.column()])
+            # Define column mappings with formatting functions
+            column_mappings = {
+                0: lambda inv: inv.id,
+                1: lambda inv: inv.invoice_number,
+                2: lambda inv: inv.date.strftime("%Y-%m-%d"),
+                3: lambda inv: inv.customer.name if inv.customer else "",
+                4: lambda inv: f"{inv.total_amount:.2f}",
+                5: lambda inv: inv.status
+            }
+
+            # Return formatted data if column is in our mappings
+            if index.column() in column_mappings:
+                return column_mappings[index.column()](invoice)
 
         return None
 
-    def headerData(self, section: int, orientation: Qt.Orientation, role: int = Qt.DisplayRole):
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return str(self.invoice_dataframe.columns[section])
-
-        if orientation == Qt.Vertical and role == Qt.DisplayRole:
-            return str(self.invoice_dataframe.index[section])
-
+            return self.headers[section]
         return None
