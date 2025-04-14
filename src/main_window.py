@@ -1,6 +1,9 @@
-import sys
+import sys, os, importlib
+
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from forms_python.main_window import Ui_MainWindow
+from src.database_manager import DatabaseManager
+
 from src.managers.invoices.invoices_manager import InvoicesManager
 # from src.managers.bills_manager import BillsManager
 # from src.managers.cash_manager import CashManager
@@ -19,6 +22,7 @@ class AppMainWindow(QMainWindow):
         super(AppMainWindow, self).__init__(parent=parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.initialize_database()
         self.initializePages()
         self.connect_signals_slots()
         self.ui.window_content.setCurrentIndex(0)
@@ -40,6 +44,37 @@ class AppMainWindow(QMainWindow):
         #     lambda: self.change_widget(self.widgets["reports_manager"]["index"]))
         # self.ui.settings_btn.clicked.connect(
         #     lambda: self.change_widget(self.widgets["settings_manager"]["index"]))
+
+    def load_data_objects(self):
+        """Dynamically import all data objects from the do folder"""
+        do_path = os.path.join(os.path.dirname(__file__), 'do')
+        do_modules = []
+
+        # Get all Python files in the do directory
+        for file in os.listdir(do_path):
+            if file.endswith('.py') and file != '__init__.py':
+                module_name = file[:-3]  # Remove .py extension
+                try:
+                    # Import the module dynamically
+                    module = importlib.import_module(f'src.do.{module_name}')
+                    do_modules.append(module)
+                    print(f"Loaded data object: {module_name}")
+                except ImportError as e:
+                    print(f"Failed to import {module_name}: {e}")
+
+        return do_modules
+
+    def initialize_database(self):
+        """Initialize the database schema"""
+        db_manager = DatabaseManager()
+
+        # Load all data objects dynamically
+        self.data_objects = self.load_data_objects()
+
+        # Create all tables
+        db_manager.Base.metadata.create_all(db_manager.engine)
+
+        print("Database schema created successfully")
 
     def initializePages(self):
         self.widgets = {
