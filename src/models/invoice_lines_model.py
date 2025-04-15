@@ -8,15 +8,20 @@ class InvoiceLinesModel(QAbstractTableModel):
         self.invoice_id = invoice_id
         self.invoice_lines = []
         self.headers = ["Item", "Account", "Description", "Quantity", "Unit Price", "Subtotal", "Tax Amount", "Line Amount"]
+        self.editable_columns = [0, 1, 2, 3, 4, 6]  # Item, Account, Description, Quantity, Unit Price, Tax Amount
+        self.changes = {}  # Track changes to save later
+
         if invoice_id:
             self.load_data()
 
     def load_data(self):
         """Load invoice lines for the specified invoice"""
-        invoice = self.dao.get_invoice_by_id(self.invoice_id)
+        invoice = self.dao.get_invoice_with_lines(self.invoice_id)
         if invoice and hasattr(invoice, 'invoice_lines'):
             self.invoice_lines = invoice.invoice_lines
             self.layoutChanged.emit()
+            # Clear changes when reloading data
+            self.changes = {}
 
     def set_invoice_id(self, invoice_id):
         """Set the invoice ID and reload data"""
@@ -36,21 +41,46 @@ class InvoiceLinesModel(QAbstractTableModel):
         invoice_line = self.invoice_lines[index.row()]
 
         if role == Qt.DisplayRole:
-            # Define column mappings with formatting functions
-            column_mappings = {
-                0: lambda line: line.item.name if line.item else "",
-                1: lambda line: line.account.name if line.account else "",
-                2: lambda line: line.description,
-                3: lambda line: f"{line.quantity:.2f}",
-                4: lambda line: f"{line.unit_price:.2f}",
-                5: lambda line: f"{line.subtotal:.2f}",
-                6: lambda line: f"{line.tax_amount:.2f}",
-                7: lambda line: f"{line.line_amount:.2f}"
-            }
+            column = index.column()
 
-            # Return formatted data if column is in our mappings
-            if index.column() in column_mappings:
-                return column_mappings[index.column()](invoice_line)
+            # Handle display of item and account names
+            if column == 0:  # Item
+                return invoice_line.item.name if hasattr(invoice_line, 'item') and invoice_line.item else ""
+            elif column == 1:  # Account
+                return invoice_line.account.name if hasattr(invoice_line, 'account') and invoice_line.account else ""
+            elif column == 2:  # Description
+                return invoice_line.description
+            elif column == 3:  # Quantity
+                return f"{invoice_line.quantity:.2f}"
+            elif column == 4:  # Unit Price
+                return f"{invoice_line.unit_price:.2f}"
+            elif column == 5:  # Subtotal
+                # Calculate subtotal as quantity * unit_price
+                subtotal = invoice_line.quantity * invoice_line.unit_price
+                return f"{subtotal:.2f}"
+            elif column == 6:  # Tax Amount
+                return f"{invoice_line.tax_amount:.2f}"
+            elif column == 7:  # Line Amount
+                # Calculate line amount as subtotal + tax_amount
+                subtotal = invoice_line.quantity * invoice_line.unit_price
+                line_amount = subtotal + invoice_line.tax_amount
+                return f"{line_amount:.2f}"
+
+        elif role == Qt.EditRole:
+            column = index.column()
+
+            if column == 0:  # Item
+                return invoice_line.item_id
+            elif column == 1:  # Account
+                return invoice_line.account_id
+            elif column == 2:  # Description
+                return invoice_line.description
+            elif column == 3:  # Quantity
+                return invoice_line.quantity
+            elif column == 4:  # Unit Price
+                return invoice_line.unit_price
+            elif column == 6:  # Tax Amount
+                return invoice_line.tax_amount
 
         return None
 
@@ -58,6 +88,111 @@ class InvoiceLinesModel(QAbstractTableModel):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self.headers[section]
         return None
+
+    def flags(self, index):
+        """Define which cells are editable"""
+        if not index.isValid():
+            return Qt.NoItemFlags
+
+        # Make specific columns editable
+        if index.column() in self.editable_columns:
+            return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
+
+        return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+
+    def setData(self, index, value, role=Qt.EditRole):
+        """Handle editing of cells"""
+        if not index.isValid() or role != Qt.EditRole:
+            return False
+
+        row = index.row()
+        col = index.column()
+
+        if not (0 <= row < len(self.invoice_lines)):
+            return False
+
+        invoice_line = self.invoice_lines[row]
+        line_id = invoice_line.id
+
+        # Track changes for later saving
+        if line_id not in self.changes:
+            self.changes[line_id] = {}
+
+        try:
+            if col == 0:  # Item
+                # This would typically involve selecting an item from a dropdown
+                # For now, we'll just store the item ID
+                self.changes[line_id]['item_id'] = value if value else None
+                invoice_line.item_id = value if value else None
+            elif col == 1:  # Account
+                # This would typically involve selecting an account from a dropdown
+                # For now, we'll just store the account ID
+                self.changes[line_id]['account_id'] = value if value else None
+                invoice_line.account_id = value if value else None
+            elif col == 2:  # Description
+                self.changes[line_id]['description'] = str(value)
+                invoice_line.description = str(value)
+            elif col == 3:  # Quantity
+                quantity = float(value)
+                self.changes[line_id]['quantity'] = quantity
+                invoice_line.quantity = quantity
+
+                # Update subtotal (calculated field)
+                subtotal = quantity * invoice_line.unit_price
+                invoice_line.subtotal = subtotal
+                self.changes[line_id]['subtotal'] = subtotal
+
+                # Update line amount (calculated field)
+                line_amount = subtotal + invoice_line.tax_amount
+                invoice_line.line_amount = line_amount
+                self.changes[line_id]['line_amount'] = line_amount
+            elif col == 4:  # Unit Price
+                unit_price = float(value)
+                self.changes[line_id]['unit_price'] = unit_price
+                invoice_line.unit_price = unit_price
+
+                # Update subtotal (calculated field)
+                subtotal = invoice_line.quantity * unit_price
+                invoice_line.subtotal = subtotal
+                self.changes[line_id]['subtotal'] = subtotal
+
+                # Update line amount (calculated field)
+                line_amount = subtotal + invoice_line.tax_amount
+                invoice_line.line_amount = line_amount
+                self.changes[line_id]['line_amount'] = line_amount
+            elif col == 6:  # Tax Amount
+                tax_amount = float(value)
+                self.changes[line_id]['tax_amount'] = tax_amount
+                invoice_line.tax_amount = tax_amount
+
+                # Update line amount (calculated field)
+                subtotal = invoice_line.quantity * invoice_line.unit_price
+                line_amount = subtotal + tax_amount
+                invoice_line.line_amount = line_amount
+                self.changes[line_id]['line_amount'] = line_amount
+            else:
+                return False
+
+            # Emit dataChanged for the entire row to update all calculated fields
+            self.dataChanged.emit(self.index(row, 0), self.index(row, self.columnCount() - 1))
+            return True
+
+        except (ValueError, TypeError) as e:
+            print(f"Error setting data: {e}")
+            return False
+
+    def save_all_changes(self):
+        """Save all changes to the database"""
+        for line_id, changes in self.changes.items():
+            if changes:  # Only update if there are changes
+                self.dao.update_invoice_line(line_id, changes)
+
+        # Clear changes after saving
+        self.changes = {}
+
+        # Recalculate invoice totals
+        if self.invoice_id:
+            self.dao.recalculate_invoice_totals(self.invoice_id)
 
     def add_line(self, line_data):
         """Add a new line to the invoice"""
