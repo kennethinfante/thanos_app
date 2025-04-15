@@ -1,5 +1,5 @@
 from src.dao.data_access_object import DataAccessObject
-from src.do.invoice import Invoice
+from src.do.invoice import Invoice, InvoiceLine
 
 class InvoiceDao(DataAccessObject):
     def __init__(self, is_testing=False):
@@ -103,22 +103,36 @@ class InvoiceDao(DataAccessObject):
             print(f"Error getting invoice with lines: {e}")
             return None
 
-    def add_invoice_line(self, invoice_line):
+    def add_invoice_line(self, line_data):
         """Add a new invoice line"""
 
         try:
-            self.session.add(invoice_line)
-            self.session.commit()
+            # Create a new InvoiceLine object from the dictionary
+            invoice_line = InvoiceLine()
 
-            # Calculate subtotal and line amount
+            # Set attributes from the dictionary
+            for key, value in line_data.items():
+                setattr(invoice_line, key, value)
+
+            # Calculate subtotal and line amount BEFORE adding to session
             invoice_line.subtotal = invoice_line.quantity * invoice_line.unit_price
             invoice_line.line_amount = invoice_line.subtotal + invoice_line.tax_amount
 
-            session.commit()
-            return invoice_line
+            # Add to session and commit once
+            self.session.add(invoice_line)
+            self.session.flush()
+            self.session.commit()
+
+            # Instead of refreshing, query for the object again
+            # Query for the newly created line to ensure we have a fresh object
+            new_line = self.session.query(InvoiceLine).get(invoice_line.id)
+            return new_line
+
         except Exception as e:
-            session.rollback()
-            print(f"Error adding invoice line: {e}")
+            self.session.rollback()
+            self.logger.error(f"Error adding invoice line: {e}")
+            import traceback
+            self.logger.error(traceback.format_exc())
             return None
 
     def update_invoice_line(self, line_id, line_data):
@@ -139,7 +153,10 @@ class InvoiceDao(DataAccessObject):
             invoice_line.subtotal = invoice_line.quantity * invoice_line.unit_price
             invoice_line.line_amount = invoice_line.subtotal + invoice_line.tax_amount
 
+            # Flush changes to the database but don't commit yet
+            self.session.flush()
             self.session.commit()
+
             return invoice_line
         except Exception as e:
             self.session.rollback()
@@ -153,11 +170,16 @@ class InvoiceDao(DataAccessObject):
             # Get the invoice line
             invoice_line = self.session.query(InvoiceLine).filter(InvoiceLine.id == line_id).first()
 
+            # Calculate subtotal and line amount BEFORE adding to session
+            invoice_line.subtotal = invoice_line.quantity * invoice_line.unit_price
+            invoice_line.line_amount = invoice_line.subtotal + invoice_line.tax_amount
+
             if not invoice_line:
                 return False
 
             # Delete the invoice line
             self.session.delete(invoice_line)
+            self.session.flush()
             self.session.commit()
             return True
         except Exception as e:

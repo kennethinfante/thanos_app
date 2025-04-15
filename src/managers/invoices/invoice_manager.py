@@ -141,19 +141,20 @@ class InvoiceManager(QMainWindow):
         """Add a new invoice line"""
         try:
             # Create a new invoice line with default values
-            new_line = InvoiceLine(
-                invoice_id=self.invoice_id,
-                description="New Line Item",
-                quantity=1.0,
-                unit_price=0.0,
-                tax_amount=0.0,
-                subtotal=0.0,
-                line_amount=0.0
-            )
+            line_data = {
+                'invoice_id': self.invoice_id,
+                'description': "New Line Item",
+                'quantity': 1.0,
+                'unit_price': 0.0,
+                'tax_amount': 0.0,
+                'subtotal': 0.0,
+                'line_amount': 0.0
+            }
 
             # Add the line to the database
-            added_line = self.invoice_dao.add_invoice_line(new_line)
+            added_line = self.invoice_dao.add_invoice_line(line_data)
 
+            print(added_line)
             if added_line:
                 # Reload the invoice lines
                 self.invoice_lines_model.load_data()
