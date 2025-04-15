@@ -59,9 +59,6 @@ class InvoiceManager(QMainWindow):
         # Load invoice lines
         self.load_invoice_lines()
 
-        # Add buttons for adding and removing invoice lines
-        self.add_invoice_line_buttons()
-
     def load_customers(self):
         """Load customers into the customer combobox"""
         self.ui.customer_cb.clear()
@@ -86,30 +83,14 @@ class InvoiceManager(QMainWindow):
         self.ui.invoice_lines_table_view.setColumnWidth(6, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(7, 100)
 
-    def add_invoice_line_buttons(self):
-        """Add buttons for adding and removing invoice lines"""
-        # Create a button for adding a new line
-        self.add_line_btn = QPushButton("Add Line", self)
-        self.add_line_btn.setMinimumSize(115, 30)
-        self.add_line_btn.setFont(self.ui.save_btn.font())
-
-        # Create a button for removing a line
-        self.remove_line_btn = QPushButton("Remove Line", self)
-        self.remove_line_btn.setMinimumSize(115, 30)
-        self.remove_line_btn.setFont(self.ui.save_btn.font())
-
-        # Add buttons to the layout
-        self.ui.btn_hbox.insertWidget(0, self.add_line_btn)
-        self.ui.btn_hbox.insertWidget(1, self.remove_line_btn)
-
     def connect_signals_slots(self):
         """Connect signals and slots"""
         # Connect save button
         self.ui.save_btn.clicked.connect(self.save_invoice)
 
         # Connect add and remove line buttons
-        self.add_line_btn.clicked.connect(self.add_invoice_line)
-        self.remove_line_btn.clicked.connect(self.remove_invoice_line)
+        self.ui.add_line_btn.clicked.connect(self.add_invoice_line)
+        self.ui.remove_line_btn.clicked.connect(self.remove_invoice_line)
 
     def save_invoice(self):
         """Save the invoice changes"""
