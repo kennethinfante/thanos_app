@@ -9,7 +9,7 @@ Base = db_manager.Base
 class TaxRate(Base):
     __tablename__ = 'tax_rates'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     rate = Column(Float, nullable=False)
     description = Column(String)

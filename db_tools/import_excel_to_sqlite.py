@@ -5,7 +5,7 @@ import argparse
 from fks import *
 
 def get_create_query(sheet_name, columns):
-    create_query = f"CREATE TABLE IF NOT EXISTS {sheet_name} (\nid INTEGER PRIMARY KEY"
+    create_query = f"CREATE TABLE IF NOT EXISTS {sheet_name} (\nid INTEGER"
 
     # create_query += ",\n".join([f"{col} TEXT" for col in columns if col != 'id'])
     for col in columns:
@@ -35,7 +35,7 @@ def get_create_query(sheet_name, columns):
         else:
             create_query += f",\n{col} TEXT"
             
-    create_query += "\n);"
+    create_query += ",\nPRIMARY KEY ('id' AUTOINCREMENT)\n);"
 
     return create_query
 
@@ -123,6 +123,7 @@ def import_excel_to_sqlite(fks, excel_path, sql_output_path, db_path):
     for sheet_name in xls.sheet_names:
         df = pd.read_excel(xls, sheet_name)
         df.to_sql(sheet_name, conn, if_exists='replace', index=False)
+        # conn.execute(f'ALTER TABLE {sheet_name} ADD PRIMARY KEY (id);')
 
         # Generate and write INSERT statements
         insert_query = get_insert_query(sheet_name, df)

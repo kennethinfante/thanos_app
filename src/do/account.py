@@ -9,7 +9,7 @@ Base = db_manager.Base
 class Account(Base):
     __tablename__ = 'accounts'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
     description = Column(String)

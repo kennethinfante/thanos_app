@@ -107,7 +107,8 @@ fk4 = {
 
 acctg_set5 = {
     "excel_path" : "acctg_db5/acctg_export5.xlsx",
-    "sql_output_path" : "../assets/database/accounting.sql"
+    "sql_output_path" : "../assets/database/accounting.sql",
+    "db_path" : "../assets/database/accounting.db"
 }
 
 fk5 = {

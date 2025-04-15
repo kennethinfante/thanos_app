@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 first_name TEXT,
 middle_name TEXT,
 last_name TEXT,
@@ -9,17 +9,19 @@ gender TEXT,
 email TEXT,
 username TEXT,
 password TEXT,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS account_types (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 name TEXT,
-description TEXT
+description TEXT,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS accounts (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 code TEXT NOT NULL UNIQUE,
 name TEXT,
 description TEXT,
@@ -27,12 +29,13 @@ account_type_id INTEGER,
 parent_account_id INTEGER,
 is_active BOOLEAN DEFAULT 1,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (account_type_id) REFERENCES account_types(id),
 FOREIGN KEY (parent_account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS customers (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 name TEXT,
 contact_person TEXT,
 phone TEXT,
@@ -46,11 +49,12 @@ postal_code TEXT,
 country TEXT,
 description TEXT,
 is_active BOOLEAN DEFAULT 1,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS vendors (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 name TEXT,
 contact_person TEXT,
 phone TEXT,
@@ -64,11 +68,12 @@ postal_code TEXT,
 country TEXT,
 description TEXT,
 is_active BOOLEAN DEFAULT 1,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS employees (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 first_name TEXT,
 last_name TEXT,
 name TEXT,
@@ -86,45 +91,50 @@ country TEXT,
 username TEXT,
 password TEXT,
 is_active BOOLEAN DEFAULT 1,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS fiscal_years (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 name TEXT,
 start_date TEXT,
 end_date TEXT,
 is_closed BOOLEAN DEFAULT 0,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS currencies (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 code TEXT NOT NULL UNIQUE,
 name TEXT,
 symbol TEXT,
 is_default BOOLEAN DEFAULT 0,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS tax_rates (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 name TEXT,
 rate TEXT,
 description TEXT,
 is_active BOOLEAN DEFAULT 1,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS payment_methods (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 name TEXT,
 is_active BOOLEAN DEFAULT 1,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS bank_accounts (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 account_id INTEGER,
 bank_name TEXT,
 account_number TEXT NOT NULL UNIQUE,
@@ -134,31 +144,34 @@ opening_balance DECIMAL(15,2) DEFAULT 0,
 current_balance DECIMAL(15,2) DEFAULT 0,
 is_active BOOLEAN DEFAULT 1,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (account_id) REFERENCES accounts(id),
 FOREIGN KEY (currency_id) REFERENCES currencies(id)
 );
 
 CREATE TABLE IF NOT EXISTS journals (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 date TEXT,
 description TEXT,
 is_posted BOOLEAN DEFAULT 0,
-created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT)
 );
 
 CREATE TABLE IF NOT EXISTS journal_lines (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 journal_id INTEGER,
 account_id INTEGER,
 description TEXT,
 debit DECIMAL(15,2) DEFAULT 0,
 credit DECIMAL(15,2) DEFAULT 0,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (journal_id) REFERENCES journals(id),
 FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS items (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 name TEXT,
 description TEXT,
 sale_price DECIMAL(15,2) DEFAULT 0,
@@ -174,6 +187,7 @@ inventory_account_id INTEGER,
 revenue_account_id INTEGER,
 expense_account_id INTEGER,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id),
 FOREIGN KEY (inventory_account_id) REFERENCES accounts(id),
 FOREIGN KEY (revenue_account_id) REFERENCES accounts(id),
@@ -181,7 +195,7 @@ FOREIGN KEY (expense_account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS invoices (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 customer_id INTEGER,
 invoice_number TEXT NOT NULL UNIQUE,
 date TEXT,
@@ -192,11 +206,12 @@ total_amount DECIMAL(15,2) DEFAULT 0,
 description TEXT,
 status TEXT DEFAULT 'draft', -- draft, sent, paid, partially_paid, overdue, cancelled,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (customer_id) REFERENCES customers(id)
 );
 
 CREATE TABLE IF NOT EXISTS invoice_lines (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 invoice_id INTEGER,
 item_id INTEGER,
 account_id INTEGER,
@@ -207,6 +222,7 @@ tax_rate_id INTEGER,
 subtotal TEXT,
 tax_amount DECIMAL(15,2) DEFAULT 0,
 line_amount DECIMAL(15,2) DEFAULT 0,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (invoice_id) REFERENCES invoices(id),
 FOREIGN KEY (item_id) REFERENCES items(id),
 FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id),
@@ -214,7 +230,7 @@ FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS invoice_payments (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 invoice_id INTEGER,
 date TEXT,
 amount DECIMAL(15,2) DEFAULT 0,
@@ -222,13 +238,14 @@ description TEXT,
 payment_method_id INTEGER,
 account_id INTEGER,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (invoice_id) REFERENCES invoices(id),
 FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
 FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS bills (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 vendor_id INTEGER,
 bill_number TEXT NOT NULL UNIQUE,
 date TEXT,
@@ -239,11 +256,12 @@ total_amount DECIMAL(15,2) DEFAULT 0,
 description TEXT,
 status TEXT DEFAULT 'draft', -- draft, received, paid, partially_paid, overdue, cancelled,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (vendor_id) REFERENCES vendors(id)
 );
 
 CREATE TABLE IF NOT EXISTS bill_lines (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 bill_id INTEGER,
 item_id INTEGER,
 account_id INTEGER,
@@ -254,6 +272,7 @@ tax_rate_id INTEGER,
 subtotal TEXT,
 tax_amount DECIMAL(15,2) DEFAULT 0,
 line_amount DECIMAL(15,2) DEFAULT 0,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (bill_id) REFERENCES bills(id),
 FOREIGN KEY (item_id) REFERENCES items(id),
 FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id),
@@ -261,7 +280,7 @@ FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS bill_payments (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 bill_id INTEGER,
 date TEXT,
 amount DECIMAL(15,2) DEFAULT 0,
@@ -269,13 +288,14 @@ description TEXT,
 payment_method_id INTEGER,
 account_id INTEGER,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (bill_id) REFERENCES bills(id),
 FOREIGN KEY (payment_method_id) REFERENCES payment_methods(id),
 FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS cash_transactions (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 customer_id INTEGER,
 vendor_id INTEGER,
 cash_type TEXT,
@@ -288,6 +308,7 @@ description TEXT,
 payment_method_id INTEGER,
 account_id INTEGER,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (customer_id) REFERENCES customers(id),
 FOREIGN KEY (vendor_id) REFERENCES vendors(id),
 FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id),
@@ -296,7 +317,7 @@ FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS cash_transaction_lines (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 cash_transaction_id INTEGER,
 item_id INTEGER,
 account_id INTEGER,
@@ -307,6 +328,7 @@ tax_rate_id INTEGER,
 subtotal TEXT,
 tax_amount DECIMAL(15,2) DEFAULT 0,
 total_amount DECIMAL(15,2) DEFAULT 0,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (cash_transaction_id) REFERENCES cash_transactions(id),
 FOREIGN KEY (item_id) REFERENCES items(id),
 FOREIGN KEY (tax_rate_id) REFERENCES tax_rates(id),
@@ -314,7 +336,7 @@ FOREIGN KEY (account_id) REFERENCES accounts(id)
 );
 
 CREATE TABLE IF NOT EXISTS bank_transactions (
-id INTEGER PRIMARY KEY,
+id INTEGER,
 bank_account_id INTEGER,
 date TEXT,
 description TEXT,
@@ -325,6 +347,7 @@ cash_transaction_id INTEGER,
 invoice_payment_id INTEGER,
 bill_payment_id INTEGER,
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY ('id' AUTOINCREMENT),
 FOREIGN KEY (bank_account_id) REFERENCES bank_accounts(id),
 FOREIGN KEY (cash_transaction_id) REFERENCES cash_transactions(id),
 FOREIGN KEY (invoice_payment_id) REFERENCES invoice_payments(id),
@@ -342,7 +365,7 @@ INSERT INTO users (id, first_name, middle_name, last_name, phone_number, address
 INSERT INTO account_types (id, name, description) VALUES (
 (1, "Assets", "Resources owned by the business"),
 (2, "Liabilities", "Debts owed by the business"),
-(3, "Equity", "Owner's interest in the business"),
+(3, "Equity", "Owners interest in the business"),
 (4, "Revenue", "Income from business activities"),
 (5, "Expenses", "Costs incurred in business operations"),
 );
@@ -1135,7 +1158,7 @@ INSERT INTO cash_transaction_lines (id, cash_transaction_id, item_id, account_id
 (5, 5, NULL, 41.0, "Monthly utilities", 1, 350, 2, 350, 26.25, 376.25),
 (6, 6, NULL, 39.0, "Monthly payroll", 1, 12000, 1, 12000, 0.0, 12000.0),
 (7, 7, 1.0, NULL, "Laptop Computers", 3, 900, 2, 2700, 202.5, 2902.5),
-(8, 7, 2.0, NULL, "Desktop computers", 3, 700, 22, 2100, 157.5, 2257.5),
+(8, 7, 2.0, NULL, "Desktop computers", 3, 700, 2, 2100, 157.5, 2257.5),
 (9, 8, NULL, 40.0, "Monthly office rent", 1, 2000, 2, 2000, 150.0, 2150.0),
 (10, 9, NULL, 39.0, "Year-end employee bonuses", 1, 10000, 1, 10000, 0.0, 10000.0),
 (11, 10, NULL, 45.0, "Annual insurance premium payment", 1, 5000, 2, 5000, 375.0, 5375.0),

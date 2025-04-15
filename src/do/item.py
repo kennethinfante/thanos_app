@@ -9,7 +9,7 @@ Base = db_manager.Base
 class Item(Base):
     __tablename__ = 'items'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     description = Column(String)
     sale_price = Column(Float, nullable=False, default=0.0)

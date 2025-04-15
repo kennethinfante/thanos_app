@@ -9,7 +9,7 @@ Base = db_manager.Base
 class Invoice(Base):
     __tablename__ = 'invoices'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     # here the ForeignKey specifies the table name as found in db
     customer_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
     invoice_number = Column(String, unique=True, nullable=False)
@@ -36,7 +36,7 @@ class Invoice(Base):
 class InvoiceLine(Base):
     __tablename__ = 'invoice_lines'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     invoice_id = Column(Integer, ForeignKey('invoices.id'), nullable=False)
     item_id = Column(Integer, ForeignKey('items.id'), nullable=True)
     account_id = Column(Integer, ForeignKey('accounts.id'), nullable=True)

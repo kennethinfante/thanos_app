@@ -112,7 +112,9 @@ class InvoiceDao(DataAccessObject):
 
             # Set attributes from the dictionary
             for key, value in line_data.items():
-                setattr(invoice_line, key, value)
+                # Skip setting the id field - let SQLAlchemy handle it
+                if key != 'id':
+                    setattr(invoice_line, key, value)
 
             # Calculate subtotal and line amount BEFORE adding to session
             invoice_line.subtotal = invoice_line.quantity * invoice_line.unit_price
@@ -123,9 +125,13 @@ class InvoiceDao(DataAccessObject):
             self.session.flush()
             self.session.commit()
 
-            # Instead of refreshing, query for the object again
-            # Query for the newly created line to ensure we have a fresh object
-            new_line = self.session.query(InvoiceLine).get(invoice_line.id)
+            line_id = invoice_line.id
+
+            # Clear the session to ensure we get a fresh object
+            self.session.expunge_all()
+
+            # Query for the newly created line with a fresh session
+            new_line = self.session.query(InvoiceLine).get(line_id)
             return new_line
 
         except Exception as e:

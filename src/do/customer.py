@@ -9,7 +9,7 @@ Base = db_manager.Base
 class Customer(Base):
     __tablename__ = 'customers'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String, nullable=False)
     contact_person = Column(String, nullable=False)
     phone = Column(String)
