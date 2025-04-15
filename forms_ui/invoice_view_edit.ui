@@ -104,13 +104,65 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>23</x>
       <y>890</y>
-      <width>1044</width>
+      <width>1141</width>
       <height>52</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="btn_hbox">
+     <item>
+      <widget class="QPushButton" name="add_line_btn">
+       <property name="minimumSize">
+        <size>
+         <width>115</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>115</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Add Line</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="remove_line_btn">
+       <property name="minimumSize">
+        <size>
+         <width>150</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Remove Line</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <spacer name="btn_spacer">
        <property name="orientation">
@@ -118,7 +170,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>900</width>
+         <width>1100</width>
          <height>20</height>
         </size>
        </property>
@@ -140,7 +192,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>15</pointsize>
+         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -166,7 +218,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>15</pointsize>
+         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
