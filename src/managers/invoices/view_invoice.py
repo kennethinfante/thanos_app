@@ -70,13 +70,15 @@ class ViewInvoice(QMainWindow):
         self.ui.invoice_lines_table_view.setModel(self.invoice_lines_model)
 
         # Adjust column widths for better display
-        self.ui.invoice_lines_table_view.setColumnWidth(0, 50)  # ID
-        self.ui.invoice_lines_table_view.setColumnWidth(1, 300)  # Description
-        self.ui.invoice_lines_table_view.setColumnWidth(2, 100)  # Quantity
-        self.ui.invoice_lines_table_view.setColumnWidth(3, 100)  # Unit Price
-        self.ui.invoice_lines_table_view.setColumnWidth(4, 100)  # Tax Rate
-        self.ui.invoice_lines_table_view.setColumnWidth(5, 100)  # Tax Amount
-        self.ui.invoice_lines_table_view.setColumnWidth(6, 100)  # Line Amount
+        # ["Item", "Account", "Description", "Quantity", "Unit Price", "Subtotal", "Tax Amount", "Line Amount"]
+        self.ui.invoice_lines_table_view.setColumnWidth(0, 150)
+        self.ui.invoice_lines_table_view.setColumnWidth(1, 150)
+        self.ui.invoice_lines_table_view.setColumnWidth(2, 200)
+        self.ui.invoice_lines_table_view.setColumnWidth(3, 100)
+        self.ui.invoice_lines_table_view.setColumnWidth(4, 100)
+        self.ui.invoice_lines_table_view.setColumnWidth(5, 100)
+        self.ui.invoice_lines_table_view.setColumnWidth(6, 100)
+        self.ui.invoice_lines_table_view.setColumnWidth(7, 100)
 
     def connect_signals_slots(self):
         """Connect signals and slots"""
