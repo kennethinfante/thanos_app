@@ -6,11 +6,13 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from sqlalchemy import and_, or_, func, column, text
 
-from forms_python.invoices_view import Ui_invoicesView
 from src.database_manager import DatabaseManager
-from src.managers.base_manager import BaseManager
 from src.models.invoices_model import InvoicesModel
 
+from forms_python.invoices_view import Ui_invoicesView
+
+from src.managers.base_manager import BaseManager
+from src.managers.invoices.view_invoice import ViewInvoice
 
 class InvoicesManager(BaseManager):
     def __init__(self, parent=None):
@@ -24,6 +26,7 @@ class InvoicesManager(BaseManager):
         self.ui.search_date_chbox.stateChanged.connect(self.enable_date)
         self.ui.search_btn.clicked.connect(self.search)
         self.ui.clear_btn.clicked.connect(self.clear)
+        self.ui.invoices_table_view.doubleClicked.connect(self.view_invoice)
         self.ui.add_new_invoice_btn.clicked.connect(self.open_create_invoice)
 
     def enable_date(self, state: int):
@@ -61,6 +64,18 @@ class InvoicesManager(BaseManager):
             )
 
         return filters
+
+    def view_invoice(self, index):
+        """Open the selected invoice for viewing/editing"""
+        # Get the invoice ID from the first column (ID column)
+        row = index.row()
+        invoice_id = self.model.data(self.model.index(row, 0))
+
+        if invoice_id:
+            # Create and show the ViewInvoice dialog
+            view_invoice_dialog = ViewInvoice(invoice_id, parent=self)
+            view_invoice_dialog.show()
+
 
     def open_create_invoice(self):
         # create_invoice = CreateInvoice(self)

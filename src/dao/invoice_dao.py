@@ -28,25 +28,23 @@ class InvoiceDao(DataAccessObject):
             self.logger.error(f"Error getting invoice by ID: {str(e)}")
             return None
 
+    # Add this method to the InvoiceDao class
+    def get_invoice_with_lines(self, invoice_id):
+        """Get an invoice with its line items"""
+        try:
+            invoice = self.session.query(Invoice).filter(Invoice.id == invoice_id).first()
+            # This will load the invoice lines due to the relationship
+            return invoice
+        except Exception as e:
+            self.logger.error(f"Error getting invoice with lines: {str(e)}")
+            return None
+
     def get_invoices_by_customer(self, customer_id):
         """Get all invoices for a specific customer"""
         try:
             return self.session.query(Invoice).filter(Invoice.customer_id == customer_id).all()
         except Exception as e:
             self.logger.error(f"Error getting invoices by customer: {str(e)}")
-            return []
-
-    def search_invoices(self, filters):
-        """Search invoices based on filters"""
-        try:
-            query = self.session.query(Invoice)
-
-            for filter_condition in filters:
-                query = query.filter(filter_condition)
-
-            return query.all()
-        except Exception as e:
-            self.logger.error(f"Error searching invoices: {str(e)}")
             return []
 
     def create_invoice(self, invoice_data):
