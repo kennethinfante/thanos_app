@@ -7,7 +7,7 @@ from src.dao.customer_dao import CustomerDao
 from src.models.invoice_lines_model import InvoiceLinesModel
 from src.do.invoice import InvoiceLine
 
-class ViewInvoice(QMainWindow):
+class InvoiceManager(QMainWindow):
     def __init__(self, invoice_id, parent=None):
         super().__init__(parent)
         self.ui = Ui_viewEditInvoice()

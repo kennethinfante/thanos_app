@@ -12,7 +12,7 @@ from src.models.invoices_model import InvoicesModel
 from forms_python.invoices_view import Ui_invoicesView
 
 from src.managers.base_manager import BaseManager
-from src.managers.invoices.view_invoice import ViewInvoice
+from src.managers.invoices.invoice_manager import InvoiceManager
 
 class InvoicesManager(BaseManager):
     def __init__(self, parent=None):
@@ -79,8 +79,8 @@ class InvoicesManager(BaseManager):
         invoice_id = self.model.data(self.model.index(row, 0))
 
         if invoice_id:
-            # Create and show the ViewInvoice dialog
-            view_invoice_dialog = ViewInvoice(invoice_id, parent=self)
+            # Create and show the InvoiceManager dialog
+            view_invoice_dialog = InvoiceManager(invoice_id, parent=self)
             view_invoice_dialog.show()
 
 

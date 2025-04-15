@@ -40,6 +40,10 @@ class InvoiceLinesModel(QAbstractTableModel):
 
         invoice_line = self.invoice_lines[index.row()]
 
+        # Check if invoice_line is None
+        if invoice_line is None:
+            return None
+
         if role == Qt.DisplayRole:
             column = index.column()
 
@@ -49,38 +53,43 @@ class InvoiceLinesModel(QAbstractTableModel):
             elif column == 1:  # Account
                 return invoice_line.account.name if hasattr(invoice_line, 'account') and invoice_line.account else ""
             elif column == 2:  # Description
-                return invoice_line.description
+                return invoice_line.description if hasattr(invoice_line, 'description') and invoice_line.description is not None else ""
             elif column == 3:  # Quantity
-                return f"{invoice_line.quantity:.2f}"
+                return f"{invoice_line.quantity:.2f}" if hasattr(invoice_line, 'quantity') and invoice_line.quantity is not None else "0.00"
             elif column == 4:  # Unit Price
-                return f"{invoice_line.unit_price:.2f}"
+                return f"{invoice_line.unit_price:.2f}" if hasattr(invoice_line, 'unit_price') and invoice_line.unit_price is not None else "0.00"
             elif column == 5:  # Subtotal
                 # Calculate subtotal as quantity * unit_price
-                subtotal = invoice_line.quantity * invoice_line.unit_price
+                quantity = invoice_line.quantity if hasattr(invoice_line, 'quantity') and invoice_line.quantity is not None else 0
+                unit_price = invoice_line.unit_price if hasattr(invoice_line, 'unit_price') and invoice_line.unit_price is not None else 0
+                subtotal = quantity * unit_price
                 return f"{subtotal:.2f}"
             elif column == 6:  # Tax Amount
-                return f"{invoice_line.tax_amount:.2f}"
+                return f"{invoice_line.tax_amount:.2f}" if hasattr(invoice_line, 'tax_amount') and invoice_line.tax_amount is not None else "0.00"
             elif column == 7:  # Line Amount
                 # Calculate line amount as subtotal + tax_amount
-                subtotal = invoice_line.quantity * invoice_line.unit_price
-                line_amount = subtotal + invoice_line.tax_amount
+                quantity = invoice_line.quantity if hasattr(invoice_line, 'quantity') and invoice_line.quantity is not None else 0
+                unit_price = invoice_line.unit_price if hasattr(invoice_line, 'unit_price') and invoice_line.unit_price is not None else 0
+                subtotal = quantity * unit_price
+                tax_amount = invoice_line.tax_amount if hasattr(invoice_line, 'tax_amount') and invoice_line.tax_amount is not None else 0
+                line_amount = subtotal + tax_amount
                 return f"{line_amount:.2f}"
 
         elif role == Qt.EditRole:
             column = index.column()
 
             if column == 0:  # Item
-                return invoice_line.item_id
+                return invoice_line.item_id if hasattr(invoice_line, 'item_id') else None
             elif column == 1:  # Account
-                return invoice_line.account_id
+                return invoice_line.account_id if hasattr(invoice_line, 'account_id') else None
             elif column == 2:  # Description
-                return invoice_line.description
+                return invoice_line.description if hasattr(invoice_line, 'description') else ""
             elif column == 3:  # Quantity
-                return invoice_line.quantity
+                return invoice_line.quantity if hasattr(invoice_line, 'quantity') else 0
             elif column == 4:  # Unit Price
-                return invoice_line.unit_price
+                return invoice_line.unit_price if hasattr(invoice_line, 'unit_price') else 0
             elif column == 6:  # Tax Amount
-                return invoice_line.tax_amount
+                return invoice_line.tax_amount if hasattr(invoice_line, 'tax_amount') else 0
 
         return None
 
