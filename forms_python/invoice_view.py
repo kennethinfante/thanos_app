@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'forms_ui/invoice_view_edit.ui'
+# Form implementation generated from reading ui file 'forms_ui/invoice_view.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -95,6 +95,16 @@ class Ui_invoiceView(object):
         self.cancel_btn.setFont(font)
         self.cancel_btn.setObjectName("cancel_btn")
         self.btn_hbox.addWidget(self.cancel_btn)
+        self.delete_btn = QtWidgets.QPushButton(self.layoutWidget)
+        self.delete_btn.setMinimumSize(QtCore.QSize(115, 50))
+        self.delete_btn.setMaximumSize(QtCore.QSize(115, 50))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        font.setBold(True)
+        font.setWeight(75)
+        self.delete_btn.setFont(font)
+        self.delete_btn.setObjectName("delete_btn")
+        self.btn_hbox.addWidget(self.delete_btn)
         self.layoutWidget1 = QtWidgets.QWidget(self.centralwidget)
         self.layoutWidget1.setGeometry(QtCore.QRect(25, 11, 611, 191))
         self.layoutWidget1.setObjectName("layoutWidget1")
@@ -218,6 +228,7 @@ class Ui_invoiceView(object):
         self.remove_line_btn.setText(_translate("viewEditInvoice", "Remove Line"))
         self.save_btn.setText(_translate("viewEditInvoice", "Save"))
         self.cancel_btn.setText(_translate("viewEditInvoice", "Cancel"))
+        self.delete_btn.setText(_translate("viewEditInvoice", "Delete"))
         self.customer_label.setText(_translate("viewEditInvoice", "Customer"))
         self.invoice_date_label.setText(_translate("viewEditInvoice", "Invoice date"))
         self.invoice_date_edit.setDisplayFormat(_translate("viewEditInvoice", "d/M/yyyy"))

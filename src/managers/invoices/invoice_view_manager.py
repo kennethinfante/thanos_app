@@ -5,6 +5,7 @@ from forms_python.invoice_view import Ui_invoiceView
 from src.dao.invoice_dao import InvoiceDao
 from src.dao.customer_dao import CustomerDao
 from src.models.invoice_lines_model import InvoiceLinesModel
+from src.models.invoice_line_delegate import InvoiceLineDelegate
 from src.do.invoice import InvoiceLine
 
 class InvoiceViewManager(QMainWindow):
@@ -72,8 +73,17 @@ class InvoiceViewManager(QMainWindow):
         # Set the model for the invoice lines table view
         self.ui.invoice_lines_table_view.setModel(self.invoice_lines_model)
 
+        # Create and configure the delegate
+        delegate = InvoiceLineDelegate(self.ui.invoice_lines_table_view)
+        delegate.set_items(self.invoice_lines_model.get_available_items())
+        delegate.set_accounts(self.invoice_lines_model.get_available_accounts())
+        delegate.set_tax_rates(self.invoice_lines_model.get_available_tax_rates())
+
+        # Set the delegate for the table view
+        self.ui.invoice_lines_table_view.setItemDelegate(delegate)
+
         # Adjust column widths for better display
-        # ["Item", "Account", "Description", "Quantity", "Unit Price", "Subtotal", "Tax Amount", "Line Amount"]
+        # ["Item", "Account", "Description", "Quantity", "Unit Price", "Tax", "Subtotal", "Tax Amount", "Line Amount"]
         self.ui.invoice_lines_table_view.setColumnWidth(0, 150)
         self.ui.invoice_lines_table_view.setColumnWidth(1, 150)
         self.ui.invoice_lines_table_view.setColumnWidth(2, 200)
@@ -82,15 +92,20 @@ class InvoiceViewManager(QMainWindow):
         self.ui.invoice_lines_table_view.setColumnWidth(5, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(6, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(7, 100)
+        self.ui.invoice_lines_table_view.setColumnWidth(8, 100)
 
     def connect_signals_slots(self):
         """Connect signals and slots"""
         # Connect save button
         self.ui.save_btn.clicked.connect(self.save_invoice)
+        self.ui.cancel_btn.clicked.connect(self.cancel_changes)
 
         # Connect add and remove line buttons
         self.ui.add_line_btn.clicked.connect(self.add_invoice_line)
         self.ui.remove_line_btn.clicked.connect(self.remove_invoice_line)
+
+        # Delete
+        self.ui.delete_btn.clicked.connect(self.delete_invoice)
 
     def save_invoice(self):
         """Save the invoice changes"""
@@ -136,6 +151,14 @@ class InvoiceViewManager(QMainWindow):
 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+
+    def cancel_changes(self):
+        """Cancel the changes and close the form"""
+        pass
+
+    def delete_invoice(self):
+        """Cancel the changes and close the form"""
+        pass
 
     def add_invoice_line(self):
         """Add a new invoice line"""

@@ -1,5 +1,8 @@
 from src.dao.data_access_object import DataAccessObject
 from src.do.invoice import Invoice, InvoiceLine
+from src.do.item import Item
+from src.do.account import Account
+from src.do.tax_rate import TaxRate
 
 class InvoiceDao(DataAccessObject):
     def __init__(self, is_testing=False):
@@ -219,3 +222,40 @@ class InvoiceDao(DataAccessObject):
             self.session.rollback()
             print(f"Error recalculating invoice totals: {e}")
             return False
+
+    # for dropdowns in the invoice line
+    def get_all_items(self):
+        """Get all available items"""
+        # with self.session as session:
+        return self.session.query(Item).all()
+
+    def get_all_accounts(self):
+        """Get all available accounts"""
+#         with self.session as session:
+        return self.session.query(Account).all()
+
+    def get_all_tax_rates(self):
+        """Get all available tax rates"""
+        # with self.session as session:
+        return self.session.query(TaxRate).all()
+
+    def get_tax_rate(self, tax_rate_id):
+        """Get a specific tax rate by ID"""
+        # with self.session as session:
+        return self.session.query(TaxRate).filter(TaxRate.id == tax_rate_id).first()
+
+    def get_item_by_id(self, item_id):
+        """Get an item by ID"""
+        try:
+            return self.session.query(Item).filter(Item.id == item_id).first()
+        except Exception as e:
+            self.logger.error(f"Error getting item by ID: {str(e)}")
+            return None
+
+    def get_account_by_id(self, account_id):
+        """Get an account by ID"""
+        try:
+            return self.session.query(Account).filter(Account.id == account_id).first()
+        except Exception as e:
+            self.logger.error(f"Error getting account by ID: {str(e)}")
+            return None

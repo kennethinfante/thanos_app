@@ -14,7 +14,7 @@ class Account(Base):
     name = Column(String, nullable=False)
     description = Column(String)
     account_type_id = Column(Integer, nullable=False)
-    parent_type_id = Column(Integer)
+    parent_account_id = Column(Integer)
     is_active = Column(Integer, nullable=False)
     created_at = Column(DateTime, nullable=False)
 

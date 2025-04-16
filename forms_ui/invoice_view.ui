@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>invoiceView</class>
- <widget class="QMainWindow" name="viewEditInvoice">
+ <widget class="QMainWindow" name="invoiceView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -225,6 +225,32 @@
        </property>
        <property name="text">
         <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="delete_btn">
+       <property name="minimumSize">
+        <size>
+         <width>115</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>115</width>
+         <height>50</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Delete</string>
        </property>
       </widget>
      </item>
@@ -499,7 +525,7 @@
   <connection>
    <sender>cancel_btn</sender>
    <signal>clicked()</signal>
-   <receiver>viewEditInvoice</receiver>
+   <receiver>invoiceView</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

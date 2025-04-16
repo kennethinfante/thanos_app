@@ -7,8 +7,8 @@ class InvoiceLinesModel(QAbstractTableModel):
         self.dao = InvoiceDao()
         self.invoice_id = invoice_id
         self.invoice_lines = []
-        self.headers = ["Item", "Account", "Description", "Quantity", "Unit Price", "Subtotal", "Tax Amount", "Line Amount"]
-        self.editable_columns = [0, 1, 2, 3, 4, 6]  # Item, Account, Description, Quantity, Unit Price, Tax Amount
+        self.headers = ["Item", "Account", "Description", "Quantity", "Unit Price", "Tax", "Subtotal", "Tax Amount", "Line Amount"]
+        self.editable_columns = [0, 1, 2, 3, 4, 5]  # Item, Account, Description, Quantity, Unit Price, Tax
         self.changes = {}  # Track changes to save later
 
         if invoice_id:
@@ -18,7 +18,18 @@ class InvoiceLinesModel(QAbstractTableModel):
         """Load invoice lines for the specified invoice"""
         invoice = self.dao.get_invoice_with_lines(self.invoice_id)
         if invoice and hasattr(invoice, 'invoice_lines'):
-            self.invoice_lines = invoice.invoice_lines
+            # Make sure relationships are loaded
+            self.invoice_lines = []
+            for line in invoice.invoice_lines:
+                # Ensure item, account, and tax_rate are loaded
+                if hasattr(line, 'item_id') and line.item_id:
+                    line.item = self.dao.get_item_by_id(line.item_id)
+                if hasattr(line, 'account_id') and line.account_id:
+                    line.account = self.dao.get_account_by_id(line.account_id)
+                if hasattr(line, 'tax_rate_id') and line.tax_rate_id:
+                    line.tax_rate = self.dao.get_tax_rate(line.tax_rate_id)
+                self.invoice_lines.append(line)
+
             self.layoutChanged.emit()
             # Clear changes when reloading data
             self.changes = {}
@@ -49,8 +60,16 @@ class InvoiceLinesModel(QAbstractTableModel):
 
             # Handle display of item and account names
             if column == 0:  # Item
+                # If item is not loaded, try to load it
+                if not hasattr(invoice_line, 'item') or invoice_line.item is None:
+                    if hasattr(invoice_line, 'item_id') and invoice_line.item_id:
+                        invoice_line.item = self.dao.get_item_by_id(invoice_line.item_id)
                 return invoice_line.item.name if hasattr(invoice_line, 'item') and invoice_line.item else ""
             elif column == 1:  # Account
+                # If account is not loaded, try to load it
+                if not hasattr(invoice_line, 'account') or invoice_line.account is None:
+                    if hasattr(invoice_line, 'account_id') and invoice_line.account_id:
+                        invoice_line.account = self.dao.get_account_by_id(invoice_line.account_id)
                 return invoice_line.account.name if hasattr(invoice_line, 'account') and invoice_line.account else ""
             elif column == 2:  # Description
                 return invoice_line.description if hasattr(invoice_line, 'description') and invoice_line.description is not None else ""
@@ -58,40 +77,16 @@ class InvoiceLinesModel(QAbstractTableModel):
                 return f"{invoice_line.quantity:.2f}" if hasattr(invoice_line, 'quantity') and invoice_line.quantity is not None else "0.00"
             elif column == 4:  # Unit Price
                 return f"{invoice_line.unit_price:.2f}" if hasattr(invoice_line, 'unit_price') and invoice_line.unit_price is not None else "0.00"
-            elif column == 5:  # Subtotal
-                # Calculate subtotal as quantity * unit_price
-                quantity = invoice_line.quantity if hasattr(invoice_line, 'quantity') and invoice_line.quantity is not None else 0
-                unit_price = invoice_line.unit_price if hasattr(invoice_line, 'unit_price') and invoice_line.unit_price is not None else 0
-                subtotal = quantity * unit_price
-                return f"{subtotal:.2f}"
-            elif column == 6:  # Tax Amount
-                return f"{invoice_line.tax_amount:.2f}" if hasattr(invoice_line, 'tax_amount') and invoice_line.tax_amount is not None else "0.00"
-            elif column == 7:  # Line Amount
-                # Calculate line amount as subtotal + tax_amount
-                quantity = invoice_line.quantity if hasattr(invoice_line, 'quantity') and invoice_line.quantity is not None else 0
-                unit_price = invoice_line.unit_price if hasattr(invoice_line, 'unit_price') and invoice_line.unit_price is not None else 0
-                subtotal = quantity * unit_price
-                tax_amount = invoice_line.tax_amount if hasattr(invoice_line, 'tax_amount') and invoice_line.tax_amount is not None else 0
-                line_amount = subtotal + tax_amount
-                return f"{line_amount:.2f}"
+            elif column == 5:  # Tax
+                # If tax_rate is not loaded, try to load it
+                if not hasattr(invoice_line, 'tax_rate') or invoice_line.tax_rate is None:
+                    if hasattr(invoice_line, 'tax_rate_id') and invoice_line.tax_rate_id:
+                        invoice_line.tax_rate = self.dao.get_tax_rate(invoice_line.tax_rate_id)
 
-        elif role == Qt.EditRole:
-            column = index.column()
-
-            if column == 0:  # Item
-                return invoice_line.item_id if hasattr(invoice_line, 'item_id') else None
-            elif column == 1:  # Account
-                return invoice_line.account_id if hasattr(invoice_line, 'account_id') else None
-            elif column == 2:  # Description
-                return invoice_line.description if hasattr(invoice_line, 'description') else ""
-            elif column == 3:  # Quantity
-                return invoice_line.quantity if hasattr(invoice_line, 'quantity') else 0
-            elif column == 4:  # Unit Price
-                return invoice_line.unit_price if hasattr(invoice_line, 'unit_price') else 0
-            elif column == 6:  # Tax Amount
-                return invoice_line.tax_amount if hasattr(invoice_line, 'tax_amount') else 0
-
-        return None
+                tax_rate = invoice_line.tax_rate if hasattr(invoice_line, 'tax_rate') and invoice_line.tax_rate else None
+                if tax_rate:
+                    return f"{tax_rate.name}-{tax_rate.rate:.2f}%"
+                return ""
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -169,6 +164,27 @@ class InvoiceLinesModel(QAbstractTableModel):
                 line_amount = subtotal + invoice_line.tax_amount
                 invoice_line.line_amount = line_amount
                 self.changes[line_id]['line_amount'] = line_amount
+            elif col == 5:  # Tax Rate
+                # Store the tax rate ID
+                self.changes[line_id]['tax_rate_id'] = value if value else None
+                invoice_line.tax_rate_id = value if value else None
+
+                # Update tax amount based on the new tax rate
+                # Get the tax rate percentage
+                tax_rate = self.dao.get_tax_rate(value) if value else None
+                tax_percentage = tax_rate.rate if tax_rate else 0
+
+                # Calculate tax amount
+                subtotal = invoice_line.quantity * invoice_line.unit_price
+                tax_amount = subtotal * (tax_percentage / 100)
+                invoice_line.tax_amount = tax_amount
+                self.changes[line_id]['tax_amount'] = tax_amount
+
+                # Update line amount
+                line_amount = subtotal + tax_amount
+                invoice_line.line_amount = line_amount
+                self.changes[line_id]['line_amount'] = line_amount
+
             elif col == 6:  # Tax Amount
                 tax_amount = float(value)
                 self.changes[line_id]['tax_amount'] = tax_amount
@@ -220,3 +236,16 @@ class InvoiceLinesModel(QAbstractTableModel):
         # This would typically call a DAO method to delete a line
         # For now, we'll just reload the data
         self.load_data()
+
+    # for dropdowns
+    def get_available_items(self):
+        """Get all available items for dropdown"""
+        return self.dao.get_all_items()
+
+    def get_available_accounts(self):
+        """Get all available accounts for dropdown"""
+        return self.dao.get_all_accounts()
+
+    def get_available_tax_rates(self):
+        """Get all available tax rates for dropdown"""
+        return self.dao.get_all_tax_rates()

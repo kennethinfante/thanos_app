@@ -22,13 +22,6 @@ class InvoiceListManager(BaseManager):
     def initialize_ui(self):
         self.ui.invoices_table_view.setModel(self.model)
 
-        self.ui.invoices_table_view.setColumnWidth(0, 100)
-        self.ui.invoices_table_view.setColumnWidth(1, 150)
-        self.ui.invoices_table_view.setColumnWidth(2, 100)
-        self.ui.invoices_table_view.setColumnWidth(3, 200)
-        self.ui.invoices_table_view.setColumnWidth(4, 150)
-        self.ui.invoices_table_view.setColumnWidth(5, 100)
-
     def connect_signals_slots(self):
         self.ui.search_date_chbox.stateChanged.connect(self.enable_date)
         self.ui.search_btn.clicked.connect(self.search)
