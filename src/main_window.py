@@ -1,7 +1,7 @@
 import sys, os, importlib
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from forms_python.main_window import Ui_MainWindow
+from forms_py.main_window import Ui_MainWindow
 from src.database_manager import DatabaseManager
 
 from src.managers.invoices.invoice_list_manager import InvoiceListManager

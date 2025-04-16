@@ -5,13 +5,13 @@ from pathlib import Path
 
 def convert_ui_files():
     """
-    Convert all .ui files in forms_ui directory to .py files in forms_python directory
+    Convert all .ui files in forms_ui directory to .py files in forms_py directory
     """
     # Get the base directory
     base_dir = Path(__file__).parent.parent
 
     ui_dir = base_dir / "forms_ui"
-    py_dir = base_dir / "forms_python"
+    py_dir = base_dir / "forms_py"
 
     # Ensure the Python forms directory exists
     if not py_dir.exists():

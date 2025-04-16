@@ -2,7 +2,7 @@ from typing import List, Dict, Any
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from src.managers.base_manager import BaseManager
-from forms_python.item_list_view import Ui_itemListView
+from forms_py.item_list_view import Ui_itemListView
 from models.items_model import ItemsModel
 # from src.create_invoice import CreateInvoice
 

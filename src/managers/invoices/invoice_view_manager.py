@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton
 from PyQt5.QtCore import QDate
 from datetime import datetime
-from forms_python.invoice_view import Ui_invoiceView
+from forms_py.invoice_view import Ui_invoiceView
 from src.dao.invoice_dao import InvoiceDao
 from src.dao.customer_dao import CustomerDao
 from src.models.invoice_lines_model import InvoiceLinesModel

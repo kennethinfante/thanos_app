@@ -31,7 +31,7 @@ class UIFileHandler(FileSystemEventHandler):
 def watch_ui_directory():
     base_dir = Path(__file__).parent
     ui_dir = base_dir / "forms_ui"
-    py_dir = base_dir / "forms_python"
+    py_dir = base_dir / "forms_py"
 
     # Ensure the Python forms directory exists
     if not py_dir.exists():

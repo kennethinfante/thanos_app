@@ -30,9 +30,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>220</y>
+      <y>200</y>
       <width>1150</width>
-      <height>511</height>
+      <height>251</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -67,24 +67,30 @@
     <property name="geometry">
      <rect>
       <x>23</x>
-      <y>890</y>
+      <y>902</y>
       <width>1141</width>
-      <height>52</height>
+      <height>41</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="btn_hbox">
      <item>
       <widget class="QPushButton" name="delete_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>115</width>
-         <height>50</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>115</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="palette">
@@ -294,16 +300,22 @@
      </item>
      <item>
       <widget class="QPushButton" name="save_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>115</width>
-         <height>50</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>115</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="font">
@@ -323,16 +335,22 @@
      </item>
      <item>
       <widget class="QPushButton" name="cancel_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>115</width>
-         <height>50</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>115</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="font">
@@ -353,9 +371,9 @@
     <property name="geometry">
      <rect>
       <x>25</x>
-      <y>11</y>
+      <y>10</y>
       <width>611</width>
-      <height>131</height>
+      <height>121</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="header_form">
@@ -533,7 +551,7 @@
       <x>880</x>
       <y>10</y>
       <width>291</width>
-      <height>131</height>
+      <height>121</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="header_vbox">
@@ -604,24 +622,30 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>160</y>
+      <y>151</y>
       <width>274</width>
-      <height>52</height>
+      <height>41</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="add_remove_hbox">
      <item>
       <widget class="QPushButton" name="add_line_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>115</width>
-         <height>50</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>115</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="font">
@@ -638,16 +662,22 @@
      </item>
      <item>
       <widget class="QPushButton" name="remove_line_btn">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="minimumSize">
         <size>
-         <width>150</width>
-         <height>50</height>
+         <width>0</width>
+         <height>0</height>
         </size>
        </property>
        <property name="maximumSize">
         <size>
          <width>150</width>
-         <height>50</height>
+         <height>40</height>
         </size>
        </property>
        <property name="font">
@@ -668,9 +698,9 @@
     <property name="geometry">
      <rect>
       <x>894</x>
-      <y>750</y>
+      <y>790</y>
       <width>271</width>
-      <height>121</height>
+      <height>101</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="invoice_total_form">
@@ -965,6 +995,119 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QTableView" name="invoice_lines_table_view_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>520</y>
+      <width>1150</width>
+      <height>251</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>0</width>
+      <height>0</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>16777215</width>
+      <height>16777215</height>
+     </size>
+    </property>
+    <property name="editTriggers">
+     <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed|QAbstractItemView::SelectedClicked</set>
+    </property>
+    <attribute name="horizontalHeaderCascadingSectionResizes">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="horizontalHeaderStretchLastSection">
+     <bool>true</bool>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="layoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>470</y>
+      <width>274</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="add_remove_hbox_2">
+     <item>
+      <widget class="QPushButton" name="add_line_btn_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>115</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Add Line</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="remove_line_btn_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>150</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Remove Line</string>
        </property>
       </widget>
      </item>

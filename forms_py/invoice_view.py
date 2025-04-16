@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'forms_ui/invoice_view2.ui'
+# Form implementation generated from reading ui file 'forms_ui/invoice_view.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #

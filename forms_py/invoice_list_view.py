@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'forms_ui/invoices_view.ui'
+# Form implementation generated from reading ui file 'forms_ui/invoice_list_view.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_invoiceListView(object):
     def setupUi(self, invoicesView):
         invoicesView.setObjectName("invoicesView")
-        invoicesView.resize(1321, 893)
+        invoicesView.setGeometry(QtCore.QRect(0, 0, 1321, 893))
         self.centralwidget = QtWidgets.QWidget(invoicesView)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -172,13 +172,13 @@ class Ui_invoiceListView(object):
 
     def retranslateUi(self, invoicesView):
         _translate = QtCore.QCoreApplication.translate
-        invoicesView.setWindowTitle(_translate("invoicesView", "Invoices"))
-        self.search_date_chbox.setText(_translate("invoicesView", "Enable date"))
-        self.from_date_label.setText(_translate("invoicesView", "From date:"))
-        self.from_date_edit.setDisplayFormat(_translate("invoicesView", "yyyy-MM-dd"))
-        self.to_date_label.setText(_translate("invoicesView", "To:"))
-        self.to_date_edit.setDisplayFormat(_translate("invoicesView", "yyyy-MM-dd"))
-        self.customer_label.setText(_translate("invoicesView", "Customer"))
-        self.search_btn.setText(_translate("invoicesView", "Search"))
-        self.clear_btn.setText(_translate("invoicesView", "Clear"))
-        self.add_new_invoice_btn.setText(_translate("invoicesView", "Add New Invoice"))
+        invoicesView.setWindowTitle(_translate("invoiceListView", "Invoices"))
+        self.search_date_chbox.setText(_translate("invoiceListView", "Enable date"))
+        self.from_date_label.setText(_translate("invoiceListView", "From date:"))
+        self.from_date_edit.setDisplayFormat(_translate("invoiceListView", "yyyy-MM-dd"))
+        self.to_date_label.setText(_translate("invoiceListView", "To:"))
+        self.to_date_edit.setDisplayFormat(_translate("invoiceListView", "yyyy-MM-dd"))
+        self.customer_label.setText(_translate("invoiceListView", "Customer"))
+        self.search_btn.setText(_translate("invoiceListView", "Search"))
+        self.clear_btn.setText(_translate("invoiceListView", "Clear"))
+        self.add_new_invoice_btn.setText(_translate("invoiceListView", "Add New Invoice"))

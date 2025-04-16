@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'forms_ui/items_view.ui'
+# Form implementation generated from reading ui file 'forms_ui/item_list_view.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_itemListView(object):
     def setupUi(self, itemsView):
         itemsView.setObjectName("itemsView")
-        itemsView.resize(1321, 893)
+        itemsView.setGeometry(QtCore.QRect(0, 0, 1321, 893))
         self.centralwidget = QtWidgets.QWidget(itemsView)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -108,8 +108,8 @@ class Ui_itemListView(object):
 
     def retranslateUi(self, itemsView):
         _translate = QtCore.QCoreApplication.translate
-        itemsView.setWindowTitle(_translate("itemsView", "Items"))
-        self.item_name_label.setText(_translate("itemsView", "Item Name"))
-        self.search_btn.setText(_translate("itemsView", "Search"))
-        self.clear_btn.setText(_translate("itemsView", "Clear"))
-        self.add_new_item_btn.setText(_translate("itemsView", "Add New Item"))
+        itemsView.setWindowTitle(_translate("itemListView", "Items"))
+        self.item_name_label.setText(_translate("itemListView", "Item Name"))
+        self.search_btn.setText(_translate("itemListView", "Search"))
+        self.clear_btn.setText(_translate("itemListView", "Clear"))
+        self.add_new_item_btn.setText(_translate("itemListView", "Add New Item"))
