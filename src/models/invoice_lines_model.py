@@ -1,7 +1,13 @@
-from PyQt5.QtCore import QAbstractTableModel, Qt, QModelIndex
+from PyQt5.QtCore import QAbstractTableModel, Qt, QModelIndex, pyqtSignal
 from src.dao.invoice_dao import InvoiceDao
+# for adding or removing lines locally
+from src.do.invoice import InvoiceLine
 
 class InvoiceLinesModel(QAbstractTableModel):
+    # Add a signal to notify when data changes that affects totals
+    dataChanged = pyqtSignal(QModelIndex, QModelIndex, list)
+    totalsChanged = pyqtSignal()
+
     def __init__(self, invoice_id=None, parent=None):
         super().__init__(parent)
         self.dao = InvoiceDao()
@@ -100,6 +106,25 @@ class InvoiceLinesModel(QAbstractTableModel):
                 if tax_rate:
                     return f"{tax_rate.name}-{tax_rate.rate:.2f}%"
                 return ""
+            elif column == 6:  # Subtotal
+                # Calculate subtotal as quantity * unit_price
+                quantity = invoice_line.quantity if hasattr(invoice_line, 'quantity') and invoice_line.quantity is not None else 0
+                unit_price = invoice_line.unit_price if hasattr(invoice_line, 'unit_price') and invoice_line.unit_price is not None else 0
+                subtotal = quantity * unit_price
+                return f"${subtotal:.2f}"
+            elif column == 7:  # Tax Amount
+                tax_amount = invoice_line.tax_amount if hasattr(invoice_line, 'tax_amount') and invoice_line.tax_amount is not None else 0
+                return f"${tax_amount:.2f}"
+            elif column == 8:  # Line Amount
+                # Calculate line amount as subtotal + tax_amount
+                quantity = invoice_line.quantity if hasattr(invoice_line, 'quantity') and invoice_line.quantity is not None else 0
+                unit_price = invoice_line.unit_price if hasattr(invoice_line, 'unit_price') and invoice_line.unit_price is not None else 0
+                subtotal = quantity * unit_price
+                tax_amount = invoice_line.tax_amount if hasattr(invoice_line, 'tax_amount') and invoice_line.tax_amount is not None else 0
+                line_amount = subtotal + tax_amount
+                return f"${line_amount:.2f}"
+
+        return None
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -247,69 +272,124 @@ class InvoiceLinesModel(QAbstractTableModel):
                 return False
 
             # Emit dataChanged for the entire row to update all calculated fields
-            self.dataChanged.emit(self.index(row, 0), self.index(row, self.columnCount() - 1))
+            # self.dataChanged.emit(self.index(row, 0), self.index(row, self.columnCount() - 1))
+
+            # After all changes, emit the dataChanged signal
+            self.dataChanged.emit(index, index, [role])
+
+            # If the change affects totals (quantity, unit_price, tax_amount), emit totalsChanged
+            if col in [3, 4, 6]:  # Quantity, Unit Price, Tax Amount
+                self.totalsChanged.emit()
+
             return True
 
         except (ValueError, TypeError) as e:
             print(f"Error setting data: {e}")
             return False
 
+    def has_unsaved_changes(self):
+        """Check if there are any unsaved changes"""
+        return len(self.changes) > 0 or len(self.new_lines) > 0 or len(self.deleted_line_ids) > 0
+
     def save_all_changes(self):
         """Save all changes to the database"""
-        # First, save changes to existing lines
-        for line_id, changes in self.changes.items():
-            if changes and line_id not in self.deleted_line_ids:  # Only update if there are changes and not marked for deletion
+        try:
+            # Validate all lines before saving
+            validation_errors = []
+
+            # Check existing lines
+            for line in self.invoice_lines:
+                # Skip lines marked for deletion
+                if line.id in self.deleted_line_ids:
+                    continue
+
+                # Validate: either item or account must be specified
+                if (not hasattr(line, 'item_id') or line.item_id is None) and \
+                   (not hasattr(line, 'account_id') or line.account_id is None):
+                    validation_errors.append(f"Line '{line.description}': Either Item or Account must be specified")
+
+                # Validate quantity
+                if not hasattr(line, 'quantity') or line.quantity is None or line.quantity <= 0:
+                    validation_errors.append(f"Line '{line.description}': Quantity must be greater than zero")
+
+                # Validate unit price
+                if not hasattr(line, 'unit_price') or line.unit_price is None or line.unit_price <= 0:
+                    validation_errors.append(f"Line '{line.description}': Unit Price must be greater than zero")
+
+                # Validate tax rate
+                if not hasattr(line, 'tax_rate_id') or line.tax_rate_id is None:
+                    validation_errors.append(f"Line '{line.description}': Tax Rate must be specified")
+
+            # If there are validation errors, raise an exception
+            if validation_errors:
+                error_message = "Cannot save invoice due to the following errors:\n" + "\n".join(validation_errors)
+                raise ValueError(error_message)
+
+            # First, add all new lines
+            for new_line in self.new_lines:
+                # Convert the line object to a dictionary for the DAO
+                line_data = {
+                    'invoice_id': self.invoice_id,
+                    'description': new_line.description,
+                    'quantity': new_line.quantity,
+                    'unit_price': new_line.unit_price,
+                    'tax_amount': new_line.tax_amount,
+                    'subtotal': new_line.quantity * new_line.unit_price,
+                    'line_amount': (new_line.quantity * new_line.unit_price) + new_line.tax_amount,
+                    'item_id': new_line.item_id,
+                    'account_id': new_line.account_id,
+                    'tax_rate_id': new_line.tax_rate_id
+                }
+
+                # Add to database
+                self.dao.add_invoice_line(line_data)
+
+            # Next, apply all changes to existing lines
+            for line_id, changes in self.changes.items():
+                # Skip changes for new lines (they were already added above)
+                if line_id < 0:
+                    continue
+
+                # Update the line in the database
                 self.dao.update_invoice_line(line_id, changes)
 
-        # Add new lines
-        for new_line in self.new_lines:
-            line_data = {
-                'invoice_id': self.invoice_id,
-                'description': new_line.description,
-                'quantity': new_line.quantity,
-                'unit_price': new_line.unit_price,
-                'tax_amount': new_line.tax_amount,
-                'subtotal': new_line.subtotal,
-                'line_amount': new_line.line_amount,
-                'item_id': new_line.item_id,
-                'account_id': new_line.account_id,
-                'tax_rate_id': new_line.tax_rate_id
-            }
-            self.dao.add_invoice_line(line_data)
+            # Finally, delete all lines marked for deletion
+            for line_id in self.deleted_line_ids:
+                self.dao.delete_invoice_line(line_id)
 
-        # Delete lines marked for deletion
-        for line_id in self.deleted_line_ids:
-            self.dao.delete_invoice_line(line_id)
-
-        # Clear all tracking lists
-        self.changes = {}
-        self.new_lines = []
-        self.deleted_line_ids = []
-
-        # Recalculate invoice totals
-        if self.invoice_id:
+            # Recalculate invoice totals
             self.dao.recalculate_invoice_totals(self.invoice_id)
 
-        # Reload data to get fresh state from database
-        self.load_data()
+            # Clear all tracking lists
+            self.new_lines = []
+            self.changes = {}
+            self.deleted_line_ids = []
 
-    def add_line(self, line_data):
-        """Add a new line to the invoice"""
-        # This would typically call a DAO method to add a line
-        # For now, we'll just reload the data
-        self.load_data()
+            # Reload data from database to reflect all changes
+            self.load_data()
 
-    def update_line(self, line_id, line_data):
-        """Update an existing line"""
-        # This would typically call a DAO method to update a line
-        # For now, we'll just reload the data
-        self.load_data()
+            return True
+        except Exception as e:
+            print(f"Error saving changes: {str(e)}")
+            return False
 
-    def delete_line(self, line_id):
-        """Delete a line from the invoice"""
-        # This would typically call a DAO method to delete a line
-        # For now, we'll just reload the data
-        self.load_data()
+    # def add_line(self, line_data):
+    #     """Add a new line to the invoice"""
+    #     # This would typically call a DAO method to add a line
+    #     # For now, we'll just reload the data
+    #     self.load_data()
+    #
+    # def update_line(self, line_id, line_data):
+    #     """Update an existing line"""
+    #     # This would typically call a DAO method to update a line
+    #     # For now, we'll just reload the data
+    #     self.load_data()
+    #
+    # def delete_line(self, line_id):
+    #     """Delete a line from the invoice"""
+    #     # This would typically call a DAO method to delete a line
+    #     # For now, we'll just reload the data
+    #     self.load_data()
 
     # adding or removing lines locally
     def add_line_locally(self):
@@ -317,8 +397,13 @@ class InvoiceLinesModel(QAbstractTableModel):
         # Create a temporary negative ID to identify new lines
         temp_id = -1 * (len(self.new_lines) + 1)
 
+        # Get the default tax rate (assuming ID 1 is the default)
+        default_tax_rate_id = 2
+        tax_rates = self.get_available_tax_rates()
+        if tax_rates and len(tax_rates) > 0:
+            default_tax_rate_id = tax_rates[0].id
+
         # Create a new line object with default values
-        from src.do.invoice import InvoiceLine  # Import at the top of the file in practice
         new_line = InvoiceLine(
             id=temp_id,
             invoice_id=self.invoice_id,
@@ -330,7 +415,7 @@ class InvoiceLinesModel(QAbstractTableModel):
             line_amount=0.0,
             item_id=None,
             account_id=None,
-            tax_rate_id=None
+            tax_rate_id=default_tax_rate_id
         )
 
         # Add to our tracking list
@@ -340,6 +425,9 @@ class InvoiceLinesModel(QAbstractTableModel):
         self.beginInsertRows(QModelIndex(), len(self.invoice_lines), len(self.invoice_lines))
         self.invoice_lines.append(new_line)
         self.endInsertRows()
+
+        # Emit signal that totals have changed
+        self.totalsChanged.emit()
 
         return True
 
@@ -367,6 +455,9 @@ class InvoiceLinesModel(QAbstractTableModel):
             self.beginRemoveRows(QModelIndex(), row, row)
             self.invoice_lines.pop(row)
             self.endRemoveRows()
+
+            # Emit signal that totals have changed
+            self.totalsChanged.emit()
 
             return True
         return False
