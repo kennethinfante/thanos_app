@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_invoicesView(object):
+class Ui_invoiceListView(object):
     def setupUi(self, invoicesView):
         invoicesView.setObjectName("invoicesView")
         invoicesView.resize(1321, 893)

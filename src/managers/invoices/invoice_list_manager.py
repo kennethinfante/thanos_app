@@ -7,17 +7,17 @@ from PyQt5.QtCore import Qt
 from sqlalchemy import and_, or_, func, column, text
 
 from src.database_manager import DatabaseManager
-from src.models.invoices_model import InvoicesModel
+from src.models.invoice_list_model import InvoiceListModel
 
-from forms_python.invoices_view import Ui_invoicesView
+from forms_python.invoice_list_view import Ui_invoiceListView
 
 from src.managers.base_manager import BaseManager
-from src.managers.invoices.invoice_manager import InvoiceManager
+from src.managers.invoices.invoice_view_manager import InvoiceViewManager
 
-class InvoicesManager(BaseManager):
+class InvoiceListManager(BaseManager):
     def __init__(self, parent=None):
-        super().__init__(ui=Ui_invoicesView(), parent=parent,
-                         model=InvoicesModel())
+        super().__init__(ui=Ui_invoiceListView(), parent=parent,
+                         model=InvoiceListModel())
 
     def initialize_ui(self):
         self.ui.invoices_table_view.setModel(self.model)
@@ -79,8 +79,8 @@ class InvoicesManager(BaseManager):
         invoice_id = self.model.data(self.model.index(row, 0))
 
         if invoice_id:
-            # Create and show the InvoiceManager dialog
-            view_invoice_dialog = InvoiceManager(invoice_id, parent=self)
+            # Create and show the InvoiceViewManager dialog
+            view_invoice_dialog = InvoiceViewManager(invoice_id, parent=self)
             view_invoice_dialog.show()
 
 
@@ -91,6 +91,6 @@ class InvoicesManager(BaseManager):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    invoice_manager = InvoicesManager()
+    invoice_manager = InvoiceListManager()
     invoice_manager.show()
     sys.exit(app.exec_())

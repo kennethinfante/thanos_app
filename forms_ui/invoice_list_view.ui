@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>invoicesView</class>
+ <class>invoiceListView</class>
  <widget class="QMainWindow" name="invoicesView">
   <property name="geometry">
    <rect>

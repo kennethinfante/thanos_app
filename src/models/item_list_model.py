@@ -4,7 +4,7 @@ from PyQt5.QtCore import QAbstractTableModel, Qt, QModelIndex
 from src.dao.item_dao import ItemDao
 
 
-class ItemsModel(QAbstractTableModel):
+class ItemListModel(QAbstractTableModel):
     def __init__(self):
         super().__init__()
         self.item_dao = ItemDao()

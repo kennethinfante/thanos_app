@@ -2,7 +2,7 @@ from PyQt5.QtCore import QAbstractTableModel, Qt, QModelIndex
 
 from src.dao.invoice_dao import InvoiceDao
 
-class InvoicesModel(QAbstractTableModel):
+class InvoiceListModel(QAbstractTableModel):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.dao = InvoiceDao()

@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_itemsView(object):
+class Ui_itemListView(object):
     def setupUi(self, itemsView):
         itemsView.setObjectName("itemsView")
         itemsView.resize(1321, 893)
