@@ -10,6 +10,8 @@ class InvoiceLinesModel(QAbstractTableModel):
         self.headers = ["Item", "Account", "Description", "Quantity", "Unit Price", "Tax", "Subtotal", "Tax Amount", "Line Amount"]
         self.editable_columns = [0, 1, 2, 3, 4, 5]  # Item, Account, Description, Quantity, Unit Price, Tax
         self.changes = {}  # Track changes to save later
+        self.new_lines = []  # Track new lines to be added
+        self.deleted_line_ids = []  # Track lines to be deleted
 
         if invoice_id:
             self.load_data()
@@ -31,8 +33,10 @@ class InvoiceLinesModel(QAbstractTableModel):
                 self.invoice_lines.append(line)
 
             self.layoutChanged.emit()
-            # Clear changes when reloading data
+            # Clear all tracking when reloading data
             self.changes = {}
+            self.new_lines = []
+            self.deleted_line_ids = []
 
     def set_invoice_id(self, invoice_id):
         """Set the invoice ID and reload data"""
@@ -252,16 +256,42 @@ class InvoiceLinesModel(QAbstractTableModel):
 
     def save_all_changes(self):
         """Save all changes to the database"""
+        # First, save changes to existing lines
         for line_id, changes in self.changes.items():
-            if changes:  # Only update if there are changes
+            if changes and line_id not in self.deleted_line_ids:  # Only update if there are changes and not marked for deletion
                 self.dao.update_invoice_line(line_id, changes)
 
-        # Clear changes after saving
+        # Add new lines
+        for new_line in self.new_lines:
+            line_data = {
+                'invoice_id': self.invoice_id,
+                'description': new_line.description,
+                'quantity': new_line.quantity,
+                'unit_price': new_line.unit_price,
+                'tax_amount': new_line.tax_amount,
+                'subtotal': new_line.subtotal,
+                'line_amount': new_line.line_amount,
+                'item_id': new_line.item_id,
+                'account_id': new_line.account_id,
+                'tax_rate_id': new_line.tax_rate_id
+            }
+            self.dao.add_invoice_line(line_data)
+
+        # Delete lines marked for deletion
+        for line_id in self.deleted_line_ids:
+            self.dao.delete_invoice_line(line_id)
+
+        # Clear all tracking lists
         self.changes = {}
+        self.new_lines = []
+        self.deleted_line_ids = []
 
         # Recalculate invoice totals
         if self.invoice_id:
             self.dao.recalculate_invoice_totals(self.invoice_id)
+
+        # Reload data to get fresh state from database
+        self.load_data()
 
     def add_line(self, line_data):
         """Add a new line to the invoice"""
@@ -280,6 +310,66 @@ class InvoiceLinesModel(QAbstractTableModel):
         # This would typically call a DAO method to delete a line
         # For now, we'll just reload the data
         self.load_data()
+
+    # adding or removing lines locally
+    def add_line_locally(self):
+        """Add a new line to the model without saving to database"""
+        # Create a temporary negative ID to identify new lines
+        temp_id = -1 * (len(self.new_lines) + 1)
+
+        # Create a new line object with default values
+        from src.do.invoice import InvoiceLine  # Import at the top of the file in practice
+        new_line = InvoiceLine(
+            id=temp_id,
+            invoice_id=self.invoice_id,
+            description="New Line Item",
+            quantity=1.0,
+            unit_price=0.0,
+            tax_amount=0.0,
+            subtotal=0.0,
+            line_amount=0.0,
+            item_id=None,
+            account_id=None,
+            tax_rate_id=None
+        )
+
+        # Add to our tracking list
+        self.new_lines.append(new_line)
+
+        # Add to the displayed lines
+        self.beginInsertRows(QModelIndex(), len(self.invoice_lines), len(self.invoice_lines))
+        self.invoice_lines.append(new_line)
+        self.endInsertRows()
+
+        return True
+
+    def remove_line_locally(self, row):
+        """Mark a line for deletion without removing from database"""
+        if 0 <= row < len(self.invoice_lines):
+            line = self.invoice_lines[row]
+
+            # If it's a new line (with negative ID), just remove it from our lists
+            if line.id < 0:
+                # Find and remove from new_lines
+                for i, new_line in enumerate(self.new_lines):
+                    if new_line.id == line.id:
+                        self.new_lines.pop(i)
+                        break
+            else:
+                # Otherwise, mark for deletion
+                self.deleted_line_ids.append(line.id)
+
+                # Remove any pending changes for this line
+                if line.id in self.changes:
+                    del self.changes[line.id]
+
+            # Remove from the displayed lines
+            self.beginRemoveRows(QModelIndex(), row, row)
+            self.invoice_lines.pop(row)
+            self.endRemoveRows()
+
+            return True
+        return False
 
     # for dropdowns
     def get_available_items(self):
