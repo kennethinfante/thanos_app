@@ -60,16 +60,25 @@ class InvoiceLinesModel(QAbstractTableModel):
 
             # Handle display of item and account names
             if column == 0:  # Item
+                # If item_id is None, return empty string to represent blank option
+                if not hasattr(invoice_line, 'item_id') or invoice_line.item_id is None:
+                    return ""
+
                 # If item is not loaded, try to load it
                 if not hasattr(invoice_line, 'item') or invoice_line.item is None:
-                    if hasattr(invoice_line, 'item_id') and invoice_line.item_id:
-                        invoice_line.item = self.dao.get_item_by_id(invoice_line.item_id)
+                    invoice_line.item = self.dao.get_item_by_id(invoice_line.item_id)
+
                 return invoice_line.item.name if hasattr(invoice_line, 'item') and invoice_line.item else ""
+
             elif column == 1:  # Account
+                # If account_id is None, return empty string to represent blank option
+                if not hasattr(invoice_line, 'account_id') or invoice_line.account_id is None:
+                    return ""
+
                 # If account is not loaded, try to load it
                 if not hasattr(invoice_line, 'account') or invoice_line.account is None:
-                    if hasattr(invoice_line, 'account_id') and invoice_line.account_id:
-                        invoice_line.account = self.dao.get_account_by_id(invoice_line.account_id)
+                    invoice_line.account = self.dao.get_account_by_id(invoice_line.account_id)
+
                 return invoice_line.account.name if hasattr(invoice_line, 'account') and invoice_line.account else ""
             elif column == 2:  # Description
                 return invoice_line.description if hasattr(invoice_line, 'description') and invoice_line.description is not None else ""
@@ -124,15 +133,50 @@ class InvoiceLinesModel(QAbstractTableModel):
 
         try:
             if col == 0:  # Item
-                # This would typically involve selecting an item from a dropdown
-                # For now, we'll just store the item ID
-                self.changes[line_id]['item_id'] = value if value else None
-                invoice_line.item_id = value if value else None
+                # Store the original value to check validation later
+                original_item_id = invoice_line.item_id
+
+                # Set the new value
+                if value == "" or value is None:
+                    self.changes[line_id]['item_id'] = None
+                    invoice_line.item_id = None
+                    invoice_line.item = None
+                else:
+                    self.changes[line_id]['item_id'] = value
+                    invoice_line.item_id = value
+                    invoice_line.item = None  # Clear for reload
+
+                # Validate: either item or account must be specified
+                if invoice_line.item_id is None and invoice_line.account_id is None:
+                    # Revert to original value
+                    invoice_line.item_id = original_item_id
+                    if line_id in self.changes:
+                        if 'item_id' in self.changes[line_id]:
+                            del self.changes[line_id]['item_id']
+                    return False
+
             elif col == 1:  # Account
-                # This would typically involve selecting an account from a dropdown
-                # For now, we'll just store the account ID
-                self.changes[line_id]['account_id'] = value if value else None
-                invoice_line.account_id = value if value else None
+                # Store the original value to check validation later
+                original_account_id = invoice_line.account_id
+
+                # Set the new value
+                if value == "" or value is None:
+                    self.changes[line_id]['account_id'] = None
+                    invoice_line.account_id = None
+                    invoice_line.account = None
+                else:
+                    self.changes[line_id]['account_id'] = value
+                    invoice_line.account_id = value
+                    invoice_line.account = None  # Clear for reload
+
+                # Validate: either item or account must be specified
+                if invoice_line.item_id is None and invoice_line.account_id is None:
+                    # Revert to original value
+                    invoice_line.account_id = original_account_id
+                    if line_id in self.changes:
+                        if 'account_id' in self.changes[line_id]:
+                            del self.changes[line_id]['account_id']
+                    return False
             elif col == 2:  # Description
                 self.changes[line_id]['description'] = str(value)
                 invoice_line.description = str(value)
@@ -239,12 +283,18 @@ class InvoiceLinesModel(QAbstractTableModel):
 
     # for dropdowns
     def get_available_items(self):
-        """Get all available items for dropdown"""
-        return self.dao.get_all_items()
+        """Get all available items for dropdown with a blank option"""
+        items = self.dao.get_all_items()
+        # Add a blank option at the beginning
+        blank_item = type('BlankItem', (), {'id': None, 'name': ''})()
+        return [blank_item] + items
 
     def get_available_accounts(self):
-        """Get all available accounts for dropdown"""
-        return self.dao.get_all_accounts()
+        """Get all available accounts for dropdown with a blank option"""
+        accounts = self.dao.get_all_accounts()
+        # Add a blank option at the beginning
+        blank_account = type('BlankAccount', (), {'id': None, 'name': ''})()
+        return [blank_account] + accounts
 
     def get_available_tax_rates(self):
         """Get all available tax rates for dropdown"""
