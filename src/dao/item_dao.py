@@ -1,5 +1,6 @@
 from src.dao.data_access_object import DataAccessObject
-from src.do.data_objects import Invoice
+from src.do.item import Item
+
 
 class ItemDao(DataAccessObject):
     def __init__(self, is_testing=False):

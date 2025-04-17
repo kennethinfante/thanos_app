@@ -6,12 +6,12 @@ from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt
 from sqlalchemy import and_, or_, func, column, text
 
-from src.database_manager import DatabaseManager
-from src.models.invoice_list_model import InvoiceListModel
-
 from forms_py.invoice_list_view import Ui_invoiceListView
 
 from src.managers.base_manager import BaseManager
+from src.database_manager import DatabaseManager
+from src.models.invoice_list_model import InvoiceListModel
+
 from src.managers.invoices.invoice_view_manager import InvoiceViewManager
 
 class InvoiceListManager(BaseManager):

@@ -23,7 +23,7 @@ class AppMainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.initialize_database()
-        self.initializePages()
+        self.initialize_pages()
         self.connect_signals_slots()
         self.ui.window_content.setCurrentIndex(0)
 
@@ -76,7 +76,7 @@ class AppMainWindow(QMainWindow):
 
         print("Database schema created successfully")
 
-    def initializePages(self):
+    def initialize_pages(self):
         self.widgets = {
             "invoices_manager":
                 {"index": 1, "widget": InvoiceListManager()}

@@ -1,54 +1,46 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, registry
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, scoped_session
+import os
+
 from src.logger import Logger
 import config
-
 
 class DatabaseManager:
     _instance = None
 
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
+    def __new__(cls, is_testing=False):
+        if cls._instance is None:
             cls._instance = super(DatabaseManager, cls).__new__(cls)
-            cls._instance._initialized = False
+            cls._instance._initialize(is_testing)
         return cls._instance
 
-    def __init__(self, is_testing=False):
-        if self._initialized:
-            return
-
+    def _initialize(self, is_testing=False):
+        """Initialize the database connection"""
         self.DATABASE_FILENAME = f'{config.PROJECT_ROOT_PATH}/assets/database/{config.DB_NAME}.db'
         self.TESTING_DATABASE_FILENAME = f'{config.PROJECT_ROOT_PATH}/assets/database/{config.DB_NAME}_testing.db'
         self.is_testing = is_testing
         self.current_database = self.DATABASE_FILENAME if not is_testing else self.TESTING_DATABASE_FILENAME
         self.logger = Logger()
 
-        # Create registry for ORM models
-        self.registry = registry()
-        self.Base = self.registry.generate_base()
+        # Create the database engine
+        self.engine = create_engine(f'sqlite:///{self.current_database}')
 
-        self.Session = None
-        self.engine = None
-        self.connectToDatabase()
-        self._initialized = True
+        # Create a base class for declarative models
+        self.Base = declarative_base()
 
-    def __str__(self):
-            return "{0!r} {1}".format(self, self.val)
+        # Create a scoped session factory
+        self.session_factory = scoped_session(sessionmaker(bind=self.engine))
 
-    def connectToDatabase(self):
-        try:
-            # Create SQLAlchemy engine
-            self.engine = create_engine(f'sqlite:///{self.current_database}')
-            self.val = self.engine
+    @property
+    def Session(self):
+        """Get the current session factory"""
+        return self.session_factory
 
-            # Create session factory
-            self.Session = sessionmaker(bind=self.engine)
+    def create_session(self):
+        """Create a new session"""
+        return self.session_factory()
 
-            # Test connection
-            connection = self.engine.connect()
-            connection.close()
-
-            self.logger.debug("database opened")
-        except Exception as e:
-            self.logger.error(f"Can not open database with file name: {self.current_database}. Error: {str(e)}")
-            return
+    def remove_session(self):
+        """Remove the current session"""
+        self.session_factory.remove()

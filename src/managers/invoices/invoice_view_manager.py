@@ -1,11 +1,15 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton
 from PyQt5.QtCore import QDate
 from datetime import datetime
+
 from forms_py.invoice_view import Ui_invoiceView
-from src.dao.invoice_dao import InvoiceDao
-from src.dao.customer_dao import CustomerDao
+
 from src.models.invoice_lines_model import InvoiceLinesModel
 from src.models.invoice_line_delegate import InvoiceLineDelegate
+
+from src.dao.invoice_dao import InvoiceDao
+from src.dao.customer_dao import CustomerDao
+# for adding or removing locally
 from src.do.invoice import InvoiceLine
 
 class InvoiceViewManager(QMainWindow):
@@ -254,34 +258,6 @@ class InvoiceViewManager(QMainWindow):
                 QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
 
     def add_invoice_line(self):
-        """Add a new invoice line"""
-        # try:
-        #     # Create a new invoice line with default values
-        #     line_data = {
-        #         'invoice_id': self.invoice_id,
-        #         'description': "New Line Item",
-        #         'quantity': 1.0,
-        #         'unit_price': 0.0,
-        #         'tax_amount': 0.0,
-        #         'subtotal': 0.0,
-        #         'line_amount': 0.0
-        #     }
-        #
-        #     # Add the line to the database
-        #     added_line = self.invoice_dao.add_invoice_line(line_data)
-        #
-        #     print(added_line)
-        #     if added_line:
-        #         # Reload the invoice lines
-        #         self.invoice_lines_model.load_data()
-        #
-        #         # Recalculate invoice totals
-        #         self.invoice_dao.recalculate_invoice_totals(self.invoice_id)
-        #
-        #         # Refresh the invoice object
-        #         self.invoice = self.invoice_dao.get_invoice_with_lines(self.invoice_id)
-        #     else:
-        #         QMessageBox.warning(self, "Warning", "Failed to add invoice line")
         try:
             # Add a new line to the model
             added = self.invoice_lines_model.add_line_locally()
@@ -305,9 +281,6 @@ class InvoiceViewManager(QMainWindow):
             # Get the row of the first selected index
             row = selected_indexes[0].row()
 
-            # Get the invoice line ID
-            # line_id = self.invoice_lines_model.invoice_lines[row].id
-
             # Confirm deletion
             reply = QMessageBox.question(
                 self,
@@ -316,22 +289,6 @@ class InvoiceViewManager(QMainWindow):
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No
             )
-
-            # if reply == QMessageBox.Yes:
-            #     # Delete the line
-            #     deleted = self.invoice_dao.delete_invoice_line(line_id)
-            #
-            #     if deleted:
-            #         # Reload the invoice lines
-            #         self.invoice_lines_model.load_data()
-            #
-            #         # Recalculate invoice totals
-            #         self.invoice_dao.recalculate_invoice_totals(self.invoice_id)
-            #
-            #         # Refresh the invoice object
-            #         self.invoice = self.invoice_dao.get_invoice_with_lines(self.invoice_id)
-            #     else:
-            #         QMessageBox.warning(self, "Warning", "Failed to remove invoice line")
 
             if reply == QMessageBox.Yes:
                 # Remove the line locally

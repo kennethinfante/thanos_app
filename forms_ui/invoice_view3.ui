@@ -26,7 +26,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableView" name="invoice_lines_table_view">
+   <widget class="QTableView" name="lines_product_view">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -622,14 +622,14 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>151</y>
+      <y>161</y>
       <width>274</width>
-      <height>41</height>
+      <height>31</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="add_remove_hbox">
+    <layout class="QHBoxLayout" name="lines_product_hbox">
      <item>
-      <widget class="QPushButton" name="add_line_btn">
+      <widget class="QPushButton" name="add_line_product_btn">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -650,7 +650,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -661,7 +661,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="remove_line_btn">
+      <widget class="QPushButton" name="remove_line_product_btn">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -682,7 +682,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1000,7 +1000,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QTableView" name="invoice_lines_table_view_2">
+   <widget class="QTableView" name="lines_account_view">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -1041,14 +1041,14 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>470</y>
+      <y>480</y>
       <width>274</width>
-      <height>41</height>
+      <height>31</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="add_remove_hbox_2">
+    <layout class="QHBoxLayout" name="lines_account_hbox">
      <item>
-      <widget class="QPushButton" name="add_line_btn_2">
+      <widget class="QPushButton" name="add_line_account_btn">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -1069,7 +1069,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -1080,7 +1080,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="remove_line_btn_2">
+      <widget class="QPushButton" name="remove_line_account_btn">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -1101,7 +1101,7 @@
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>

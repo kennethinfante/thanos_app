@@ -1,8 +1,6 @@
 from src.dao.data_access_object import DataAccessObject
-from src.do.invoice import Invoice, InvoiceLine
-from src.do.item import Item
-from src.do.account import Account
-from src.do.tax_rate import TaxRate
+from src.do.invoice import Invoice
+
 
 class InvoiceDao(DataAccessObject):
     def __init__(self, is_testing=False):
@@ -94,108 +92,6 @@ class InvoiceDao(DataAccessObject):
             self.logger.error(f"Error deleting invoice: {str(e)}")
             return False
 
-    # for editing invoice lines
-    def get_invoice_with_lines(self, invoice_id):
-        """Get an invoice with its line items"""
-
-        try:
-            invoice = self.session.query(Invoice).filter(Invoice.id == invoice_id).first()
-            # This will load the invoice lines due to the relationship
-            return invoice
-        except Exception as e:
-            print(f"Error getting invoice with lines: {e}")
-            return None
-
-    def add_invoice_line(self, line_data):
-        """Add a new invoice line"""
-
-        try:
-            # Create a new InvoiceLine object from the dictionary
-            invoice_line = InvoiceLine()
-
-            # Set attributes from the dictionary
-            for key, value in line_data.items():
-                # Skip setting the id field - let SQLAlchemy handle it
-                if key != 'id':
-                    setattr(invoice_line, key, value)
-
-            # Calculate subtotal and line amount BEFORE adding to session
-            invoice_line.subtotal = invoice_line.quantity * invoice_line.unit_price
-            invoice_line.line_amount = invoice_line.subtotal + invoice_line.tax_amount
-
-            # Add to session and commit once
-            self.session.add(invoice_line)
-            self.session.flush()
-            self.session.commit()
-
-            line_id = invoice_line.id
-
-            # Clear the session to ensure we get a fresh object
-            self.session.expunge_all()
-
-            # Query for the newly created line with a fresh session
-            new_line = self.session.query(InvoiceLine).get(line_id)
-            return new_line
-
-        except Exception as e:
-            self.session.rollback()
-            self.logger.error(f"Error adding invoice line: {e}")
-            import traceback
-            self.logger.error(traceback.format_exc())
-            return None
-
-    def update_invoice_line(self, line_id, line_data):
-        """Update an existing invoice line"""
-
-        try:
-            # Get the invoice line
-            invoice_line = self.session.query(InvoiceLine).filter(InvoiceLine.id == line_id).first()
-
-            if not invoice_line:
-                return None
-
-            # Update the invoice line with the provided data
-            for key, value in line_data.items():
-                setattr(invoice_line, key, value)
-
-            # Ensure subtotal and line amount are calculated correctly
-            invoice_line.subtotal = invoice_line.quantity * invoice_line.unit_price
-            invoice_line.line_amount = invoice_line.subtotal + invoice_line.tax_amount
-
-            # Flush changes to the database but don't commit yet
-            self.session.flush()
-            self.session.commit()
-
-            return invoice_line
-        except Exception as e:
-            self.session.rollback()
-            print(f"Error updating invoice line: {e}")
-            return None
-
-    def delete_invoice_line(self, line_id):
-        """Delete an invoice line"""
-
-        try:
-            # Get the invoice line
-            invoice_line = self.session.query(InvoiceLine).filter(InvoiceLine.id == line_id).first()
-
-            # Calculate subtotal and line amount BEFORE adding to session
-            invoice_line.subtotal = invoice_line.quantity * invoice_line.unit_price
-            invoice_line.line_amount = invoice_line.subtotal + invoice_line.tax_amount
-
-            if not invoice_line:
-                return False
-
-            # Delete the invoice line
-            self.session.delete(invoice_line)
-            self.session.flush()
-            self.session.commit()
-            return True
-        except Exception as e:
-            self.session.rollback()
-            print(f"Error deleting invoice line: {e}")
-            return False
-
     def recalculate_invoice_totals(self, invoice_id):
         """Recalculate invoice totals based on line items"""
 
@@ -222,40 +118,3 @@ class InvoiceDao(DataAccessObject):
             self.session.rollback()
             print(f"Error recalculating invoice totals: {e}")
             return False
-
-    # for dropdowns in the invoice line
-    def get_all_items(self):
-        """Get all available items"""
-        # with self.session as session:
-        return self.session.query(Item).all()
-
-    def get_all_accounts(self):
-        """Get all available accounts"""
-#         with self.session as session:
-        return self.session.query(Account).all()
-
-    def get_all_tax_rates(self):
-        """Get all available tax rates"""
-        # with self.session as session:
-        return self.session.query(TaxRate).all()
-
-    def get_tax_rate(self, tax_rate_id):
-        """Get a specific tax rate by ID"""
-        # with self.session as session:
-        return self.session.query(TaxRate).filter(TaxRate.id == tax_rate_id).first()
-
-    def get_item_by_id(self, item_id):
-        """Get an item by ID"""
-        try:
-            return self.session.query(Item).filter(Item.id == item_id).first()
-        except Exception as e:
-            self.logger.error(f"Error getting item by ID: {str(e)}")
-            return None
-
-    def get_account_by_id(self, account_id):
-        """Get an account by ID"""
-        try:
-            return self.session.query(Account).filter(Account.id == account_id).first()
-        except Exception as e:
-            self.logger.error(f"Error getting account by ID: {str(e)}")
-            return None

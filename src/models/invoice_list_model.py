@@ -32,6 +32,7 @@ class InvoiceListModel(QAbstractTableModel):
 
         if role == Qt.DisplayRole:
             # Define column mappings with formatting functions
+            # ["ID", "Invoice Number", "Date", "Customer", "Total Amount", "Status"]
             column_mappings = {
                 0: lambda inv: inv.id,
                 1: lambda inv: inv.invoice_number,

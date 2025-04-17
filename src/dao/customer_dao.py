@@ -1,6 +1,7 @@
 from src.dao.data_access_object import DataAccessObject
 from src.do.customer import Customer
 
+
 class CustomerDao(DataAccessObject):
     def __init__(self, is_testing=False):
         super().__init__(table_name='customers', is_testing=is_testing)
