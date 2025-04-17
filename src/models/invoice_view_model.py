@@ -8,7 +8,7 @@ from src.dao.invoice_line_dao import InvoiceLineDao
 from src.do.invoice import InvoiceLine
 from src.database_manager import DatabaseManager
 
-class InvoiceLinesModel(QAbstractTableModel):
+class InvoiceViewModel(QAbstractTableModel):
     # Add a signal to notify when data changes that affects totals
     dataChanged = pyqtSignal(QModelIndex, QModelIndex, list)
     totalsChanged = pyqtSignal()
