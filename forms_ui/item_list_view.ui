@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>itemListView</class>
- <widget class="QMainWindow" name="itemsView">
+ <widget class="QMainWindow" name="itemListView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -173,11 +173,11 @@
     </item>
     <item>
      <widget class="QTableView" name="items_table_view">
-      <attribute name="horizontalHeaderDefaultSectionSize">
-       <number>120</number>
-      </attribute>
       <attribute name="horizontalHeaderMinimumSectionSize">
        <number>80</number>
+      </attribute>
+      <attribute name="horizontalHeaderDefaultSectionSize">
+       <number>120</number>
       </attribute>
       <attribute name="horizontalHeaderStretchLastSection">
        <bool>true</bool>

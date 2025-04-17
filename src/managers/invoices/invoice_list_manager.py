@@ -13,6 +13,7 @@ from src.database_manager import DatabaseManager
 from src.models.invoice_list_model import InvoiceListModel
 
 from src.managers.invoices.invoice_view_manager import InvoiceViewManager
+from src.utils.table_utils import *
 
 class InvoiceListManager(BaseManager):
     def __init__(self, parent=None):
@@ -21,6 +22,8 @@ class InvoiceListManager(BaseManager):
 
     def initialize_ui(self):
         self.ui.invoices_table_view.setModel(self.model)
+        # Apply column widths
+        apply_column_widths(self.ui.invoices_table_view, self.model)
 
     def connect_signals_slots(self):
         self.ui.search_date_chbox.stateChanged.connect(self.enable_date)
@@ -28,6 +31,7 @@ class InvoiceListManager(BaseManager):
         self.ui.clear_btn.clicked.connect(self.clear)
         self.ui.invoices_table_view.doubleClicked.connect(self.view_invoice)
         self.ui.add_new_invoice_btn.clicked.connect(self.open_create_invoice)
+        self.ui.refresh_list_btn.clicked.connect(self.refresh_list)
 
     def enable_date(self, state: int):
         is_enabled = state == Qt.Checked
@@ -37,6 +41,10 @@ class InvoiceListManager(BaseManager):
     def search(self):
         filters = self.build_search_filters()
         self.model.update(filters)
+        self.ui.invoices_table_view.update()
+
+    def refresh_list(self):
+        self.model.update()
         self.ui.invoices_table_view.update()
 
     def clear(self):

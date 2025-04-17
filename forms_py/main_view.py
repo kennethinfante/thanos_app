@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'forms_ui/main_window.ui'
+# Form implementation generated from reading ui file 'forms_ui/main_view.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -11,19 +11,19 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1920, 1080)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+class Ui_MainView(object):
+    def setupUi(self, MainView):
+        MainView.setObjectName("MainView")
+        MainView.resize(1600, 950)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
-        MainWindow.setSizePolicy(sizePolicy)
-        MainWindow.setMinimumSize(QtCore.QSize(800, 600))
-        MainWindow.setMaximumSize(QtCore.QSize(10000, 10000))
-        MainWindow.setAutoFillBackground(False)
-        MainWindow.setStyleSheet(" QWidget#SideBar\n"
+        sizePolicy.setHeightForWidth(MainView.sizePolicy().hasHeightForWidth())
+        MainView.setSizePolicy(sizePolicy)
+        MainView.setMinimumSize(QtCore.QSize(800, 600))
+        MainView.setMaximumSize(QtCore.QSize(1600, 950))
+        MainView.setAutoFillBackground(False)
+        MainView.setStyleSheet(" QWidget#SideBar\n"
 " {\n"
 "            background-color: white;\n"
 "            margin: 0\n"
@@ -52,8 +52,8 @@ class Ui_MainWindow(object):
 "\n"
 "\n"
 "")
-        MainWindow.setDockOptions(QtWidgets.QMainWindow.AllowNestedDocks|QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        MainView.setDockOptions(QtWidgets.QMainWindow.AllowNestedDocks|QtWidgets.QMainWindow.AllowTabbedDocks|QtWidgets.QMainWindow.AnimatedDocks)
+        self.centralwidget = QtWidgets.QWidget(MainView)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -252,6 +252,12 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.settings_btn)
         self.horizontalLayout.addWidget(self.SideBar)
         self.window_content = QtWidgets.QStackedWidget(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.window_content.sizePolicy().hasHeightForWidth())
+        self.window_content.setSizePolicy(sizePolicy)
+        self.window_content.setMaximumSize(QtCore.QSize(1350, 950))
         self.window_content.setFrameShape(QtWidgets.QFrame.Box)
         self.window_content.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.window_content.setObjectName("window_content")
@@ -265,20 +271,20 @@ class Ui_MainWindow(object):
         self.page_2.setObjectName("page_2")
         self.window_content.addWidget(self.page_2)
         self.horizontalLayout.addWidget(self.window_content)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1920, 26))
+        MainView.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainView)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1600, 26))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
         self.menuProfile = QtWidgets.QMenu(self.menubar)
         self.menuProfile.setObjectName("menuProfile")
-        MainWindow.setMenuBar(self.menubar)
-        self.actionExit = QtWidgets.QAction(MainWindow)
+        MainView.setMenuBar(self.menubar)
+        self.actionExit = QtWidgets.QAction(MainView)
         self.actionExit.setObjectName("actionExit")
-        self.actionView_profile = QtWidgets.QAction(MainWindow)
+        self.actionView_profile = QtWidgets.QAction(MainView)
         self.actionView_profile.setObjectName("actionView_profile")
-        self.actionSignout = QtWidgets.QAction(MainWindow)
+        self.actionSignout = QtWidgets.QAction(MainView)
         self.actionSignout.setObjectName("actionSignout")
         self.menuFile.addAction(self.actionExit)
         self.menuProfile.addAction(self.actionView_profile)
@@ -286,33 +292,33 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuProfile.menuAction())
 
-        self.retranslateUi(MainWindow)
+        self.retranslateUi(MainView)
         self.window_content.setCurrentIndex(0)
-        self.actionExit.triggered.connect(MainWindow.close) # type: ignore
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        self.actionExit.triggered.connect(MainView.close) # type: ignore
+        QtCore.QMetaObject.connectSlotsByName(MainView)
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, MainView):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.invoices_btn.setToolTip(_translate("MainWindow", "Create sales on account"))
-        self.invoices_btn.setText(_translate("MainWindow", "Invoices"))
-        self.bills_btn.setToolTip(_translate("MainWindow", "Create purchases on account"))
-        self.bills_btn.setText(_translate("MainWindow", "Bills"))
-        self.cash_btn.setToolTip(_translate("MainWindow", "Create Receive Money or Spend Money transactions"))
-        self.cash_btn.setText(_translate("MainWindow", "Cash"))
-        self.items_btn.setToolTip(_translate("MainWindow", "Manage inventory, consumables, services"))
-        self.items_btn.setText(_translate("MainWindow", "Items"))
-        self.contacts_btn.setToolTip(_translate("MainWindow", "Manage contacts"))
-        self.contacts_btn.setText(_translate("MainWindow", "Contacts"))
-        self.journals_btn.setToolTip(_translate("MainWindow", "Manage journal entries"))
-        self.journals_btn.setText(_translate("MainWindow", "Journals"))
-        self.reports_btn.setToolTip(_translate("MainWindow", "Manage reports"))
-        self.reports_btn.setText(_translate("MainWindow", "Reports"))
-        self.settings_btn.setToolTip(_translate("MainWindow", "Manage settings"))
-        self.settings_btn.setText(_translate("MainWindow", "Settings"))
-        self.menuFile.setTitle(_translate("MainWindow", "File"))
-        self.menuProfile.setTitle(_translate("MainWindow", "Profile"))
-        self.actionExit.setText(_translate("MainWindow", "Exit"))
-        self.actionView_profile.setText(_translate("MainWindow", "View profile"))
-        self.actionSignout.setText(_translate("MainWindow", "Signout"))
+        MainView.setWindowTitle(_translate("MainView", "MainWindow"))
+        self.invoices_btn.setToolTip(_translate("MainView", "Create sales on account"))
+        self.invoices_btn.setText(_translate("MainView", "Invoices"))
+        self.bills_btn.setToolTip(_translate("MainView", "Create purchases on account"))
+        self.bills_btn.setText(_translate("MainView", "Bills"))
+        self.cash_btn.setToolTip(_translate("MainView", "Create Receive Money or Spend Money transactions"))
+        self.cash_btn.setText(_translate("MainView", "Cash"))
+        self.items_btn.setToolTip(_translate("MainView", "Manage inventory, consumables, services"))
+        self.items_btn.setText(_translate("MainView", "Items"))
+        self.contacts_btn.setToolTip(_translate("MainView", "Manage contacts"))
+        self.contacts_btn.setText(_translate("MainView", "Contacts"))
+        self.journals_btn.setToolTip(_translate("MainView", "Manage journal entries"))
+        self.journals_btn.setText(_translate("MainView", "Journals"))
+        self.reports_btn.setToolTip(_translate("MainView", "Manage reports"))
+        self.reports_btn.setText(_translate("MainView", "Reports"))
+        self.settings_btn.setToolTip(_translate("MainView", "Manage settings"))
+        self.settings_btn.setText(_translate("MainView", "Settings"))
+        self.menuFile.setTitle(_translate("MainView", "File"))
+        self.menuProfile.setTitle(_translate("MainView", "Profile"))
+        self.actionExit.setText(_translate("MainView", "Exit"))
+        self.actionView_profile.setText(_translate("MainView", "View profile"))
+        self.actionSignout.setText(_translate("MainView", "Signout"))
 import resources_rc

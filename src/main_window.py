@@ -1,7 +1,7 @@
 import sys, os, importlib
 
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from forms_py.main_window import Ui_MainWindow
+from forms_py.main_view import Ui_MainView
 from src.database_manager import DatabaseManager
 
 from src.managers.invoices.invoice_list_manager import InvoiceListManager
@@ -20,7 +20,7 @@ from src.managers.invoices.invoice_list_manager import InvoiceListManager
 class AppMainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(AppMainWindow, self).__init__(parent=parent)
-        self.ui = Ui_MainWindow()
+        self.ui = Ui_MainView()
         self.ui.setupUi(self)
         self.initialize_database()
         self.initialize_pages()

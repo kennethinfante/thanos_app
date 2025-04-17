@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>MainView</class>
+ <widget class="QMainWindow" name="MainView">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1920</width>
-    <height>1080</height>
+    <width>1600</width>
+    <height>950</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -24,8 +24,8 @@
   </property>
   <property name="maximumSize">
    <size>
-    <width>10000</width>
-    <height>10000</height>
+    <width>1600</width>
+    <height>950</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -481,6 +481,18 @@ background-color: #838383;
     </item>
     <item>
      <widget class="QStackedWidget" name="window_content">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>1350</width>
+        <height>950</height>
+       </size>
+      </property>
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
@@ -502,7 +514,7 @@ background-color: #838383;
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1920</width>
+     <width>1600</width>
      <height>26</height>
     </rect>
    </property>
@@ -545,7 +557,7 @@ background-color: #838383;
   <connection>
    <sender>actionExit</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>MainView</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
