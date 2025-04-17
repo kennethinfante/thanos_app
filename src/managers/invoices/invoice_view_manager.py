@@ -116,11 +116,9 @@ class InvoiceViewManager(QMainWindow):
         self.ui.invoice_lines_table_view.setColumnWidth(8, 100)
 
         # Connect to the validation error signal
-        self.invoice_lines_model.validationError.connect(self.show_validation_error)
+        # self.invoice_lines_model.validationError.connect(self.show_validation_error)
         # Connect the totalsChanged signal to update the total labels
         self.invoice_lines_model.totalsChanged.connect(self.update_total_labels)
-        # Connect validation error signal
-        self.invoice_lines_model.validationError.connect(self.show_validation_error)
 
     def show_validation_error(self, message):
         """Show a validation error message"""
@@ -179,7 +177,7 @@ class InvoiceViewManager(QMainWindow):
                 self.invoice_lines_model.save_all_changes()
             except ValueError as ve:
                 QMessageBox.warning(self, "Validation Error", str(ve))
-                return
+                return False
 
             # Refresh the invoice to get updated line items
             # self.invoice = self.invoice_dao.get_invoice_with_lines(self.invoice_id)
@@ -216,11 +214,13 @@ class InvoiceViewManager(QMainWindow):
                 QMessageBox.information(self, "Success", "Invoice updated successfully")
                 # Close the form after successful update
                 self.close()
+                return True
             else:
                 QMessageBox.warning(self, "Warning", "Failed to update invoice")
-
+                return False
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
+            return False
 
     def cancel_changes(self):
         """Cancel the changes and close the form"""
@@ -229,16 +229,29 @@ class InvoiceViewManager(QMainWindow):
             reply = QMessageBox.question(
                 self,
                 "Confirm Cancel",
-                "You have unsaved changes. Are you sure you want to cancel?",
+                "Are you sure you want to cancel? Your changes will be discarded.",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No
             )
 
-            if reply == QMessageBox.No:
+            if reply == QMessageBox.Yes:
+                QMessageBox.information(self, "Changes Discarded", "Changes discarded")
+                self.invoice_lines_model.discard_changes()
+                self.close()
+            else:
                 return
 
         # Close the form without saving
         self.close()
+
+    # def closeEvent(self, event):
+    #     """Handle window close event"""
+    #     # Check if there are unsaved changes
+    #     if self.invoice_lines_model.has_unsaved_changes():
+    #         QMessageBox.information(self, "Changes Discarded", "Changes discarded")
+    #         self.invoice_lines_model.discard_changes()
+    #
+    #     self.close()
 
     def delete_invoice(self):
         """Delete the current invoice"""

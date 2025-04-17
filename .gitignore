@@ -65,3 +65,5 @@ db_tools/acctg_db4/accounting.sql
 db_tools/DATABASE.sql
 db_tools/import_excel_to_mysql.py
 notes/*
+assets/database/accounting.db-journal
+assets/database/accounting.db

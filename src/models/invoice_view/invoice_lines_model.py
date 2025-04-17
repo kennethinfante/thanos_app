@@ -13,7 +13,6 @@ class InvoiceLinesModel(QAbstractTableModel):
     # Add a signal to notify when data changes that affects totals
     dataChanged = pyqtSignal(QModelIndex, QModelIndex, list)
     totalsChanged = pyqtSignal()
-    validationError = pyqtSignal(str)
 
     def __init__(self, invoice_id=None, parent=None):
         super().__init__(parent)
@@ -27,6 +26,7 @@ class InvoiceLinesModel(QAbstractTableModel):
         self.changes = {}  # Track changes to save later
         self.new_lines = []  # Track new lines to be added
         self.deleted_line_ids = []  # Track lines to be deleted
+        self.validation_errors = []
 
         if invoice_id:
             self.load_data()
@@ -51,7 +51,6 @@ class InvoiceLinesModel(QAbstractTableModel):
         if hasattr(line, 'tax_rate_id') and line.tax_rate_id:
             line.tax_rate = self.tax_rate_dao.get_tax_rate(line.tax_rate_id)
         return line
-
 
     def load_data(self):
         """Load invoice lines for the specified invoice"""
@@ -143,21 +142,13 @@ class InvoiceLinesModel(QAbstractTableModel):
     def _validate_item(self, invoice_line, line_id, original_item_id):
         """Check if item XOR account is specified"""
         if (invoice_line.item_id is None) == (invoice_line.account_id is None):
-            # Revert to original value
-            invoice_line.item_id = original_item_id
-            if line_id in self.changes:
-                if 'item_id' in self.changes[line_id]:
-                    del self.changes[line_id]['item_id']
+            self.validation_errors.append(f"Line {invoice_line.description}: Item and account cannot be both filled or both empty.")
             return False
         return True
 
     def _validate_account(self, invoice_line, line_id, original_account_id):
         if (invoice_line.item_id is None) == (invoice_line.account_id is None):
-            # Revert to original value
-            invoice_line.account_id = original_account_id
-            if line_id in self.changes:
-                if 'account_id' in self.changes[line_id]:
-                    del self.changes[line_id]['account_id']
+            self.validation_errors.append(f"Line {invoice_line.description}: Item and account cannot be both filled or both empty.")
             return False
         return True
 
@@ -192,12 +183,10 @@ class InvoiceLinesModel(QAbstractTableModel):
                 else:
                     self.changes[line_id]['item_id'] = value
                     invoice_line.item_id = value
-                    invoice_line.item = None  # Clear for reload
+                    invoice_line.item = self.item_dao.get_item_by_id(value)  # Load the item object
 
                 # Validate item
-                if not self._validate_item(invoice_line, line_id, original_item_id):
-                    self.validationError.emit("Either Item OR Account must be specified, but not both and not neither.")
-                    return False
+                self._validate_item(invoice_line, line_id, original_item_id)
 
             elif col == 1:  # Account
                 # Store the original value to check validation later
@@ -211,12 +200,10 @@ class InvoiceLinesModel(QAbstractTableModel):
                 else:
                     self.changes[line_id]['account_id'] = value
                     invoice_line.account_id = value
-                    invoice_line.account = None  # Clear for reload
+                    invoice_line.account = self.account_dao.get_account_by_id(value)  # Load the account object
 
                 # Validate account
-                if not self._validate_account(invoice_line, line_id, original_account_id):
-                    self.validationError.emit("Item and account cannot be both filled or both empty.")
-                    return False
+                self._validate_account(invoice_line, line_id, original_account_id)
 
             elif col == 2:  # Description
                 self.changes[line_id]['description'] = str(value)
@@ -309,10 +296,22 @@ class InvoiceLinesModel(QAbstractTableModel):
         """Check if there are any unsaved changes"""
         return len(self.changes) > 0 or len(self.new_lines) > 0 or len(self.deleted_line_ids) > 0
 
+    def discard_changes(self):
+        """Discard all unsaved changes and reset tracking variables"""
+        # Clear all tracking lists
+        self.new_lines = []
+        self.changes = {}
+        self.deleted_line_ids = []
+        self.validation_errors = []
+
+        # Reload data from database to reflect original state
+        self.load_data()
+
+        # Emit signal that totals have changed to update UI
+        self.totalsChanged.emit()
+
     def _validate_lines(self):
         # Validate all lines before saving
-        validation_errors = []
-
         # Check existing lines
         for line in self.invoice_lines:
             # Skip lines marked for deletion
@@ -322,30 +321,36 @@ class InvoiceLinesModel(QAbstractTableModel):
             # Validate: item and account cannot be both filled or empty
             if (not hasattr(line, 'item_id') or line.item_id is None) == \
                (not hasattr(line, 'account_id') or line.account_id is None):
-                validation_errors.append(f"Line '{line.description}': Either Item OR Account must be specified, but not both and not neither.")
+                self.validation_errors.append(f"Line '{line.description}': Item and account cannot be both filled or both empty.")
 
             # Validate quantity
             if not hasattr(line, 'quantity') or line.quantity is None or line.quantity <= 0:
-                validation_errors.append(f"Line '{line.description}': Quantity must be greater than zero")
+                self.validation_errors.append(f"Line '{line.description}': Quantity must be greater than zero")
 
             # Validate unit price
             if not hasattr(line, 'unit_price') or line.unit_price is None or line.unit_price <= 0:
-                validation_errors.append(f"Line '{line.description}': Unit Price must be greater than zero")
+                self.validation_errors.append(f"Line '{line.description}': Unit Price must be greater than zero")
 
             # Validate tax rate - make this optional
             # if not hasattr(line, 'tax_rate_id') or line.tax_rate_id is None:
             #     validation_errors.append(f"Line '{line.description}': Tax Rate must be specified")
 
         # If there are validation errors, raise an exception
-        if validation_errors:
-            error_message = "Cannot save invoice due to the following errors:\n" + "\n".join(validation_errors)
+        if self.validation_errors:
+            error_message = "Cannot save invoice due to the following errors:\n" + "\n".join(self.validation_errors)
             raise ValueError(error_message)
 
     def save_all_changes(self):
         """Save all changes to the database"""
-        try:
-            self._validate_lines()
+        # If there are validation errors, raise an exception immediately
+        if self.validation_errors:
+            error_message = "Cannot save invoice due to the following errors:\n" + "\n".join(self.validation_errors)
+            raise ValueError(error_message)
 
+        # validate again the lines
+        self._validate_lines()
+
+        try:
             # First, add all new lines
             for new_line in self.new_lines:
                 # Convert the line object to a dictionary for the DAO
@@ -385,6 +390,7 @@ class InvoiceLinesModel(QAbstractTableModel):
             self.new_lines = []
             self.changes = {}
             self.deleted_line_ids = []
+            self.validation_errors = []
 
             # Reload data from database to reflect all changes
             self.load_data()
@@ -400,14 +406,6 @@ class InvoiceLinesModel(QAbstractTableModel):
         # Create a temporary negative ID to identify new lines
         temp_id = -1 * (len(self.new_lines) + 1)
 
-        # Get the default tax rate (assuming ID 2 is the default)
-        # default_tax_rate_id = None
-        # tax_rates = self.get_available_tax_rates()
-        # if tax_rates and len(tax_rates) > 0:
-        #     default_tax_rate_id = tax_rates[0].id
-
-        default_tax_rate_id = 2
-
         # Create a new line object with default values
         new_line = InvoiceLine(
             id=temp_id,
@@ -420,7 +418,7 @@ class InvoiceLinesModel(QAbstractTableModel):
             line_amount=0.0,
             item_id=None,
             account_id=None,
-            tax_rate_id=default_tax_rate_id
+            tax_rate_id=None
         )
 
         # Add to our tracking list
