@@ -1,16 +1,15 @@
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from PyQt5.QtCore import QDate
 from datetime import datetime
 
 from forms_py.invoice_view import Ui_invoiceView
 
-from src.models.invoice_view_model import InvoiceViewModel
-from src.models.invoice_view_delegate import InvoiceViewDelegate
+from src.models.invoice_view.invoice_lines_model import InvoiceLinesModel
+from src.models.invoice_view.invoice_lines_delegate import InvoiceLinesDelegate
 
 from src.dao.invoice_dao import InvoiceDao
 from src.dao.customer_dao import CustomerDao
 # for adding or removing locally
-from src.do.invoice import InvoiceLine
 
 class InvoiceViewManager(QMainWindow):
 
@@ -24,7 +23,7 @@ class InvoiceViewManager(QMainWindow):
         self.customer_dao = CustomerDao()
 
         # Create the invoice lines model
-        self.invoice_lines_model = InvoiceViewModel(invoice_id)
+        self.invoice_lines_model = InvoiceLinesModel(invoice_id)
 
         # Load invoice data
         self.invoice = self.invoice_dao.get_invoice_with_lines(invoice_id)
@@ -68,6 +67,18 @@ class InvoiceViewManager(QMainWindow):
         # Initialize the total amount labels
         self.update_total_labels()
 
+    def connect_signals_slots(self):
+        """Connect signals and slots"""
+        # Connect save button
+        self.ui.save_btn.clicked.connect(self.save_invoice)
+        self.ui.cancel_btn.clicked.connect(self.cancel_changes)
+
+        # Connect add and remove line buttons
+        self.ui.add_line_btn.clicked.connect(self.add_invoice_line)
+        self.ui.remove_line_btn.clicked.connect(self.remove_invoice_line)
+
+        # Delete
+        self.ui.delete_btn.clicked.connect(self.delete_invoice)
 
     def load_customers(self):
         """Load customers into the customer combobox"""
@@ -77,36 +88,6 @@ class InvoiceViewManager(QMainWindow):
         for customer in customers:
             self.ui.customer_cb.addItem(customer.name, customer.id)
 
-    def update_total_labels(self):
-        """Update the subtotal, tax, and total amount labels based on current invoice lines"""
-        try:
-            # Calculate totals from the current invoice lines in the model
-            subtotal = 0.0
-            tax_amount = 0.0
-
-            for line in self.invoice_lines_model.invoice_lines:
-                # Calculate subtotal (quantity * unit_price)
-                quantity = line.quantity if hasattr(line, 'quantity') and line.quantity is not None else 0
-                unit_price = line.unit_price if hasattr(line, 'unit_price') and line.unit_price is not None else 0
-                line_subtotal = quantity * unit_price
-
-                # Get tax amount
-                line_tax = line.tax_amount if hasattr(line, 'tax_amount') and line.tax_amount is not None else 0
-
-                # Add to totals
-                subtotal += line_subtotal
-                tax_amount += line_tax
-
-            # Calculate total
-            total_amount = subtotal + tax_amount
-
-            # Update the labels with formatted currency values
-            self.ui.subtotal_amt_label.setText(f"${subtotal:.2f}")
-            self.ui.tax_amt_label.setText(f"${tax_amount:.2f}")
-            self.ui.total_amt_label.setText(f"${total_amount:.2f}")
-
-        except Exception as e:
-            print(f"Error updating total labels: {str(e)}")
 
     def load_invoice_lines(self):
         """Load invoice line items into the table view"""
@@ -114,7 +95,7 @@ class InvoiceViewManager(QMainWindow):
         self.ui.invoice_lines_table_view.setModel(self.invoice_lines_model)
 
         # Create and configure the delegate
-        delegate = InvoiceViewDelegate(self.ui.invoice_lines_table_view)
+        delegate = InvoiceLinesDelegate(self.ui.invoice_lines_table_view)
         delegate.set_items(self.invoice_lines_model.get_available_items())
         delegate.set_accounts(self.invoice_lines_model.get_available_accounts())
         delegate.set_tax_rates(self.invoice_lines_model.get_available_tax_rates())
@@ -134,21 +115,53 @@ class InvoiceViewManager(QMainWindow):
         self.ui.invoice_lines_table_view.setColumnWidth(7, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(8, 100)
 
+        # Connect to the validation error signal
+        self.invoice_lines_model.validationError.connect(self.show_validation_error)
         # Connect the totalsChanged signal to update the total labels
         self.invoice_lines_model.totalsChanged.connect(self.update_total_labels)
+        # Connect validation error signal
+        self.invoice_lines_model.validationError.connect(self.show_validation_error)
 
-    def connect_signals_slots(self):
-        """Connect signals and slots"""
-        # Connect save button
-        self.ui.save_btn.clicked.connect(self.save_invoice)
-        self.ui.cancel_btn.clicked.connect(self.cancel_changes)
+    def show_validation_error(self, message):
+        """Show a validation error message"""
+        QMessageBox.warning(self, "Validation Error", message)
 
-        # Connect add and remove line buttons
-        self.ui.add_line_btn.clicked.connect(self.add_invoice_line)
-        self.ui.remove_line_btn.clicked.connect(self.remove_invoice_line)
+    def show_validation_error(self, message):
+        """Show validation error message"""
+        QMessageBox.warning(self, "Validation Error", message)
 
-        # Delete
-        self.ui.delete_btn.clicked.connect(self.delete_invoice)
+    def update_total_labels(self):
+        """Update the subtotal, tax, and total amount labels based on current invoice lines"""
+        try:
+            # Calculate totals from the current invoice lines in the model
+            subtotal = 0.0
+            tax_amount = 0.0
+
+            for line in self.invoice_lines_model.invoice_lines:
+                # Calculate subtotal (quantity * unit_price) - stricter, but shortcut is to get the subtotal directly
+                # quantity = line.quantity if hasattr(line, 'quantity') and line.quantity is not None else 0
+                # unit_price = line.unit_price if hasattr(line, 'unit_price') and line.unit_price is not None else 0
+                # line_subtotal = quantity * unit_price
+
+                line_subtotal = line.subtotal if hasattr(line, 'subtotal') and line.subtotal is not None else 0
+
+                # Get tax amount
+                line_tax = line.tax_amount if hasattr(line, 'tax_amount') and line.tax_amount is not None else 0
+
+                # Add to totals
+                subtotal += line_subtotal
+                tax_amount += line_tax
+
+            # Calculate total
+            total_amount = subtotal + tax_amount
+
+            # Update the labels with formatted currency values
+            self.ui.subtotal_amt_label.setText(f"${subtotal:.2f}")
+            self.ui.tax_amt_label.setText(f"${tax_amount:.2f}")
+            self.ui.total_amt_label.setText(f"${total_amount:.2f}")
+
+        except Exception as e:
+            print(f"Error updating total labels: {str(e)}")
 
     def save_invoice(self):
         """Save the invoice changes"""
@@ -161,16 +174,6 @@ class InvoiceViewManager(QMainWindow):
             invoice_date = datetime.strptime(self.ui.invoice_date_edit.date().toString("yyyy-MM-dd"), "%Y-%m-%d").date()
             due_date = datetime.strptime(self.ui.due_date_edit.date().toString("yyyy-MM-dd"), "%Y-%m-%d").date()
 
-            # seems this part is not used
-            # Get the current totals from our calculated values
-            # subtotal_text = self.ui.subtotal_amt_label.text().replace('$', '')
-            # tax_text = self.ui.tax_amt_label.text().replace('$', '')
-            # total_text = self.ui.total_amt_label.text().replace('$', '')
-            #
-            # subtotal = float(subtotal_text)
-            # tax_amount = float(tax_text)
-            # total_amount = float(total_text)
-
              # Save all changes to invoice lines first
             try:
                 self.invoice_lines_model.save_all_changes()
@@ -179,12 +182,22 @@ class InvoiceViewManager(QMainWindow):
                 return
 
             # Refresh the invoice to get updated line items
-            self.invoice = self.invoice_dao.get_invoice_with_lines(self.invoice_id)
+            # self.invoice = self.invoice_dao.get_invoice_with_lines(self.invoice_id)
+            #
+            # # Calculate totals based on line items
+            # subtotal = sum(line.subtotal for line in self.invoice.invoice_lines)
+            # tax_amount = sum(line.tax_amount for line in self.invoice.invoice_lines)
+            # total_amount = subtotal + tax_amount
 
-            # Calculate totals based on line items
-            subtotal = sum(line.subtotal for line in self.invoice.invoice_lines)
-            tax_amount = sum(line.tax_amount for line in self.invoice.invoice_lines)
-            total_amount = subtotal + tax_amount
+            # since subtotal, tax_amount, and total_amount are already calculated,
+            # we don't need to calculate them again
+            subtotal_text = self.ui.subtotal_amt_label.text().replace('$', '')
+            tax_text = self.ui.tax_amt_label.text().replace('$', '')
+            total_text = self.ui.total_amt_label.text().replace('$', '')
+
+            subtotal = float(subtotal_text)
+            tax_amount = float(tax_text)
+            total_amount = float(total_text)
 
             # Prepare data for update
             invoice_data = {

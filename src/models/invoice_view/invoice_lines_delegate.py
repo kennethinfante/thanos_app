@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QStyledItemDelegate, QComboBox
 from PyQt5.QtCore import Qt
 
-class InvoiceViewDelegate(QStyledItemDelegate):
+class InvoiceLinesDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.items = []
@@ -51,6 +51,9 @@ class InvoiceViewDelegate(QStyledItemDelegate):
                     if editor.itemData(i) == value:
                         editor.setCurrentIndex(i)
                         break
+            else:
+                # If value is None, select the blank option (index 0)
+                editor.setCurrentIndex(0)
         else:
             super().setEditorData(editor, index)
 
@@ -62,3 +65,11 @@ class InvoiceViewDelegate(QStyledItemDelegate):
             model.setData(index, value, Qt.EditRole)
         else:
             super().setModelData(editor, model, index)
+
+    # def updateEditorGeometry(self, editor, option, index):
+    #     """Update the editor geometry"""
+    #     editor.setGeometry(option.rect)
+    #
+    # def closeEditor(self, editor, hint):
+    #     """Ensure data is committed when editor is closed"""
+    #     super().closeEditor(editor, hint)

@@ -17,4 +17,4 @@ class TaxRate(Base):
     created_at = Column(DateTime, nullable=False)
 
     def __repr__(self):
-        return f"<Account(code='{self.code}', name='{self.name}')>"
+        return f"<Tax Rate(name='{self.name}', rate='{self.rate}')>"

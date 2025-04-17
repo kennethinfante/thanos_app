@@ -27,4 +27,4 @@ class Item(Base):
     created_at = Column(DateTime, nullable=False)
 
     def __repr__(self):
-        return f"<Item(name='{self.name}', unit_price={self.unit_price})>"
+        return f"<Item(name='{self.name}', sale_price={self.sale_price}, purchase_price={self.purchase_price})>"
