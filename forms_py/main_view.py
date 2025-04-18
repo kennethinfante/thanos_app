@@ -299,7 +299,7 @@ class Ui_MainView(object):
 
     def retranslateUi(self, MainView):
         _translate = QtCore.QCoreApplication.translate
-        MainView.setWindowTitle(_translate("MainView", "MainWindow"))
+        MainView.setWindowTitle(_translate("MainView", "Thanos"))
         self.invoices_btn.setToolTip(_translate("MainView", "Create sales on account"))
         self.invoices_btn.setText(_translate("MainView", "Invoices"))
         self.bills_btn.setToolTip(_translate("MainView", "Create purchases on account"))

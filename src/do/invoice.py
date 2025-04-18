@@ -55,4 +55,4 @@ class InvoiceLine(Base):
     tax_rate = relationship("TaxRate", uselist=False)
 
     def __repr__(self):
-        return f"Invoice #: {self.invoice_id}, Amount: {self.line_amount}"
+        return f"<Invoice Line(invoice='{self.invoice_id}', line amount='{self.line_amount}')>"
