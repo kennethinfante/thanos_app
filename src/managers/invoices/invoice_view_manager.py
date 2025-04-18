@@ -5,7 +5,7 @@ from datetime import datetime
 from forms_py.invoice_view import Ui_invoiceView
 
 from src.models.invoice_view.invoice_lines_model import InvoiceLinesModel
-from src.models.invoice_view.invoice_line_delegate import InvoiceLineDelegate
+from src.models.invoice_view.invoice_lines_delegate import InvoiceLinesDelegate
 
 from src.dao.invoice_dao import InvoiceDao
 from src.dao.customer_dao import CustomerDao
@@ -132,7 +132,7 @@ class InvoiceViewManager(QMainWindow):
         self.ui.invoice_lines_table_view.setModel(self.invoice_lines_model)
 
         # Create and configure the delegate
-        delegate = InvoiceLineDelegate(self.ui.invoice_lines_table_view)
+        delegate = InvoiceLinesDelegate(self.ui.invoice_lines_table_view)
         delegate.set_items(self.invoice_lines_model.get_available_items())
         delegate.set_accounts(self.invoice_lines_model.get_available_accounts())
         delegate.set_tax_rates(self.invoice_lines_model.get_available_tax_rates())

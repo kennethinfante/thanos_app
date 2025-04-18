@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QStyledItemDelegate, QComboBox
 from PyQt5.QtCore import Qt
 
-class InvoiceLineDelegate(QStyledItemDelegate):
+class InvoiceLinesDelegate(QStyledItemDelegate):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.items = []
