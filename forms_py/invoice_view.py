@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'forms_ui/invoice_view.ui'
+# Form implementation generated from reading ui file 'forms_ui/invoice_view2.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_invoiceView(object):
     def setupUi(self, invoiceView):
         invoiceView.setObjectName("invoiceView")
+        invoiceView.setWindowModality(QtCore.Qt.ApplicationModal)
         invoiceView.resize(1200, 1000)
         invoiceView.setMinimumSize(QtCore.QSize(1200, 1000))
         invoiceView.setMaximumSize(QtCore.QSize(1200, 1000))
