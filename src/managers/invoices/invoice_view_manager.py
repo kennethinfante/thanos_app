@@ -19,12 +19,11 @@ class InvoiceViewManager(QMainWindow):
         self.ui = Ui_invoiceView()
         self.ui.setupUi(self)
 
-
         # Disconnect the automatic connection
         self.ui.cancel_btn.clicked.disconnect()
 
         # Disable the close button (X) in the window title bar
-        # self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)
 
         # Set window modality to make it behave like a dialog
         # self.setWindowModality(Qt.WindowModal)
