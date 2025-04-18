@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate, pyqtSignal, Qt
 from datetime import datetime
 
 from forms_py.invoice_view import Ui_invoiceView
@@ -12,11 +12,18 @@ from src.dao.customer_dao import CustomerDao
 # for adding or removing locally
 
 class InvoiceViewManager(QMainWindow):
+    invoiceDeleted = pyqtSignal(int)  # Signal with invoice_id parameter
 
     def __init__(self, invoice_id, parent=None):
         super().__init__(parent)
         self.ui = Ui_invoiceView()
         self.ui.setupUi(self)
+
+        # Disable the close button (X) in the window title bar
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)
+
+        # # Set window modality to make it behave like a dialog
+        self.setWindowModality(Qt.WindowModal)
 
         self.invoice_id = invoice_id
         self.invoice_dao = InvoiceDao()
@@ -88,6 +95,36 @@ class InvoiceViewManager(QMainWindow):
         for customer in customers:
             self.ui.customer_cb.addItem(customer.name, customer.id)
 
+    def update_total_labels(self):
+        """Update the subtotal, tax, and total amount labels based on current invoice lines"""
+        try:
+            # Calculate totals from the current invoice lines in the model
+            subtotal = 0.0
+            tax_amount = 0.0
+
+            for line in self.invoice_lines_model.invoice_lines:
+                # Calculate subtotal (quantity * unit_price)
+                quantity = line.quantity if hasattr(line, 'quantity') and line.quantity is not None else 0
+                unit_price = line.unit_price if hasattr(line, 'unit_price') and line.unit_price is not None else 0
+                line_subtotal = quantity * unit_price
+
+                # Get tax amount
+                line_tax = line.tax_amount if hasattr(line, 'tax_amount') and line.tax_amount is not None else 0
+
+                # Add to totals
+                subtotal += line_subtotal
+                tax_amount += line_tax
+
+            # Calculate total
+            total_amount = subtotal + tax_amount
+
+            # Update the labels with formatted currency values
+            self.ui.subtotal_amt_label.setText(f"${subtotal:.2f}")
+            self.ui.tax_amt_label.setText(f"${tax_amount:.2f}")
+            self.ui.total_amt_label.setText(f"${total_amount:.2f}")
+
+        except Exception as e:
+            print(f"Error updating total labels: {str(e)}")
 
     def load_invoice_lines(self):
         """Load invoice line items into the table view"""
@@ -110,56 +147,13 @@ class InvoiceViewManager(QMainWindow):
         self.ui.invoice_lines_table_view.setColumnWidth(2, 200)
         self.ui.invoice_lines_table_view.setColumnWidth(3, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(4, 100)
-        self.ui.invoice_lines_table_view.setColumnWidth(5, 100)
+        self.ui.invoice_lines_table_view.setColumnWidth(5, 150)
         self.ui.invoice_lines_table_view.setColumnWidth(6, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(7, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(8, 100)
 
-        # Connect to the validation error signal
-        # self.invoice_lines_model.validationError.connect(self.show_validation_error)
         # Connect the totalsChanged signal to update the total labels
         self.invoice_lines_model.totalsChanged.connect(self.update_total_labels)
-
-    def show_validation_error(self, message):
-        """Show a validation error message"""
-        QMessageBox.warning(self, "Validation Error", message)
-
-    def show_validation_error(self, message):
-        """Show validation error message"""
-        QMessageBox.warning(self, "Validation Error", message)
-
-    def update_total_labels(self):
-        """Update the subtotal, tax, and total amount labels based on current invoice lines"""
-        try:
-            # Calculate totals from the current invoice lines in the model
-            subtotal = 0.0
-            tax_amount = 0.0
-
-            for line in self.invoice_lines_model.invoice_lines:
-                # Calculate subtotal (quantity * unit_price) - stricter, but shortcut is to get the subtotal directly
-                # quantity = line.quantity if hasattr(line, 'quantity') and line.quantity is not None else 0
-                # unit_price = line.unit_price if hasattr(line, 'unit_price') and line.unit_price is not None else 0
-                # line_subtotal = quantity * unit_price
-
-                line_subtotal = line.subtotal if hasattr(line, 'subtotal') and line.subtotal is not None else 0
-
-                # Get tax amount
-                line_tax = line.tax_amount if hasattr(line, 'tax_amount') and line.tax_amount is not None else 0
-
-                # Add to totals
-                subtotal += line_subtotal
-                tax_amount += line_tax
-
-            # Calculate total
-            total_amount = subtotal + tax_amount
-
-            # Update the labels with formatted currency values
-            self.ui.subtotal_amt_label.setText(f"${subtotal:.2f}")
-            self.ui.tax_amt_label.setText(f"${tax_amount:.2f}")
-            self.ui.total_amt_label.setText(f"${total_amount:.2f}")
-
-        except Exception as e:
-            print(f"Error updating total labels: {str(e)}")
 
     def save_invoice(self):
         """Save the invoice changes"""
@@ -172,12 +166,22 @@ class InvoiceViewManager(QMainWindow):
             invoice_date = datetime.strptime(self.ui.invoice_date_edit.date().toString("yyyy-MM-dd"), "%Y-%m-%d").date()
             due_date = datetime.strptime(self.ui.due_date_edit.date().toString("yyyy-MM-dd"), "%Y-%m-%d").date()
 
+            # seems this part is not used
+            # Get the current totals from our calculated values
+            subtotal_text = self.ui.subtotal_amt_label.text().replace('$', '')
+            tax_text = self.ui.tax_amt_label.text().replace('$', '')
+            total_text = self.ui.total_amt_label.text().replace('$', '')
+
+            subtotal = float(subtotal_text)
+            tax_amount = float(tax_text)
+            total_amount = float(total_text)
+
              # Save all changes to invoice lines first
             try:
                 self.invoice_lines_model.save_all_changes()
             except ValueError as ve:
                 QMessageBox.warning(self, "Validation Error", str(ve))
-                return False
+                return
 
             # Refresh the invoice to get updated line items
             # self.invoice = self.invoice_dao.get_invoice_with_lines(self.invoice_id)
@@ -186,16 +190,6 @@ class InvoiceViewManager(QMainWindow):
             # subtotal = sum(line.subtotal for line in self.invoice.invoice_lines)
             # tax_amount = sum(line.tax_amount for line in self.invoice.invoice_lines)
             # total_amount = subtotal + tax_amount
-
-            # since subtotal, tax_amount, and total_amount are already calculated,
-            # we don't need to calculate them again
-            subtotal_text = self.ui.subtotal_amt_label.text().replace('$', '')
-            tax_text = self.ui.tax_amt_label.text().replace('$', '')
-            total_text = self.ui.total_amt_label.text().replace('$', '')
-
-            subtotal = float(subtotal_text)
-            tax_amount = float(tax_text)
-            total_amount = float(total_text)
 
             # Prepare data for update
             invoice_data = {
@@ -214,13 +208,11 @@ class InvoiceViewManager(QMainWindow):
                 QMessageBox.information(self, "Success", "Invoice updated successfully")
                 # Close the form after successful update
                 self.close()
-                return True
             else:
                 QMessageBox.warning(self, "Warning", "Failed to update invoice")
-                return False
+
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
-            return False
 
     def cancel_changes(self):
         """Cancel the changes and close the form"""
@@ -235,8 +227,8 @@ class InvoiceViewManager(QMainWindow):
             )
 
             if reply == QMessageBox.Yes:
-                QMessageBox.information(self, "Changes Discarded", "Changes discarded")
                 self.invoice_lines_model.discard_changes()
+                QMessageBox.information(self, "Changes Discarded", "Changes discarded")
                 self.close()
             else:
                 return
@@ -244,14 +236,62 @@ class InvoiceViewManager(QMainWindow):
         # Close the form without saving
         self.close()
 
-    # def closeEvent(self, event):
-    #     """Handle window close event"""
-    #     # Check if there are unsaved changes
-    #     if self.invoice_lines_model.has_unsaved_changes():
-    #         QMessageBox.information(self, "Changes Discarded", "Changes discarded")
-    #         self.invoice_lines_model.discard_changes()
+    def closeEvent(self, event):
+        """Handle the close event for the window"""
+        try:
+            # Only show confirmation if there are unsaved changes
+            if self.invoice_lines_model.has_unsaved_changes():
+                reply = QMessageBox.question(
+                    self,
+                    "Confirm Close",
+                    "You have unsaved changes. Do you want to discard them?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.No
+                )
+
+                if reply == QMessageBox.Yes:
+                    # Discard changes and accept the close event
+                    self.invoice_lines_model.discard_changes()
+                    event.accept()
+                else:
+                    # Reject the close event to keep the window open
+                    event.ignore()
+                    return
+
+            # If no unsaved changes, accept the close event
+            event.accept()
+        except Exception as e:
+            print(f"Error during close event: {str(e)}")
+            # Still accept the close event even if there's an error
+            event.accept()
+
+    # def close(self):
+    #     """Override the close method to handle unsaved changes"""
+    #     try:
+    #         # Only show confirmation if there are unsaved changes
+    #         if self.invoice_lines_model.has_unsaved_changes():
+    #             reply = QMessageBox.question(
+    #                 self,
+    #                 "Confirm Close",
+    #                 "You have unsaved changes. Do you want to discard them?",
+    #                 QMessageBox.Yes | QMessageBox.No,
+    #                 QMessageBox.No
+    #             )
     #
-    #     self.close()
+    #             if reply == QMessageBox.Yes:
+    #                 # Discard changes and close
+    #                 self.invoice_lines_model.discard_changes()
+    #                 super().close()
+    #             else:
+    #                 # Don't close
+    #                 return
+    #         else:
+    #             # If no unsaved changes, just close
+    #             super().close()
+    #     except Exception as e:
+    #         print(f"Error during close: {str(e)}")
+    #         # Still close even if there's an error
+    #         super().close()
 
     def delete_invoice(self):
         """Delete the current invoice"""
@@ -273,6 +313,9 @@ class InvoiceViewManager(QMainWindow):
                 deleted = self.invoice_dao.delete_invoice(self.invoice_id)
 
                 if deleted:
+                    # Emit signal that invoice was deleted
+                    self.invoiceDeleted.emit(self.invoice_id)
+
                     QMessageBox.information(self, "Success", "Invoice deleted successfully")
 
                     # Close the form after successful deletion

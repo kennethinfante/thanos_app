@@ -75,8 +75,8 @@ fk3 = {
 
 acctg_set4 = {
     "excel_path" : "acctg_db4/acctg_export4.xlsx", 
-    "sql_output_path" : "../assets/database/accounting.sql", 
-    "db_path" : "../assets/database/accounting.db"
+    "sql_output_path" : "../database/accounting.sql",
+    "db_path" : "../database/accounting.db"
 }
 
 fk4 = {
@@ -107,8 +107,8 @@ fk4 = {
 
 acctg_set5 = {
     "excel_path" : "acctg_db5/acctg_export5.xlsx",
-    "sql_output_path" : "../assets/database/accounting.sql",
-    "db_path" : "../assets/database/accounting.db"
+    "sql_output_path" : "../database/accounting.sql",
+    "db_path" : "../database/accounting.db"
 }
 
 fk5 = {

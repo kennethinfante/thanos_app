@@ -17,8 +17,8 @@ class DatabaseManager:
 
     def _initialize(self, is_testing=False):
         """Initialize the database connection"""
-        self.DATABASE_FILENAME = f'{config.PROJECT_ROOT_PATH}/assets/database/{config.DB_NAME}.db'
-        self.TESTING_DATABASE_FILENAME = f'{config.PROJECT_ROOT_PATH}/assets/database/{config.DB_NAME}_testing.db'
+        self.DATABASE_FILENAME = f'{config.PROJECT_ROOT_PATH}/database/{config.DB_NAME}.db'
+        self.TESTING_DATABASE_FILENAME = f'{config.PROJECT_ROOT_PATH}/database/{config.DB_NAME}_testing.db'
         self.is_testing = is_testing
         self.current_database = self.DATABASE_FILENAME if not is_testing else self.TESTING_DATABASE_FILENAME
         self.logger = Logger()
