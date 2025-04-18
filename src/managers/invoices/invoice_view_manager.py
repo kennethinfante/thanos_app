@@ -129,7 +129,7 @@ class InvoiceViewManager(QMainWindow):
         self.ui.invoice_lines_table_view.setColumnWidth(2, 200)
         self.ui.invoice_lines_table_view.setColumnWidth(3, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(4, 100)
-        self.ui.invoice_lines_table_view.setColumnWidth(5, 100)
+        self.ui.invoice_lines_table_view.setColumnWidth(5, 150)
         self.ui.invoice_lines_table_view.setColumnWidth(6, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(7, 100)
         self.ui.invoice_lines_table_view.setColumnWidth(8, 100)
@@ -216,16 +216,24 @@ class InvoiceViewManager(QMainWindow):
             reply = QMessageBox.question(
                 self,
                 "Confirm Cancel",
-                "You have unsaved changes. Are you sure you want to cancel?",
+                "Are you sure you want to cancel? Your changes will be discarded.",
                 QMessageBox.Yes | QMessageBox.No,
                 QMessageBox.No
             )
 
-            if reply == QMessageBox.No:
+            if reply == QMessageBox.Yes:
+                self.invoice_lines_model.discard_changes()
+                QMessageBox.information(self, "Changes Discarded", "Changes discarded")
+                self.close()
+            else:
                 return
 
         # Close the form without saving
         self.close()
+
+    def closeEvent(self, event):
+        """Handle the close event for the window"""
+        self.cancel_changes()  # Cancel any unsaved changes before closing
 
     def delete_invoice(self):
         """Delete the current invoice"""

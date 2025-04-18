@@ -142,6 +142,24 @@ class InvoiceLinesModel(QAbstractTableModel):
                 line_amount = subtotal + tax_amount
                 return f"${line_amount:.2f}"
 
+        elif role == Qt.EditRole:
+            # For edit role, return the raw value without formatting
+            column = index.column()
+
+            if column == 0:  # Item
+                return invoice_line.item_id
+            elif column == 1:  # Account
+                return invoice_line.account_id
+            elif column == 2:  # Description
+                return invoice_line.description
+            elif column == 3:  # Quantity
+                return invoice_line.quantity
+            elif column == 4:  # Unit Price
+                return invoice_line.unit_price
+            elif column == 5:  # Tax Rate
+                return invoice_line.tax_rate_id
+            # We don't need to handle columns 6, 7, 8 for EditRole as they're not editable
+
         return None
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
@@ -191,12 +209,13 @@ class InvoiceLinesModel(QAbstractTableModel):
                 else:
                     self.changes[line_id]['item_id'] = value
                     invoice_line.item_id = value
-                    invoice_line.item = None  # Clear for reload
+                    invoice_line.item = None
+                    # invoice_line.item = self.item_dao.get_item_by_id(value)
 
                 # Validate: either item or account must be specified
-                if invoice_line.item_id is None and invoice_line.account_id is None:
+                if (invoice_line.item_id is None) == (invoice_line.account_id is None):
                     # Revert to original value
-                    invoice_line.item_id = original_item_id
+                    # invoice_line.item_id = original_item_id
                     if line_id in self.changes:
                         if 'item_id' in self.changes[line_id]:
                             del self.changes[line_id]['item_id']
@@ -214,12 +233,13 @@ class InvoiceLinesModel(QAbstractTableModel):
                 else:
                     self.changes[line_id]['account_id'] = value
                     invoice_line.account_id = value
-                    invoice_line.account = None  # Clear for reload
+                    invoice_line.account = None
+                    # invoice_line.account = self.account_dao.get_account_by_id(value)
 
                 # Validate: either item or account must be specified
-                if invoice_line.item_id is None and invoice_line.account_id is None:
+                if (invoice_line.item_id is None) == (invoice_line.account_id is None):
                     # Revert to original value
-                    invoice_line.account_id = original_account_id
+                    # invoice_line.account_id = original_account_id
                     if line_id in self.changes:
                         if 'account_id' in self.changes[line_id]:
                             del self.changes[line_id]['account_id']
@@ -304,6 +324,32 @@ class InvoiceLinesModel(QAbstractTableModel):
         except (ValueError, TypeError) as e:
             print(f"Error setting data: {e}")
             return False
+
+    def discard_changes(self):
+        """Discard all unsaved changes and reset tracking variables"""
+        # Clear all tracking lists
+        self.new_lines = []
+        self.changes = {}
+        self.deleted_line_ids = []
+
+        # Instead of removing the session, get a fresh session
+        # First, get the current session
+        session = self.db_manager.Session()
+
+        # Rollback any uncommitted changes
+        session.rollback()
+
+        # Don't close or remove the session yet, as we need it for load_data
+
+        # Reload data from database to reflect original state
+        self.load_data()
+
+        # # Now it's safe to clean up the session
+        # session.close()
+        # self.db_manager.remove_session()
+
+        # Emit signal that totals have changed to update UI
+        self.totalsChanged.emit()
 
     def has_unsaved_changes(self):
         """Check if there are any unsaved changes"""
