@@ -1,16 +1,15 @@
-from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton, QDialog
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 from PyQt5.QtCore import QDate, pyqtSignal, Qt
 from datetime import datetime
 
 from forms_py.invoice_view import Ui_invoiceView
 
-from src.models.invoice_lines_model import InvoiceLinesModel
-from src.models.invoice_line_delegate import InvoiceLineDelegate
+from src.models.invoice_view.invoice_lines_model import InvoiceLinesModel
+from src.models.invoice_view.invoice_line_delegate import InvoiceLineDelegate
 
 from src.dao.invoice_dao import InvoiceDao
 from src.dao.customer_dao import CustomerDao
 # for adding or removing locally
-from src.do.invoice import InvoiceLine
 
 class InvoiceViewManager(QMainWindow):
     invoiceDeleted = pyqtSignal(int)  # Signal with invoice_id parameter
@@ -19,6 +18,9 @@ class InvoiceViewManager(QMainWindow):
         super().__init__(parent)
         self.ui = Ui_invoiceView()
         self.ui.setupUi(self)
+
+        # Disable the close button (X) in the window title bar
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)
 
         # # Set window modality to make it behave like a dialog
         self.setWindowModality(Qt.WindowModal)
@@ -84,8 +86,6 @@ class InvoiceViewManager(QMainWindow):
 
         # Delete
         self.ui.delete_btn.clicked.connect(self.delete_invoice)
-        # Connect to the aboutToClose signal
-        self.destroyed.connect(self.handle_close)
 
     def load_customers(self):
         """Load customers into the customer combobox"""
@@ -238,9 +238,8 @@ class InvoiceViewManager(QMainWindow):
 
     def closeEvent(self, event):
         """Handle the close event for the window"""
-        # self.invoice_lines_model.discard_changes()
         try:
-            # Only show confirmation if there are unsaved changes and we're not in the middle of saving
+            # Only show confirmation if there are unsaved changes
             if self.invoice_lines_model.has_unsaved_changes():
                 reply = QMessageBox.question(
                     self,
@@ -369,25 +368,3 @@ class InvoiceViewManager(QMainWindow):
 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred: {str(e)}")
-
-    def handle_close(self):
-        """Handle the window close event"""
-        try:
-            # Only show confirmation if there are unsaved changes
-            if self.invoice_lines_model.has_unsaved_changes():
-                reply = QMessageBox.question(
-                    self,
-                    "Confirm Close",
-                    "You have unsaved changes. Do you want to discard them?",
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.No
-                )
-
-                if reply == QMessageBox.Yes:
-                    # Discard changes
-                    self.invoice_lines_model.discard_changes()
-                else:
-                    # Don't close - but this might be too late since we're in the destroyed signal
-                    pass
-        except Exception as e:
-            print(f"Error during close: {str(e)}")

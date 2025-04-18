@@ -210,7 +210,6 @@ class InvoiceLinesModel(QAbstractTableModel):
                     self.changes[line_id]['item_id'] = value
                     invoice_line.item_id = value
                     invoice_line.item = self.item_dao.get_item_by_id(value)  # Load the item object
-                    # invoice_line.item = self.item_dao.get_item_by_id(value)
 
                 # Validate: either item or account must be specified
                 # if (invoice_line.item_id is None) == (invoice_line.account_id is None):
@@ -234,7 +233,6 @@ class InvoiceLinesModel(QAbstractTableModel):
                     self.changes[line_id]['account_id'] = value
                     invoice_line.account_id = value
                     invoice_line.account = self.account_dao.get_account_by_id(value)  # Load the item object
-                    # invoice_line.account = self.account_dao.get_account_by_id(value)
 
                 # Validate: either item or account must be specified
                 # if (invoice_line.item_id is None) == (invoice_line.account_id is None):
@@ -338,14 +336,8 @@ class InvoiceLinesModel(QAbstractTableModel):
         # Rollback any uncommitted changes
         session.rollback()
 
-        # Don't close or remove the session yet, as we need it for load_data
-
         # Reload data from database to reflect original state
         self.load_data()
-
-        # # Now it's safe to clean up the session
-        # session.close()
-        # self.db_manager.remove_session()
 
         # Emit signal that totals have changed to update UI
         self.totalsChanged.emit()
@@ -354,39 +346,42 @@ class InvoiceLinesModel(QAbstractTableModel):
         """Check if there are any unsaved changes"""
         return len(self.changes) > 0 or len(self.new_lines) > 0 or len(self.deleted_line_ids) > 0
 
+    def _validate_lines(self):
+        """Validate all invoice lines before saving"""
+        # Validate all lines before saving
+        validation_errors = []
+
+        # Check existing lines
+        for line in self.invoice_lines:
+            # Skip lines marked for deletion
+            if line.id in self.deleted_line_ids:
+                continue
+
+            # Validate: either item or account must be specified
+            if (line.item_id is None) == (line.account_id is None):
+                validation_errors.append(f"Line '{line.description}': Item and account cannot be both filled or both empty.")
+
+            # Validate quantity
+            if not hasattr(line, 'quantity') or line.quantity is None or line.quantity <= 0:
+                validation_errors.append(f"Line '{line.description}': Quantity must be greater than zero")
+
+            # Validate unit price
+            if not hasattr(line, 'unit_price') or line.unit_price is None or line.unit_price <= 0:
+                validation_errors.append(f"Line '{line.description}': Unit Price must be greater than zero")
+
+            # Validate tax rate
+            if not hasattr(line, 'tax_rate_id') or line.tax_rate_id is None:
+                validation_errors.append(f"Line '{line.description}': Tax Rate must be specified")
+
+        # If there are validation errors, raise an exception
+        if validation_errors:
+            error_message = "Cannot save invoice due to the following errors:\n" + "\n".join(validation_errors)
+            raise ValueError(error_message)
+
     def save_all_changes(self):
         """Save all changes to the database"""
+        self._validate_lines()
         try:
-            # Validate all lines before saving
-            validation_errors = []
-
-            # Check existing lines
-            for line in self.invoice_lines:
-                # Skip lines marked for deletion
-                if line.id in self.deleted_line_ids:
-                    continue
-
-                # Validate: either item or account must be specified
-                if (line.item_id is None) == (line.account_id is None):
-                    validation_errors.append(f"Line '{line.description}': Item and account cannot be both filled or both empty.")
-
-                # Validate quantity
-                if not hasattr(line, 'quantity') or line.quantity is None or line.quantity <= 0:
-                    validation_errors.append(f"Line '{line.description}': Quantity must be greater than zero")
-
-                # Validate unit price
-                if not hasattr(line, 'unit_price') or line.unit_price is None or line.unit_price <= 0:
-                    validation_errors.append(f"Line '{line.description}': Unit Price must be greater than zero")
-
-                # Validate tax rate
-                if not hasattr(line, 'tax_rate_id') or line.tax_rate_id is None:
-                    validation_errors.append(f"Line '{line.description}': Tax Rate must be specified")
-
-            # If there are validation errors, raise an exception
-            if validation_errors:
-                error_message = "Cannot save invoice due to the following errors:\n" + "\n".join(validation_errors)
-                raise ValueError(error_message)
-
             # First, add all new lines
             for new_line in self.new_lines:
                 # Convert the line object to a dictionary for the DAO
