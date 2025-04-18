@@ -209,17 +209,17 @@ class InvoiceLinesModel(QAbstractTableModel):
                 else:
                     self.changes[line_id]['item_id'] = value
                     invoice_line.item_id = value
-                    invoice_line.item = None
+                    invoice_line.item = self.item_dao.get_item_by_id(value)  # Load the item object
                     # invoice_line.item = self.item_dao.get_item_by_id(value)
 
                 # Validate: either item or account must be specified
-                if (invoice_line.item_id is None) == (invoice_line.account_id is None):
-                    # Revert to original value
-                    # invoice_line.item_id = original_item_id
-                    if line_id in self.changes:
-                        if 'item_id' in self.changes[line_id]:
-                            del self.changes[line_id]['item_id']
-                    return False
+                # if (invoice_line.item_id is None) == (invoice_line.account_id is None):
+                #     # Revert to original value
+                #     # invoice_line.item_id = original_item_id
+                #     if line_id in self.changes:
+                #         if 'item_id' in self.changes[line_id]:
+                #             del self.changes[line_id]['item_id']
+                #     return False
 
             elif col == 1:  # Account
                 # Store the original value to check validation later
@@ -233,17 +233,17 @@ class InvoiceLinesModel(QAbstractTableModel):
                 else:
                     self.changes[line_id]['account_id'] = value
                     invoice_line.account_id = value
-                    invoice_line.account = None
+                    invoice_line.account = self.account_dao.get_account_by_id(value)  # Load the item object
                     # invoice_line.account = self.account_dao.get_account_by_id(value)
 
                 # Validate: either item or account must be specified
-                if (invoice_line.item_id is None) == (invoice_line.account_id is None):
-                    # Revert to original value
-                    # invoice_line.account_id = original_account_id
-                    if line_id in self.changes:
-                        if 'account_id' in self.changes[line_id]:
-                            del self.changes[line_id]['account_id']
-                    return False
+                # if (invoice_line.item_id is None) == (invoice_line.account_id is None):
+                #     # Revert to original value
+                #     # invoice_line.account_id = original_account_id
+                #     if line_id in self.changes:
+                #         if 'account_id' in self.changes[line_id]:
+                #             del self.changes[line_id]['account_id']
+                #     return False
             elif col == 2:  # Description
                 self.changes[line_id]['description'] = str(value)
                 invoice_line.description = str(value)
@@ -280,14 +280,21 @@ class InvoiceLinesModel(QAbstractTableModel):
                 self.changes[line_id]['tax_rate_id'] = value if value else None
                 invoice_line.tax_rate_id = value if value else None
 
-                # Update tax amount based on the new tax rate
+                # Clear the tax_rate object to force reload
+                invoice_line.tax_rate = self.tax_rate_dao.get_tax_rate(value)  # Load the tax object
+
                 # Get the tax rate percentage
-                tax_rate = self.tax_rate_dao.get_tax_rate(value) if value else None
-                tax_percentage = tax_rate.rate if tax_rate else 0
+                tax_percentage = invoice_line.tax_rate.rate if invoice_line.tax_rate else 0
 
                 # Calculate tax amount
                 subtotal = invoice_line.quantity * invoice_line.unit_price
+
+                # update subtotal amount
+                invoice_line.subtotal = subtotal
+                self.changes[line_id]['subtotal'] = subtotal
                 tax_amount = subtotal * (tax_percentage / 100)
+
+                # update Tax amount
                 invoice_line.tax_amount = tax_amount
                 self.changes[line_id]['tax_amount'] = tax_amount
 
@@ -296,16 +303,8 @@ class InvoiceLinesModel(QAbstractTableModel):
                 invoice_line.line_amount = line_amount
                 self.changes[line_id]['line_amount'] = line_amount
 
-            elif col == 6:  # Tax Amount
-                tax_amount = float(value)
-                self.changes[line_id]['tax_amount'] = tax_amount
-                invoice_line.tax_amount = tax_amount
-
-                # Update line amount (calculated field)
-                subtotal = invoice_line.quantity * invoice_line.unit_price
-                line_amount = subtotal + tax_amount
-                invoice_line.line_amount = line_amount
-                self.changes[line_id]['line_amount'] = line_amount
+                # Emit totalsChanged signal since tax affects totals
+                self.totalsChanged.emit()
             else:
                 return False
 
@@ -368,9 +367,8 @@ class InvoiceLinesModel(QAbstractTableModel):
                     continue
 
                 # Validate: either item or account must be specified
-                if (not hasattr(line, 'item_id') or line.item_id is None) and \
-                   (not hasattr(line, 'account_id') or line.account_id is None):
-                    validation_errors.append(f"Line '{line.description}': Either Item or Account must be specified")
+                if (line.item_id is None) == (line.account_id is None):
+                    validation_errors.append(f"Line '{line.description}': Item and account cannot be both filled or both empty.")
 
                 # Validate quantity
                 if not hasattr(line, 'quantity') or line.quantity is None or line.quantity <= 0:
@@ -429,6 +427,10 @@ class InvoiceLinesModel(QAbstractTableModel):
             self.changes = {}
             self.deleted_line_ids = []
 
+            print(self.new_lines,
+            self.changes,
+            self.deleted_line_ids)
+
             # Reload data from database to reflect all changes
             self.load_data()
 
@@ -447,7 +449,7 @@ class InvoiceLinesModel(QAbstractTableModel):
         default_tax_rate_id = 2
         tax_rates = self.get_available_tax_rates()
         if tax_rates and len(tax_rates) > 0:
-            default_tax_rate_id = tax_rates[0].id
+            default_tax_rate_id = tax_rates[1].id
 
         # Create a new line object with default values
         new_line = InvoiceLine(

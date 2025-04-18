@@ -82,6 +82,8 @@ class InvoiceListManager(BaseManager):
         if invoice_id:
             # Create and show the InvoiceViewManager dialog
             view_invoice_dialog = InvoiceViewManager(invoice_id, parent=self)
+            # Connect the invoiceDeleted signal to refresh_list method
+            view_invoice_dialog.invoiceDeleted.connect(self.refresh_list)
             view_invoice_dialog.show()
 
 
