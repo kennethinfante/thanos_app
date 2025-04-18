@@ -19,11 +19,15 @@ class InvoiceViewManager(QMainWindow):
         self.ui = Ui_invoiceView()
         self.ui.setupUi(self)
 
-        # Disable the close button (X) in the window title bar
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)
 
-        # # Set window modality to make it behave like a dialog
-        self.setWindowModality(Qt.WindowModal)
+        # Disconnect the automatic connection
+        self.ui.cancel_btn.clicked.disconnect()
+
+        # Disable the close button (X) in the window title bar
+        # self.setWindowFlags(self.windowFlags() & ~Qt.WindowCloseButtonHint)
+
+        # Set window modality to make it behave like a dialog
+        # self.setWindowModality(Qt.WindowModal)
 
         self.invoice_id = invoice_id
         self.invoice_dao = InvoiceDao()
@@ -183,7 +187,7 @@ class InvoiceViewManager(QMainWindow):
                 QMessageBox.warning(self, "Validation Error", str(ve))
                 return
 
-            # Refresh the invoice to get updated line items
+            # No need to do this since the ui values are updated while editing
             # self.invoice = self.invoice_dao.get_invoice_with_lines(self.invoice_id)
             #
             # # Calculate totals based on line items
@@ -217,7 +221,9 @@ class InvoiceViewManager(QMainWindow):
     def cancel_changes(self):
         """Cancel the changes and close the form"""
         # Ask for confirmation if there are unsaved changes
+        print("pressed cancel1")
         if self.invoice_lines_model.has_unsaved_changes():
+            print("pressed cancel2")
             reply = QMessageBox.question(
                 self,
                 "Confirm Cancel",
@@ -238,9 +244,11 @@ class InvoiceViewManager(QMainWindow):
 
     def closeEvent(self, event):
         """Handle the close event for the window"""
+        print("pressed close1")
         try:
             # Only show confirmation if there are unsaved changes
             if self.invoice_lines_model.has_unsaved_changes():
+                print("pressed close2")
                 reply = QMessageBox.question(
                     self,
                     "Confirm Close",
@@ -261,37 +269,10 @@ class InvoiceViewManager(QMainWindow):
             # If no unsaved changes, accept the close event
             event.accept()
         except Exception as e:
+            print("pressed close3")
             print(f"Error during close event: {str(e)}")
             # Still accept the close event even if there's an error
             event.accept()
-
-    # def close(self):
-    #     """Override the close method to handle unsaved changes"""
-    #     try:
-    #         # Only show confirmation if there are unsaved changes
-    #         if self.invoice_lines_model.has_unsaved_changes():
-    #             reply = QMessageBox.question(
-    #                 self,
-    #                 "Confirm Close",
-    #                 "You have unsaved changes. Do you want to discard them?",
-    #                 QMessageBox.Yes | QMessageBox.No,
-    #                 QMessageBox.No
-    #             )
-    #
-    #             if reply == QMessageBox.Yes:
-    #                 # Discard changes and close
-    #                 self.invoice_lines_model.discard_changes()
-    #                 super().close()
-    #             else:
-    #                 # Don't close
-    #                 return
-    #         else:
-    #             # If no unsaved changes, just close
-    #             super().close()
-    #     except Exception as e:
-    #         print(f"Error during close: {str(e)}")
-    #         # Still close even if there's an error
-    #         super().close()
 
     def delete_invoice(self):
         """Delete the current invoice"""
