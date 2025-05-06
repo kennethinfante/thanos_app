@@ -7,7 +7,7 @@ from src.database_manager import DatabaseManager
 from src.managers.invoices.invoice_list_manager import InvoiceListManager
 # from src.managers.bills_manager import BillsManager
 # from src.managers.cash_manager import CashManager
-# from src.managers.items.items_manager import ItemListManager
+# from src.managers.items.item_list_manager import ItemListManager
 # from src.managers.contacts_manager import ContactsManager
 # from src.managers.journals_manager import JournalsManager
 # from src.managers.reports_manager import ReportsManager

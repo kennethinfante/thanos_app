@@ -13,8 +13,8 @@ def reset_database():
     """Reset the database by replacing it with the backup copy"""
     try:
         # Define paths
-        db_path = os.path.join(PROJECT_ROOT_PATH, 'assets', 'database', 'accounting.db')
-        backup_path = os.path.join(PROJECT_ROOT_PATH, 'assets', 'database', 'accounting_bk.db')
+        db_path = os.path.join(PROJECT_ROOT_PATH, 'database', 'accounting.db')
+        backup_path = os.path.join(PROJECT_ROOT_PATH, 'database', 'accounting_bk.db')
 
         # Check if backup exists
         if not os.path.exists(backup_path):
@@ -36,7 +36,7 @@ def reset_database():
         return False
 
 if __name__ == "__main__":
-    reset_database()
+    # reset_database()
     app = QApplication(sys.argv)
     splash = QSplashScreen(QPixmap(''))
     splash.show()
