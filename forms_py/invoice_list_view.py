@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from .form_utils import *
 
 class Ui_invoiceListView(object):
     def setupUi(self, invoiceListView):
@@ -205,3 +206,13 @@ class Ui_invoiceListView(object):
         
         # Connect signals and slots
         QtCore.QMetaObject.connectSlotsByName(invoiceListView)
+
+        # Apply macOS-specific style adjustments
+        apply_macos_button_style(self.search_btn)
+        apply_macos_button_style(self.clear_btn)
+        apply_macos_button_style(self.add_new_invoice_btn)
+        apply_macos_button_style(self.refresh_list_btn)
+
+        apply_macos_table_style(self.invoices_table_view)
+
+        apply_macos_line_edit_style(self.customer_line_edit)

@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from form_utils import *
 
 class Ui_itemListView(object):
     def setupUi(self, itemsView):
@@ -125,61 +126,9 @@ class Ui_itemListView(object):
         QtCore.QMetaObject.connectSlotsByName(itemsView)
         
         # Apply macOS-specific style adjustments
-        self.apply_macos_styles(itemsView)
-    
-    def apply_macos_styles(self, itemsView):
-        """Apply macOS-specific style adjustments for Retina display"""
-        # Style for buttons - more macOS-like
-        button_style = """
-            QPushButton {
-                background-color: #f0f0f0;
-                border: 1px solid #c0c0c0;
-                border-radius: 4px;
-                padding: 4px 15px;
-                color: #000000;
-            }
-            QPushButton:hover {
-                background-color: #e0e0e0;
-            }
-            QPushButton:pressed {
-                background-color: #d0d0d0;
-            }
-        """
-        
-        # Apply to all buttons
-        self.search_btn.setStyleSheet(button_style)
-        self.clear_btn.setStyleSheet(button_style)
-        self.add_new_item_btn.setStyleSheet(button_style)
-        
-        # Style for the table view - more macOS-like
-        table_style = """
-            QTableView {
-                border: 1px solid #d0d0d0;
-                gridline-color: #f0f0f0;
-                selection-background-color: #b2d7ff;
-                selection-color: #000000;
-                alternate-background-color: #f9f9f9;
-                background-color: #ffffff;
-            }
-            QHeaderView::section {
-                background-color: #f0f0f0;
-                padding: 4px;
-                border: 1px solid #d0d0d0;
-                font-weight: bold;
-            }
-        """
-        self.items_table_view.setStyleSheet(table_style)
-        
-        # Style for line edit - more macOS-like
-        line_edit_style = """
-            QLineEdit {
-                border: 1px solid #c0c0c0;
-                border-radius: 4px;
-                padding: 2px 4px;
-                background-color: #ffffff;
-            }
-            QLineEdit:focus {
-                border: 1px solid #5c9eff;
-            }
-        """
-        self.item_name_line_edit.setStyleSheet(line_edit_style)
+        apply_macos_button_style(self.search_btn)
+        apply_macos_button_style(self.clear_btn)
+        apply_macos_button_style(self.add_new_item_btn)
+
+        apply_macos_table_style(self.items_table_view)
+        apply_macos_line_edit_style(self.item_name_line_edit)

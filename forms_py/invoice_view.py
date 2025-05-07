@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from .form_utils import *
 
 class Ui_invoiceView(object):
     def setupUi(self, invoiceView):
@@ -102,6 +103,7 @@ class Ui_invoiceView(object):
         font.setBold(True)
         self.invoice_number_label.setFont(font)
         self.invoice_number_label.setText("Invoice #")
+        self.invoice_number_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.invoice_number_label.setObjectName("invoice_number_label")
         self.header_vbox.addWidget(self.invoice_number_label)
         
@@ -168,23 +170,33 @@ class Ui_invoiceView(object):
         # Add spacer to push totals to the right
         spacer_item3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.totals_layout.addItem(spacer_item3)
-        
+
+        # Create a container widget for the form to control its width
+        self.totals_container = QtWidgets.QWidget(self.centralwidget)
+        self.totals_container.setFixedWidth(350)  # Set fixed width for the totals section
+        self.totals_container.setObjectName("totals_container")
+
         # Invoice totals form
-        self.invoice_total_form = QtWidgets.QFormLayout()
+        self.invoice_total_form = QtWidgets.QFormLayout(self.totals_container)
         self.invoice_total_form.setObjectName("invoice_total_form")
+        self.invoice_total_form.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldsStayAtSizeHint)  # Prevent fields from growing
+        self.invoice_total_form.setFormAlignment(QtCore.Qt.AlignRight)  # Align the form to the right
+        # self.invoice_total_form.setHorizontalSpacing(20)  # Add spacing between label and field
+        self.invoice_total_form.setContentsMargins(10, 10, 20, 10)  # Add padding inside the frame
         
         # Subtotal
-        self.subtotal_label = QtWidgets.QLabel(self.centralwidget)
+        self.subtotal_label = QtWidgets.QLabel(self.totals_container)
         font = QtGui.QFont()
         font.setPointSize(11)
         font.setBold(True)
         self.subtotal_label.setFont(font)
         self.subtotal_label.setText("Subtotal")
         self.subtotal_label.setObjectName("subtotal_label")
+        self.subtotal_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.invoice_total_form.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.subtotal_label)
         
-        self.subtotal_amt_label = QtWidgets.QLabel(self.centralwidget)
-        self.subtotal_amt_label.setMinimumWidth(150)
+        self.subtotal_amt_label = QtWidgets.QLabel(self.totals_container)
+        self.subtotal_amt_label.setFixedWidth(130)
         font = QtGui.QFont()
         font.setPointSize(11)
         font.setBold(True)
@@ -196,16 +208,18 @@ class Ui_invoiceView(object):
         self.invoice_total_form.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.subtotal_amt_label)
         
         # Tax
-        self.tax_label = QtWidgets.QLabel(self.centralwidget)
+        self.tax_label = QtWidgets.QLabel(self.totals_container)
         font = QtGui.QFont()
         font.setPointSize(11)
         font.setBold(True)
         self.tax_label.setFont(font)
         self.tax_label.setText("Tax")
         self.tax_label.setObjectName("tax_label")
+        self.tax_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.invoice_total_form.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.tax_label)
         
-        self.tax_amt_label = QtWidgets.QLabel(self.centralwidget)
+        self.tax_amt_label = QtWidgets.QLabel(self.totals_container)
+        self.tax_amt_label.setFixedWidth(130)
         font = QtGui.QFont()
         font.setPointSize(11)
         font.setBold(True)
@@ -217,16 +231,18 @@ class Ui_invoiceView(object):
         self.invoice_total_form.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.tax_amt_label)
         
         # Total
-        self.total_label = QtWidgets.QLabel(self.centralwidget)
+        self.total_label = QtWidgets.QLabel(self.totals_container)
         font = QtGui.QFont()
         font.setPointSize(11)
         font.setBold(True)
         self.total_label.setFont(font)
         self.total_label.setText("Total")
         self.total_label.setObjectName("total_label")
+        self.total_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.invoice_total_form.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.total_label)
         
-        self.total_amt_label = QtWidgets.QLabel(self.centralwidget)
+        self.total_amt_label = QtWidgets.QLabel(self.totals_container)
+        self.total_amt_label.setFixedWidth(130)
         font = QtGui.QFont()
         font.setPointSize(11)
         font.setBold(True)
@@ -236,8 +252,8 @@ class Ui_invoiceView(object):
         self.total_amt_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.total_amt_label.setObjectName("total_amt_label")
         self.invoice_total_form.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.total_amt_label)
-        
-        self.totals_layout.addLayout(self.invoice_total_form)
+
+        self.totals_layout.addWidget(self.totals_container)
         self.main_layout.addLayout(self.totals_layout)
         
         # Action buttons (Delete, Save, Cancel)
@@ -306,3 +322,36 @@ class Ui_invoiceView(object):
         # Note: We're not connecting cancel_btn.clicked to invoiceView.close here
         # because it should be handled in the manager class
         QtCore.QMetaObject.connectSlotsByName(invoiceView)
+
+        # apply macos styles
+        apply_macos_button_style(self.add_client_btn)
+        apply_macos_button_style(self.add_line_btn)
+        apply_macos_button_style(self.remove_line_btn)
+        apply_macos_button_style(self.delete_btn)
+        apply_macos_button_style(self.save_btn)
+        apply_macos_button_style(self.cancel_btn)
+
+        apply_macos_table_style(self.invoice_lines_table_view)
+
+        # Apply styles to combo box and date edit widgets
+        apply_macos_combobox_style(self.customer_cb)
+        apply_macos_dateedit_style(self.invoice_date_edit)
+        apply_macos_dateedit_style(self.due_date_edit)
+
+        # Ensure consistent height and vertical alignment for form fields
+        for widget in [self.customer_cb, self.invoice_date_edit, self.due_date_edit]:
+            widget.setFixedWidth(300)  # Ensure all fields have the same width
+            widget.setFixedHeight(30)  # Set a consistent height
+            widget.setContentsMargins(0, 0, 0, 0)  # Remove any internal margins
+
+        # Set fixed width for labels to ensure alignment
+        for label in [self.customer_label, self.invoice_date_label, self.due_date_label]:
+            label.setFixedWidth(120)  # Set consistent width for all labels
+            label.setFixedHeight(30)  # Set a consistent height
+            label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)  # Right-align text with vertical centering
+
+        # Adjust form layout for better vertical alignment
+        self.header_form.setVerticalSpacing(10)  # Consistent spacing between rows
+        self.header_form.setLabelAlignment(QtCore.Qt.AlignVCenter | QtCore.Qt.AlignRight)  # Align labels vertically and right
+        self.header_form.setFormAlignment(QtCore.Qt.AlignVCenter)  # Align form fields vertically
+
