@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from .styles_macos import *
+from .form_styles import *
 
 class Ui_itemListView(object):
     def setupUi(self, itemsView):

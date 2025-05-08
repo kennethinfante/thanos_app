@@ -303,12 +303,6 @@ def apply_dateedit_style(dateedit):
             QDateEdit:focus {
                 border: 1px solid #0078d7;
             }
-            QDateEdit::drop-down {
-                subcontrol-origin: padding;
-                subcontrol-position: top right;
-                width: 20px;
-                border-left-width: 0px;
-            }
         """
 
     dateedit.setStyleSheet(dateedit_style)

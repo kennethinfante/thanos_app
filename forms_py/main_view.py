@@ -1,5 +1,5 @@
 import resources_rc
-from .styles_macos import *
+from .form_styles import *
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
