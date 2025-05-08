@@ -28,3 +28,9 @@ Bugs
     If I add a new line, the default tax is nothing, I want it to be 2
     
 When deleting, I want the list of invoices in the invoice_list_manager to be updated
+
+## TODOS2
+
+* When resizing, resize columns as well
+* Add helper functions
+* Limits for the dropdowns

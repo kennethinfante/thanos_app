@@ -11,30 +11,30 @@ class Ui_invoiceListView(object):
         invoiceListView.setMaximumSize(QtCore.QSize(1920, 1080))
 
         # Central widget
-        self.centralwidget = QtWidgets.QWidget(invoiceListView)
-        self.centralwidget.setObjectName("centralwidget")
+        self.central_widget = QtWidgets.QWidget(invoiceListView)
+        self.central_widget.setObjectName("central_widget")
 
         # Main vertical layout for the entire form
-        self.main_layout = QtWidgets.QVBoxLayout(self.centralwidget)
-        self.main_layout.setContentsMargins(10, 10, 10, 10)
-        self.main_layout.setSpacing(10)
-        self.main_layout.setObjectName("main_layout")
+        self.main_vly = QtWidgets.QVBoxLayout(self.central_widget)
+        self.main_vly.setContentsMargins(10, 10, 10, 10)
+        self.main_vly.setSpacing(10)
+        self.main_vly.setObjectName("main_vly")
 
         # Search section
-        self.search_section = QtWidgets.QWidget(self.centralwidget)
-        self.search_section.setObjectName("search_section")
-        self.search_layout = QtWidgets.QVBoxLayout(self.search_section)
-        self.search_layout.setContentsMargins(0, 0, 0, 0)
-        self.search_layout.setSpacing(10)
-        self.search_layout.setObjectName("search_layout")
+        self.header_section = QtWidgets.QWidget(self.central_widget)
+        self.header_section.setObjectName("header_section")
+        self.header_vly = QtWidgets.QVBoxLayout(self.header_section)
+        self.header_vly.setContentsMargins(0, 0, 0, 0)
+        self.header_vly.setSpacing(10)
+        self.header_vly.setObjectName("header_vly")
 
         # Search criteria layout (horizontal)
-        self.search_hbox = QtWidgets.QHBoxLayout()
-        self.search_hbox.setSpacing(10)
-        self.search_hbox.setObjectName("search_hbox")
+        self.search_hly = QtWidgets.QHBoxLayout()
+        self.search_hly.setSpacing(10)
+        self.search_hly.setObjectName("search_hly")
 
         # Date filter checkbox
-        self.search_date_chbox = QtWidgets.QCheckBox(self.search_section)
+        self.search_date_chbox = QtWidgets.QCheckBox(self.header_section)
         font = QtGui.QFont()
         font.setPointSize(12)
         font.setBold(True)
@@ -42,139 +42,68 @@ class Ui_invoiceListView(object):
         self.search_date_chbox.setText("Enable date")
         self.search_date_chbox.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.search_date_chbox.setObjectName("search_date_chbox")
-        self.search_hbox.addWidget(self.search_date_chbox)
+        self.search_hly.addWidget(self.search_date_chbox)
 
         # From date label
-        self.from_date_label = QtWidgets.QLabel(self.search_section)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.from_date_label.setFont(font)
-        self.from_date_label.setText("From date:")
-        self.from_date_label.setObjectName("from_date_label")
-        self.search_hbox.addWidget(self.from_date_label)
+        self.from_date_lbl = self.create_label(self.header_section, "From date:")
+        self.search_hly.addWidget(self.from_date_lbl)
 
         # From date edit
-        self.from_date_edit = QtWidgets.QDateEdit(self.search_section)
-        self.from_date_edit.setEnabled(False)
-        self.from_date_edit.setMinimumSize(QtCore.QSize(160, 40))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.from_date_edit.setFont(font)
-        self.from_date_edit.setCalendarPopup(True)
-        self.from_date_edit.setDate(QtCore.QDate(2022, 1, 1))
-        self.from_date_edit.setDisplayFormat("yyyy-MM-dd")
-        self.from_date_edit.setObjectName("from_date_edit")
-        self.search_hbox.addWidget(self.from_date_edit)
+        self.from_date_dte = self.create_date_edit(self.header_section, False, default_date=(2022, 1, 1))
+        self.search_hly.addWidget(self.from_date_dte)
 
         # To date label
-        self.to_date_label = QtWidgets.QLabel(self.search_section)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.to_date_label.setFont(font)
-        self.to_date_label.setText("To:")
-        self.to_date_label.setObjectName("to_date_label")
-        self.search_hbox.addWidget(self.to_date_label)
+        self.to_date_lbl = self.create_label(self.header_section, "To date:")
+        self.search_hly.addWidget(self.to_date_lbl)
 
         # To date edit
-        self.to_date_edit = QtWidgets.QDateEdit(self.search_section)
-        self.to_date_edit.setEnabled(False)
-        self.to_date_edit.setMinimumSize(QtCore.QSize(160, 40))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.to_date_edit.setFont(font)
-        self.to_date_edit.setCalendarPopup(True)
-        self.to_date_edit.setDate(QtCore.QDate(2024, 1, 1))
-        self.to_date_edit.setDisplayFormat("yyyy-MM-dd")
-        self.to_date_edit.setObjectName("to_date_edit")
-        self.search_hbox.addWidget(self.to_date_edit)
+        self.to_date_dte = self.create_date_edit(self.header_section, False, default_date=(2024, 1, 1))
+        self.search_hly.addWidget(self.to_date_dte)
 
         # Customer label
-        self.customer_label = QtWidgets.QLabel(self.search_section)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.customer_label.setFont(font)
-        self.customer_label.setText("Customer")
-        self.customer_label.setObjectName("customer_label")
-        self.search_hbox.addWidget(self.customer_label)
+        self.customer_lbl = self.create_label(self.header_section, "Customer")
+        self.search_hly.addWidget(self.customer_lbl)
 
         # Customer line edit
-        self.customer_line_edit = QtWidgets.QLineEdit(self.search_section)
-        self.customer_line_edit.setMinimumSize(QtCore.QSize(200, 40))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.customer_line_edit.setFont(font)
-        self.customer_line_edit.setObjectName("customer_line_edit")
-        self.search_hbox.addWidget(self.customer_line_edit)
+        self.customer_lne = self.create_line_edit(self.header_section, placeholder="Enter customer name")
+        self.search_hly.addWidget(self.customer_lne)
 
         # Search button
-        self.search_btn = QtWidgets.QPushButton(self.search_section)
-        self.search_btn.setMinimumSize(QtCore.QSize(120, 40))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.search_btn.setFont(font)
-        self.search_btn.setText("Search")
-        self.search_btn.setObjectName("search_btn")
-        self.search_hbox.addWidget(self.search_btn)
+        self.search_btn = self.create_button(self.header_section, "Search")
+        self.search_hly.addWidget(self.search_btn)
 
         # Clear button
-        self.clear_btn = QtWidgets.QPushButton(self.search_section)
-        self.clear_btn.setMinimumSize(QtCore.QSize(120, 40))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.clear_btn.setFont(font)
-        self.clear_btn.setText("Clear")
-        self.clear_btn.setObjectName("clear_btn")
-        self.search_hbox.addWidget(self.clear_btn)
+        self.clear_btn = self.create_button(self.header_section, "Clear")
+        self.search_hly.addWidget(self.clear_btn)
 
         # Add search criteria layout to search section
-        self.search_layout.addLayout(self.search_hbox)
+        self.header_vly.addLayout(self.search_hly)
 
         # Action buttons layout (horizontal)
-        self.btn_hbox = QtWidgets.QHBoxLayout()
-        self.btn_hbox.setSpacing(10)
-        self.btn_hbox.setObjectName("btn_hbox")
+        self.btn_hly = QtWidgets.QHBoxLayout()
+        self.btn_hly.setSpacing(10)
+        self.btn_hly.setObjectName("btn_hly")
 
         # Add new invoice button
-        self.add_new_invoice_btn = QtWidgets.QPushButton(self.search_section)
-        self.add_new_invoice_btn.setMinimumSize(QtCore.QSize(180, 40))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.add_new_invoice_btn.setFont(font)
-        self.add_new_invoice_btn.setText("Add New Invoice")
-        self.add_new_invoice_btn.setObjectName("add_new_invoice_btn")
-        self.btn_hbox.addWidget(self.add_new_invoice_btn)
+        self.add_new_invoice_btn = self.create_button(self.header_section, "Add New Invoice", min_size=(180, 40))
+        self.btn_hly.addWidget(self.add_new_invoice_btn)
 
         # Refresh list button
-        self.refresh_list_btn = QtWidgets.QPushButton(self.search_section)
-        self.refresh_list_btn.setMinimumSize(QtCore.QSize(150, 40))
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        font.setBold(True)
-        self.refresh_list_btn.setFont(font)
-        self.refresh_list_btn.setText("Refresh List")
-        self.refresh_list_btn.setObjectName("refresh_list_btn")
-        self.btn_hbox.addWidget(self.refresh_list_btn)
+        self.refresh_list_btn = self.create_button(self.header_section, "Refresh List", min_size=(150, 40))
+        self.btn_hly.addWidget(self.refresh_list_btn)
 
         # Add spacer to push buttons to the left
         spacer_item = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.btn_hbox.addItem(spacer_item)
+        self.btn_hly.addItem(spacer_item)
 
         # Add action buttons layout to search section
-        self.search_layout.addLayout(self.btn_hbox)
+        self.header_vly.addLayout(self.btn_hly)
 
         # Add search section to main layout
-        self.main_layout.addWidget(self.search_section)
+        self.main_vly.addWidget(self.header_section)
 
         # Table view for invoices
-        self.invoices_table_view = QtWidgets.QTableView(self.centralwidget)
+        self.invoices_table_view = QtWidgets.QTableView(self.central_widget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.invoices_table_view.setSizePolicy(sizePolicy)
         self.invoices_table_view.setObjectName("invoices_table_view")
@@ -182,13 +111,26 @@ class Ui_invoiceListView(object):
         # Configure table headers
         self.invoices_table_view.horizontalHeader().setDefaultSectionSize(120)
         self.invoices_table_view.horizontalHeader().setMinimumSectionSize(80)
-        self.invoices_table_view.horizontalHeader().setStretchLastSection(True)
+
+        # Make all columns stretch proportionally when the window is resized
+        self.invoices_table_view.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+
+        # Set resize mode for each column individually
+        # First, set all columns to stretch
+        # header = self.invoices_table_view.horizontalHeader()
+        # for i in range(header.count()):
+        #     header.setSectionResizeMode(i, QtWidgets.QHeaderView.Stretch)
+
+        # Then, set specific columns to fixed width if needed
+        # For example, if column 0 is an ID column that should stay fixed width:
+        # header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        # self.invoices_table_view.setColumnWidth(0, 60)  # Set fixed width for column 0
 
         # Add table view to main layout
-        self.main_layout.addWidget(self.invoices_table_view)
+        self.main_vly.addWidget(self.invoices_table_view)
 
         # Set central widget
-        invoiceListView.setCentralWidget(self.centralwidget)
+        invoiceListView.setCentralWidget(self.central_widget)
 
         # Menu bar
         self.menubar = QtWidgets.QMenuBar(invoiceListView)
@@ -215,4 +157,127 @@ class Ui_invoiceListView(object):
 
         apply_table_style(self.invoices_table_view)
 
-        apply_line_edit_style(self.customer_line_edit)
+        apply_line_edit_style(self.customer_lne)
+
+    def create_label(self, parent, text, font_size=12, bold=True, object_name=None):
+        """Create a standardized label with consistent styling
+
+        Args:
+            parent: Parent widget
+            text: Label text
+            font_size: Font size (default: 12)
+            bold: Whether font should be bold (default: True)
+            object_name: Object name for the label (optional)
+
+        Returns:
+            QLabel: The created label
+        """
+        label = QtWidgets.QLabel(parent)
+        font = QtGui.QFont()
+        font.setPointSize(font_size)
+        font.setBold(bold)
+        label.setFont(font)
+        label.setText(text)
+        if object_name:
+            label.setObjectName(object_name)
+        return label
+
+    def create_button(self, parent, text, min_size=(120, 40), font_size=12,
+                     bold=True, tooltip=None, icon_path=None, object_name=None):
+        """Create a standardized button with consistent styling
+
+        Args:
+            parent: Parent widget
+            text: Button text
+            min_size: Minimum size (default: (120, 40))
+            font_size: Font size (default: 12)
+            bold: Whether font should be bold (default: True)
+            tooltip: Tooltip text (optional)
+            icon_path: Path to icon (optional)
+            object_name: Object name for the button (optional)
+
+        Returns:
+            QPushButton: The created button
+        """
+        button = QtWidgets.QPushButton(parent)
+        button.setMinimumSize(QtCore.QSize(*min_size))
+        font = QtGui.QFont()
+        font.setPointSize(font_size)
+        font.setBold(bold)
+        button.setFont(font)
+        button.setText(text)
+
+        if tooltip:
+            button.setToolTip(tooltip)
+        if icon_path:
+            icon = QtGui.QIcon()
+            icon.addPixmap(QtGui.QPixmap(icon_path), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            button.setIcon(icon)
+        if object_name:
+            button.setObjectName(object_name)
+
+        return button
+
+    def create_line_edit(self, parent, min_size=(200, 40), font_size=12,
+                        bold=False, placeholder=None, object_name=None):
+        """Create a standardized line edit with consistent styling
+
+        Args:
+            parent: Parent widget
+            min_size: Minimum size (default: (200, 40))
+            font_size: Font size (default: 12)
+            bold: Whether font should be bold (default: False)
+            placeholder: Placeholder text (optional)
+            object_name: Object name for the line edit (optional)
+
+        Returns:
+            QLineEdit: The created line edit
+        """
+        line_edit = QtWidgets.QLineEdit(parent)
+        line_edit.setMinimumSize(QtCore.QSize(*min_size))
+        font = QtGui.QFont()
+        font.setPointSize(font_size)
+        font.setBold(bold)
+        line_edit.setFont(font)
+
+        if placeholder:
+            line_edit.setPlaceholderText(placeholder)
+        if object_name:
+            line_edit.setObjectName(object_name)
+
+        return line_edit
+
+    def create_date_edit(self, parent, enabled=True, min_size=(160, 40),
+                        font_size=12, bold=True, display_format="yyyy-MM-dd",
+                        default_date=None, object_name=None):
+        """Create a standardized date edit with consistent styling
+
+        Args:
+            parent: Parent widget
+            enabled: Whether the date edit is enabled (default: True)
+            min_size: Minimum size (default: (160, 40))
+            font_size: Font size (default: 12)
+            bold: Whether font should be bold (default: True)
+            display_format: Date display format (default: "yyyy-MM-dd")
+            default_date: Default date (QDate object, optional)
+            object_name: Object name for the date edit (optional)
+
+        Returns:
+            QDateEdit: The created date edit
+        """
+        date_edit = QtWidgets.QDateEdit(parent)
+        date_edit.setEnabled(enabled)
+        date_edit.setMinimumSize(QtCore.QSize(*min_size))
+        font = QtGui.QFont()
+        font.setPointSize(font_size)
+        font.setBold(bold)
+        date_edit.setFont(font)
+        date_edit.setCalendarPopup(True)
+        date_edit.setDisplayFormat(display_format)
+
+        if default_date:
+            date_edit.setDate(QtCore.QDate(*default_date))
+        if object_name:
+            date_edit.setObjectName(object_name)
+
+        return date_edit
