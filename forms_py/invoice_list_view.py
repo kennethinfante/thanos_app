@@ -8,7 +8,7 @@ class Ui_invoiceListView(object):
         invoiceListView.setObjectName("invoiceListView")
         # Appropriate size for MacBook Pro 2015 with Retina display
         invoiceListView.resize(1440, 900)
-        invoiceListView.setMinimumSize(QtCore.QSize(1024, 768))
+        invoiceListView.setMinimumSize(QtCore.QSize(1440, 900))
         invoiceListView.setMaximumSize(QtCore.QSize(1920, 1080))
 
         # Central widget
