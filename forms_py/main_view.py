@@ -126,13 +126,15 @@ class Ui_MainView(object):
         # Connect signals and slots
         QtCore.QMetaObject.connectSlotsByName(MainView)
 
-    def create_sidebar_button(self, object_name, text, icon_path, tooltip):
+    def create_sidebar_button(self, object_name, text, icon_path=None, tooltip=None):
         """Helper method to create sidebar buttons with consistent styling"""
         button = QtWidgets.QPushButton(self.nav_sidebar)
         button.setObjectName(object_name)
         button.setText(text)
-        button.setToolTip(tooltip)
         button.setMinimumSize(QtCore.QSize(220, 60))
+
+        if tooltip:
+            button.setToolTip(tooltip)
 
         # Set font
         font = QtGui.QFont()
