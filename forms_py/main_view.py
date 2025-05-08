@@ -8,9 +8,10 @@ class Ui_MainView(object):
     def setupUi(self, MainView):
         # Main window setup
         MainView.setObjectName("MainView")
-        # Appropriate size for MacBook Pro 2015 with Retina display
+        # # Appropriate size for MacBook Pro 2015 with Retina display
         MainView.resize(1440, 900)
-        MainView.setMinimumSize(QtCore.QSize(1024, 768))
+        # MainView.setMinimumSize(QtCore.QSize(1024, 768)) # aspect ratio is 1.6
+        MainView.setMinimumSize(QtCore.QSize(1600, 1000))
         MainView.setMaximumSize(QtCore.QSize(1920, 1080))
 
         # Base stylesheet - more macOS-like

@@ -25,7 +25,7 @@ class Ui_invoiceListView(object):
         self.header_section = QtWidgets.QWidget(self.central_widget)
         self.header_section.setObjectName("header_section")
         self.header_vly = QtWidgets.QVBoxLayout(self.header_section)
-        self.header_vly.setContentsMargins(0, 0, 0, 0)
+        # self.header_vly.setContentsMargins(0, 0, 0, 0)
         self.header_vly.setSpacing(10)
         self.header_vly.setObjectName("header_vly")
 
