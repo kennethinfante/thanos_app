@@ -21,7 +21,7 @@ class Ui_invoiceListView(object):
         self.main_vly.setSpacing(10)
         self.main_vly.setObjectName("main_vly")
 
-        # Search section
+        # Header section
         self.header_section = QtWidgets.QWidget(self.central_widget)
         self.header_section.setObjectName("header_section")
         self.header_vly = QtWidgets.QVBoxLayout(self.header_section)
@@ -93,7 +93,7 @@ class Ui_invoiceListView(object):
         # Add action buttons layout to search section
         self.header_vly.addLayout(self.btn_hly)
 
-        # Add search section to main layout
+        # Add header section to main layout
         self.main_vly.addWidget(self.header_section)
 
         # Table view for invoices

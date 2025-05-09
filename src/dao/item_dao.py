@@ -6,10 +6,16 @@ class ItemDao(DataAccessObject):
     def __init__(self, is_testing=False):
         super().__init__(table_name='items', is_testing=is_testing)
 
-    def get_all_items(self):
-        """Get all items"""
+    def get_all_items(self, filters=None):
+        """Get all invoices with related data"""
         try:
-            return self.session.query(Item).all()
+            query = self.session.query(Item)
+
+            # Apply invoice filters
+            if filters:
+                for filter_condition in filters:
+                    query = query.filter(filter_condition)
+            return query.all()
         except Exception as e:
             self.logger.error(f"Error getting all items: {str(e)}")
             return []

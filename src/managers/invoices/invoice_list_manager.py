@@ -48,7 +48,7 @@ class InvoiceListManager(BaseManager):
         self.ui.invoices_table_view.update()
 
     def clear(self):
-        self.ui.customer_line_edit.clear()
+        self.ui.customer_lne.clear()
         self.model.update()
         self.ui.invoices_table_view.update()
 
@@ -56,7 +56,7 @@ class InvoiceListManager(BaseManager):
         filters = []
 
         # Customer filter
-        customer_name = self.ui.customer_line_edit.text().strip().lower()
+        customer_name = self.ui.customer_lne.text().strip().lower()
 
         if customer_name:
             filters.append(text("LOWER(customers.name) LIKE :pattern").bindparams(
