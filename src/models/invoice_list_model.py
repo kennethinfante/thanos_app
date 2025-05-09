@@ -52,16 +52,3 @@ class InvoiceListModel(QAbstractTableModel):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self.headers[section]
         return None
-
-    def get_column_widths(self):
-        """
-        Returns a dictionary with recommended column widths for each column
-        """
-        return {
-            0: 60,    # ID - narrow column
-            1: 120,   # Invoice Number
-            2: 100,   # Date
-            3: 200,   # Customer - wider for names
-            4: 120,   # Total Amount
-            5: 100    # Status
-        }

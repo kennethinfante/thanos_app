@@ -7,9 +7,9 @@ class Ui_invoiceListView(object):
         # Main window setup
         invoiceListView.setObjectName("invoiceListView")
         # Appropriate size for MacBook Pro 2015 with Retina display
-        invoiceListView.resize(1440, 900)
-        invoiceListView.setMinimumSize(QtCore.QSize(1440, 900))
-        invoiceListView.setMaximumSize(QtCore.QSize(1920, 1080))
+        invoiceListView.resize(*page_min_size)
+        invoiceListView.setMinimumSize(QtCore.QSize(*page_min_size))
+        invoiceListView.setMaximumSize(QtCore.QSize(*page_max_size))
 
         # Central widget
         self.central_widget = QtWidgets.QWidget(invoiceListView)
@@ -107,7 +107,7 @@ class Ui_invoiceListView(object):
         self.invoices_table_view.horizontalHeader().setMinimumSectionSize(80)
 
         # Make all columns stretch proportionally when the window is resized
-        self.invoices_table_view.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        # self.invoices_table_view.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
         # Set resize mode for each column individually
         # First, set all columns to stretch

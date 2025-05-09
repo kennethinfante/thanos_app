@@ -4,6 +4,7 @@ import shutil
 
 from PyQt5.QtWidgets import QApplication, QSplashScreen
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 
 import config
 from config import PROJECT_ROOT_PATH
@@ -37,6 +38,8 @@ def reset_database():
 
 if __name__ == "__main__":
     # reset_database()
+    # QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
+    # QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
     app = QApplication(sys.argv)
     splash = QSplashScreen(QPixmap(''))
     splash.show()

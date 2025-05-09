@@ -13,7 +13,6 @@ from src.database_manager import DatabaseManager
 from src.models.item_list_model import ItemListModel
 
 # from src.managers.items.item_view_manager import ItemViewManager
-from src.utils.table_utils import *
 
 class ItemListManager(BaseManager):
     def __init__(self, parent=None):
@@ -22,8 +21,6 @@ class ItemListManager(BaseManager):
 
     def initialize_ui(self):
         self.ui.items_table_view.setModel(self.model)
-        # Apply column widths
-        apply_column_widths(self.ui.items_table_view, self.model)
 
     def connect_signals_slots(self):
         self.ui.search_btn.clicked.connect(self.search)

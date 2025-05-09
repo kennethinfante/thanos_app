@@ -7,9 +7,9 @@ class Ui_itemListView(object):
         # Main window setup
         itemListView.setObjectName("itemListView")
         # Appropriate size for MacBook Pro 2015 with Retina display
-        itemListView.resize(1440, 900)
-        itemListView.setMinimumSize(QtCore.QSize(1440, 900))
-        itemListView.setMaximumSize(QtCore.QSize(1920, 1080))
+        itemListView.resize(*page_min_size)
+        itemListView.setMinimumSize(QtCore.QSize(*page_min_size))
+        itemListView.setMaximumSize(QtCore.QSize(*page_max_size))
 
         # Central widget
         self.central_widget = QtWidgets.QWidget(itemListView)
@@ -64,7 +64,7 @@ class Ui_itemListView(object):
         self.items_table_view.horizontalHeader().setMinimumSectionSize(80)
 
         # Make all columns stretch proportionally when the window is resized
-        self.items_table_view.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        # self.items_table_view.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
         # Set resize mode for each column individually
         # First, set all columns to stretch

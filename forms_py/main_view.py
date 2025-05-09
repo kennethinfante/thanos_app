@@ -1,5 +1,6 @@
 import resources_rc
 from .form_styles import *
+from .form_utils import main_max_size, main_min_size, sidebar_max_size, sidebar_min_size
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -9,10 +10,11 @@ class Ui_MainView(object):
         # Main window setup
         MainView.setObjectName("MainView")
         # # Appropriate size for MacBook Pro 2015 with Retina display
-        MainView.resize(1440, 900)
+        # MainView.resize(1440, 900)
         # MainView.setMinimumSize(QtCore.QSize(1024, 768)) # aspect ratio is 1.6
-        MainView.setMinimumSize(QtCore.QSize(1600, 1000))
-        MainView.setMaximumSize(QtCore.QSize(1920, 1080))
+        MainView.resize(*main_min_size)
+        MainView.setMinimumSize(QtCore.QSize(*main_min_size))
+        MainView.setMaximumSize(QtCore.QSize(*main_max_size))
 
         # Base stylesheet - more macOS-like
         apply_main_window_style(MainView)
@@ -29,8 +31,8 @@ class Ui_MainView(object):
 
         # Navigation Sidebar
         self.sidebar = QtWidgets.QWidget(self.central_widget)
-        self.sidebar.setMinimumSize(QtCore.QSize(220, 0))
-        self.sidebar.setMaximumSize(QtCore.QSize(220, 1080))
+        self.sidebar.setMinimumSize(QtCore.QSize(*sidebar_min_size))
+        self.sidebar.setMaximumSize(QtCore.QSize(*sidebar_max_size))
         self.sidebar.setObjectName("sidebar")
 
         # Sidebar stylesheet - more macOS-like
@@ -75,10 +77,10 @@ class Ui_MainView(object):
         self.window_content.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.window_content.setObjectName("window_content")
 
-        # Add placeholder pages - useful for the dashboard
-        # self.page = QtWidgets.QWidget()
-        # self.page.setObjectName("page")
-        # self.window_content.addWidget(self.page)
+        # Add placeholder pages - needed a placeholder page to allow switching between pages
+        self.page = QtWidgets.QWidget()
+        self.page.setObjectName("page")
+        self.window_content.addWidget(self.page)
 
         # Add content area to main layout
         self.main_hly.addWidget(self.window_content)

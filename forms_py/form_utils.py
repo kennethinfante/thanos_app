@@ -1,5 +1,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+main_max_size = (1600, 1000)
+main_min_size = (1440, 900)
+page_max_size = (1400, 1000)
+page_min_size = (1224, 890)
+sidebar_min_size = (200, 0)
+sidebar_max_size = (200, 1000)
+
 def create_checkbox(parent, text, font_size=12, bold=True, direction=QtCore.Qt.RightToLeft, object_name=None):
     """Create a standardized label with consistent styling
 

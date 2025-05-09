@@ -7,8 +7,8 @@ class Ui_invoiceView(object):
         invoiceView.setObjectName("invoiceView")
         invoiceView.setWindowModality(QtCore.Qt.ApplicationModal)
         # Recommended size for 15-inch MacBook Pro with Retina display
-        invoiceView.resize(1200, 800)
-        invoiceView.setMinimumSize(QtCore.QSize(1200, 800))
+        invoiceView.resize(1204, 890)
+        invoiceView.setMinimumSize(QtCore.QSize(1204, 890))
 
         # Central widget
         self.centralwidget = QtWidgets.QWidget(invoiceView)

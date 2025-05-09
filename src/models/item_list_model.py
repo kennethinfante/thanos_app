@@ -53,18 +53,3 @@ class ItemListModel(QAbstractTableModel):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self.headers[section]
         return None
-
-    def get_column_widths(self):
-        """
-        Returns a dictionary with recommended column widths for each column
-        """
-        # ["ID", "Name", "Sale Price", "Purchase Price", "Inventory Tracking", "Is Consumable", "Is Service"]
-        return {
-            0: 60,    # ID - narrow column
-            1: 200,   # Name
-            2: 100,   # Sale Price
-            3: 100,   # Purchase Price
-            4: 60,   # tracked
-            5: 60,   # consumed
-            6: 60,   # service
-        }

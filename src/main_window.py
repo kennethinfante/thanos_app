@@ -25,7 +25,10 @@ class AppMainWindow(QMainWindow):
         self.initialize_database()
         self.initialize_pages()
         self.connect_signals_slots()
-        self.ui.window_content.setCurrentIndex(0)
+
+        # set to invoice page
+        # note that the first index is 1, we can use 0 for dashboard
+        self.ui.window_content.setCurrentIndex(1)
 
     def connect_signals_slots(self):
         self.ui.invoices_btn.clicked.connect(
@@ -84,8 +87,9 @@ class AppMainWindow(QMainWindow):
             #     {"index": 2, "widget": BillsManager()},
             # "cash_manager":
             #     {"index": 3, "widget": CashManager()},
+
             "items_manager":
-                {"index": 4, "widget": ItemListManager()},
+                {"index": 2, "widget": ItemListManager()}
             # 'contacts_manager':
             #     {"index": 5, "widget": ContactsManager()},
             # "journals_manager":

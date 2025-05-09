@@ -13,7 +13,6 @@ from src.database_manager import DatabaseManager
 from src.models.invoice_list_model import InvoiceListModel
 
 from src.managers.invoices.invoice_view_manager import InvoiceViewManager
-from src.utils.table_utils import *
 
 class InvoiceListManager(BaseManager):
     def __init__(self, parent=None):
@@ -22,8 +21,19 @@ class InvoiceListManager(BaseManager):
 
     def initialize_ui(self):
         self.ui.invoices_table_view.setModel(self.model)
-        # Apply column widths
-        apply_column_widths(self.ui.invoices_table_view, self.model)
+
+        # # Apply column widths
+        # column_widths = {
+        #     0: 60,    # ID - narrow column
+        #     1: 120,   # Invoice Number
+        #     2: 100,   # Date
+        #     3: 200,   # Customer - wider for names
+        #     4: 120,   # Total Amount
+        #     5: 100    # Status
+        # }
+        #
+        # for column, width in column_widths.items():
+        #     self.ui.invoices_table_view.setColumnWidth(column, width)
 
     def connect_signals_slots(self):
         self.ui.search_date_chbox.stateChanged.connect(self.enable_date)
