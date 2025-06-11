@@ -11,6 +11,13 @@ class Ui_invoiceListView(object):
         invoiceListView.setMinimumSize(QtCore.QSize(*page_min_size))
         invoiceListView.setMaximumSize(QtCore.QSize(*page_max_size))
 
+        # Set size policy to prefer the minimum size
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(invoiceListView.sizePolicy().hasHeightForWidth())
+        invoiceListView.setSizePolicy(sizePolicy)
+        
         # Central widget
         self.central_widget = QtWidgets.QWidget(invoiceListView)
         self.central_widget.setObjectName("central_widget")
@@ -98,27 +105,13 @@ class Ui_invoiceListView(object):
 
         # Table view for invoices
         self.invoices_table_view = QtWidgets.QTableView(self.central_widget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Expanding)
         self.invoices_table_view.setSizePolicy(sizePolicy)
         self.invoices_table_view.setObjectName("invoices_table_view")
 
         # Configure table headers
         self.invoices_table_view.horizontalHeader().setDefaultSectionSize(120)
         self.invoices_table_view.horizontalHeader().setMinimumSectionSize(80)
-
-        # Make all columns stretch proportionally when the window is resized
-        # self.invoices_table_view.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
-
-        # Set resize mode for each column individually
-        # First, set all columns to stretch
-        # header = self.invoices_table_view.horizontalHeader()
-        # for i in range(header.count()):
-        #     header.setSectionResizeMode(i, QtWidgets.QHeaderView.Stretch)
-
-        # Then, set specific columns to fixed width if needed
-        # For example, if column 0 is an ID column that should stay fixed width:
-        # header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-        # self.invoices_table_view.setColumnWidth(0, 60)  # Set fixed width for column 0
 
         # Add table view to main layout
         self.main_vly.addWidget(self.invoices_table_view)
@@ -152,5 +145,3 @@ class Ui_invoiceListView(object):
         apply_table_style(self.invoices_table_view)
 
         apply_line_edit_style(self.customer_lne)
-
-

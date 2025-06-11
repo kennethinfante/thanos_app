@@ -45,8 +45,8 @@ class InvoiceListManager(BaseManager):
 
     def enable_date(self, state: int):
         is_enabled = state == Qt.Checked
-        self.ui.from_date_edit.setEnabled(is_enabled)
-        self.ui.to_date_edit.setEnabled(is_enabled)
+        self.ui.from_date_dte.setEnabled(is_enabled)
+        self.ui.to_date_dte.setEnabled(is_enabled)
 
     def search(self):
         filters = self.build_search_filters()

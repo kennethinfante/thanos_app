@@ -1,11 +1,21 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from platform import system
 
-main_max_size = (1600, 1000)
-main_min_size = (1440, 900)
-page_max_size = (1400, 1000)
-page_min_size = (1224, 890)
-sidebar_min_size = (200, 0)
-sidebar_max_size = (200, 1000)
+IS_MACOS = system() == 'Darwin'
+# main_max_size = (1440, 900) if IS_MACOS else (1800, 1000)
+# main_min_size = (1024, 768) if IS_MACOS else (1500, 900)
+# page_max_size = (1310, 900) if IS_MACOS else (1590, 990)
+# page_min_size = (894, 768) if IS_MACOS else (1290, 890)
+# sidebar_max_size = (130, 900) if IS_MACOS else (200, 1000)
+# sidebar_min_size = (130, 768) if IS_MACOS else (200, 0)
+
+main_max_size = (1440, 870) if IS_MACOS else (1800, 1000)  # Matches default scaling
+main_min_size = (1024, 768) if IS_MACOS else (1500, 900)   # Keep as is for compatibility
+page_max_size = (1310, 870) if IS_MACOS else (1590, 990)   # Slightly smaller than main window
+page_min_size = (894, 768) if IS_MACOS else (1290, 890)    # Keep as is
+sidebar_max_size = (130, 870) if IS_MACOS else (200, 1000)
+sidebar_min_size = (130, 768) if IS_MACOS else (200, 900)
+base_font_size = 12 if IS_MACOS else 10  # macOS typically needs larger fonts
 
 def create_checkbox(parent, text, font_size=12, bold=True, direction=QtCore.Qt.RightToLeft, object_name=None):
     """Create a standardized label with consistent styling

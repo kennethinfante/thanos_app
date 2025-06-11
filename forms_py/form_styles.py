@@ -1,8 +1,8 @@
 import sys
-import platform
+from platform import system
 
 # Flag to determine if we're running on macOS
-IS_MACOS = platform.system() == 'Darwin'
+IS_MACOS = system() == 'Darwin'
 
 def apply_main_window_style(window):
     """Apply macOS-like styling to the main window, only if running on macOS"""
@@ -14,6 +14,9 @@ def apply_main_window_style(window):
             QMenuBar {
                 background-color: #F5F5F5;
                 border-bottom: 1px solid #D0D0D0;
+            }
+            QStatusBar {
+                background-color: #F5F5F5;
             }
             QMenuBar::item {
                 background: transparent;
@@ -363,4 +366,3 @@ def apply_dateedit_style(dateedit):
 #         }
 #     """
 #     dateedit.setStyleSheet(dateedit_style)
-
